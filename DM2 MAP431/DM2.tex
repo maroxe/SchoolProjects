@@ -1,0 +1,94 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}   
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{pgfplots}
+\usepackage{sagetex}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{geometry}
+\geometry{hmargin=1.5cm,vmargin=1.5cm}
+
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\left(#1\right)}}
+\newcommand{\SmallO}[1]{\ensuremath{\operatorname{o}\left(#1\right)}}
+\newcommand{\BBigO}[3]{\ensuremath{\underset{#1 \to #2 }{\operatorname{O}\left(#3\right)}}}
+\newcommand{\BigF}[2]{\ensuremath{#1 \left(#2\right)}}
+\newcommand{\Wrap}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\Q}[1]{\subsubsection*{Question #1}}
+
+
+\begin{document}
+
+\title{MAP431 - DM 2}
+\author{EL KHADIR Bachir}
+
+
+%\maketitle
+
+\Q{1}
+
+$v(x+D) = u(x+D) e^{-i\frac{x+D}{D} \varphi} = u(x)e^{i \varphi} e^{-i(\frac{x}{D}+1) \varphi} = v(x)$ donc $v$ est $D$-périodique.
+comme $v \in L^2( ] -\frac{D}{2},\frac{D}{2} [) $, alors par décomposition de Fourier:
+$$v(x) = \sum_{L \in \mathbb{Z}} \hat v(L) e^{i \frac{2\pi L}{D} }$$
+et donc
+\begin{align*}
+u(x) &= \left( \sum_{L \in \mathbb{Z}} \hat v(L) e^{i \frac{2\pi L}{D} } \right) e^{i\frac{x}{D}\varphi} \\
+&= \sum_{L \in \mathbb{Z}} u_L e^{i K_L x} & \text{où} \, u_L = \hat v(L)
+\end{align*}
+
+$\sum_{L \in \mathbb{Z}} |u_L| ^2 = || v ||_{L_2}^2 < + \infty$, d'où la convergence de la série.
+$$u|_{]-D/2,D/2[} \in H^1(]-\frac{D}{2}, \frac{D}{2}[) \rightarrow \sum_{L \in \mathbb{Z}} |u_L K_L|^2 = || \nabla u ||_{L_2}^2 < +\infty$$
+
+
+\Q{2}
+En injectant $u(x, z) = u_L(z) e^{i K_L x}$ dans l'équation, on trouve:
+$$ -\delta u = (u_L''(z) - K_L^2 u_L(z)) e^{iK_L x} = 0$$
+Les solution sont donc de la forme:
+\begin{align*}
+u(x, z) &= (A e^{K_L z} + B e^{-K_L z}) e^{i K_L x} & \text{avec} \, A, B \in \mathbb{C}
+\end{align*}
+Pour que cette fonction appartiennent à $H^1(]-D/2, D/2[ \times ]0, +\infty[ )$, il faut que $A = 0$.\\
+Et dans ce cas, la solution s'écrit: $u(x, z) =   C e^{K_L (i x - z) }$ avec $C \in \mathbb{C}$.
+
+\Q{3}
+$$u_L'(H) = -K_L u_L(H)$$
+
+\Q{4}
+
+\Q{5}
+
+\begin{align*}
+\nabla u &= \sum_{L\in\mathbb{Z}} \nabla (u_L(z)e^{iK_Lx})  \\
+&= \sum_{L\in\mathbb{Z}} \begin{pmatrix} i K_L u_L(z) \\ u_L'(z) \end{pmatrix} e^{iK_Lx}
+\end{align*}
+D'où (puisque les $e{iK_x}$ forme une famille orthonormée):
+$$ ||u||_{L_2}^2 = \int_{z \in ]H, + \infty[} \int_{x \in ]-D/2, D/2[} \sum_{L\in\mathbb{Z}} u_L(z)e^{iK_Lx} dx \, dz 
+= \int_{z \in ]H, + \infty[} \sum_{L\in\mathbb{Z}} |u_L(z)|^2 dz$$
+$$ ||\nabla u||_{L_2}^2 
+= \int_{z \in ]H, + \infty[} \sum_{L\in\mathbb{Z}} |K_L u_L(z) |^2 + |u_L'(z)|^2 dz$$
+
+Puis par fubini:
+$$ ||u||_{H^1}^2 = ||u||_{L_2}^2 + ||\nabla u||_{L_2}^2 = \sum_{L\in\mathbb{Z}} \int_{z \in ]H, + \infty[} \left( (1+|K_L|^2)|u_L(z)^2 + |u_L'(z)|^2\right) dz$$
+
+bla bla
+
+On en conclut que:
+\begin{align*}
+\sum_{L \in \mathbb Z} |K_L| |u_L(H)|^2 & \leq 2 \sum_{L \in \mathbb Z} |K_L| \int_H^{+\infty} |u_L'(t)| |u_L(t)| dt \\
+& \leq  2 \sum_{L \in \mathbb Z}  \int_H^{+\infty} (|u_L'(t)|^2 + |K_L u_L(t)|^2) dt & \text{par Cauchy Schwartz} \\
+& \leq C ||u||^2
+\end{align*}
+
+Soit $u \in H^1$.
+$C^\infty_c$ étant dense dans $H^1$, il existe une suite de fonction $(u^n)$ de $C^\infty_c$ tel  que $u^n \rightarrow u$.
+L'application trace étant continue, on a aussi /* par densité bla bla bla */
+
+
+
+\end{document}
+
+

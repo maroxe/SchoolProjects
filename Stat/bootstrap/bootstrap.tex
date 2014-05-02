@@ -1,0 +1,237 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[T1]{fontenc}   
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{pgfplots}
+\usepackage{sagetex}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\usepackage{minted}
+
+
+\usepackage{geometry}
+\geometry{hmargin=1.5cm,vmargin=1.5cm}
+
+\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\left(#1\right)}}
+\newcommand{\SmallO}[1]{\ensuremath{\operatorname{o}\left(#1\right)}}
+\newcommand{\BBigO}[3]{\ensuremath{\underset{#1 \to #2 }{\operatorname{O}\left(#3\right)}}}
+\newcommand{\BigF}[2]{\ensuremath{#1 \left(#2\right)}}
+\newcommand{\Wrap}[1]{\ensuremath{\left(#1\right)}}
+\newcommand{\Q}[1]{\subsubsection*{Question #1}}
+
+
+\begin{document}
+
+\title{MAP433 - Projet 4}
+\author{EL KHADIR Bachir, BIAD Anas}
+
+
+\maketitle
+
+Le code utilisé pour trouver les valeurs numériques et sa sortie sont disponibles en annexe.
+
+\Q{1) - a}
+Pour $mois \in \{ mai, juin \}$, on a:
+$$\nabla_\vartheta M^{(mois)}(\hat{\vartheta}^{(mois)})
+=  \nabla_\vartheta M^{(mois)}(\vartheta^{(mois)}) + H_e . (\hat{\vartheta}^{(mois)} -  \vartheta^{(mois)}) + \BigO{ \left\| \hat{\vartheta}^{(mois)}- \vartheta^{(mois)} \right\| ^2}  $$
+où $H_e$ est la hessienne de $M^{(mois)}$ au point $\vartheta^{(mois)}$..
+
+$M^{(mois)}$ atteint son minimum en $\hat{\vartheta}^{(mois)}$, donc: $\nabla_\vartheta M^{(mois)}(\hat{\vartheta}^{(mois)}) = 0$.
+Par conséquent:
+
+
+$$ \sqrt n (\hat{\vartheta}^{(mois)} -  \vartheta^{(mois)}) = -\sqrt n \, H_e ^{-1} \nabla_\vartheta M^{(mois)}(\vartheta^{(mois)})  + \BigO{ \sqrt n \, \left\|H_e ^{-1} (\hat{\vartheta}^{(mois)}- \vartheta^{(mois)}) \right\| ^2}    $$
+
+Or
+\begin{align*}
+(\forall \vartheta \in \mathbb{R} ) \, \nabla_\vartheta M^{(mois)}(\vartheta) 
+&= \frac{-2}{n} \sum_{i=1}^{k} \sum_{j=1}^{r} (Y_{i,j}^{(mois)} - f(x_i, \vartheta)) \nabla_\vartheta f(x_i, \vartheta) \\
+&= \frac{-2}{n} \sum_{i=1}^{k} \sum_{j=1}^{r}  \varepsilon_{i,j} \, \nabla_\vartheta f(x_i, \vartheta) 
+\end{align*}
+
+$$ \mathbb{E} [\sqrt n \nabla_\vartheta M^{(mois)} (\vartheta^{(mois)}) ] = 0$$ 
+car les $\varepsilon_{i,j}$ sont centrées.
+
+
+\begin{align*}
+\mathbb{V} [ \sqrt n \nabla_\vartheta M^{(mois)} (\vartheta^{(mois)} ] 
+&= 4 \, \sum_{i=1}^{k} \sum_{j=1}^{r} \mathbb{E} [ \varepsilon_{i,j}^2 ] \, \nabla_\vartheta f(x_i, \vartheta^{(mois)}) \nabla_\vartheta f(x_i, \vartheta^{(mois)})^T 
+& \text{ (car les $\varepsilon_{i,j}$ sont iid) } \\
+&= \frac{4 \sigma^2}{n} \, \sum_{i=1}^{k} \sum_{j=1}^{r}  \nabla_\vartheta f(x_i, \vartheta^{(mois)}) \nabla_\vartheta f(x_i, \vartheta^{(mois)})^T  \\
+&= \frac{4 \sigma^2}{k} \, \sum_{i=1}^{k} \nabla_\vartheta f(x_i, \vartheta^{(mois)}) \nabla_\vartheta f(x_i, \vartheta^{(mois)})^T  \\
+& \to 4\sigma^2 \int^1_0 \nabla_\vartheta f(x, \vartheta^{(mois)}) \nabla_\vartheta f(x, \vartheta^{(mois)})^T \, \mathrm{d}x \\
+&= 4\sigma^2 H(\vartheta^{(mois)} )
+\end{align*}
+
+
+Par TCL :
+$$ \sqrt n \nabla_\vartheta M^{(mois)} (\vartheta^{(mois)} \overset{d}{\to} \mathcal{N}(0, 4 \sigma^2 H(\vartheta) )$$
+On a aussi:
+\begin{align*}
+H_e &= \frac{-2}{n} \sum_{i, j} - \nabla_\vartheta f(x_i, \vartheta^{(mois)})\nabla_\vartheta f(x_i, \vartheta^{(mois)})^T + \varepsilon_{i,j} H(f) \\
+&=  \frac{2}{n} \sum_{i, j} - \nabla_\vartheta f \nabla_\vartheta f ^T + \frac{-2}{n}  \sum_{i, j} \varepsilon_{i,j} H(f) 
+\end{align*}
+$ \frac{-2}{n}  \sum_{i, j} \varepsilon_{i,j} H(f) \longrightarrow 0$ par LGN, 
+et $ \frac{2}{n} \sum_{i, j} - \nabla_\vartheta f \nabla_\vartheta f ^T \longrightarrow \BigF{H}{\vartheta^{(mois)}}$ 
+
+d'où $$ H_e \overset{\mathbb{P}_{\vartheta} } \longrightarrow  2 \BigF{H}{\vartheta^{(mois)}} $$
+
+On en déduit par Slutsky que:
+$$ \sqrt n (\hat{\vartheta}^{(mois)} - \vartheta^{(mois)} ) \overset{ d } \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 \BigF{H}{\vartheta^{(mois)}}^{-1}}$$
+
+Comme $\hat{\vartheta}^{(mai)}$ et $\hat{\vartheta}^{(juin)} $ sont indépendants, alors:
+$$ \sqrt n (\hat{\vartheta}- \vartheta ) \overset{ d } \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 \BigF{H}{\vartheta}^{-1}}$$
+
+où 
+\begin{center}
+\ensuremath{
+\BigF{H}{\vartheta} = 
+\begin{pmatrix}
+ \BigF{H}{\vartheta^{(mai)}} & 0 \\
+ 0 & \BigF{H}{\vartheta^{(juin)}}
+\end{pmatrix}
+}
+\end{center}
+
+\Q{b)}
+Posons $A = (\mathbb{I}_3 \,  0 \, -\mathbb{I}_3 \, 0) \in {\cal M}_{3, 8}(\mathbb{R})$ de rang $3$, alors $A \vartheta = 0$.
+
+$\sqrt n (\hat{\vartheta}_n - \vartheta)  \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 \BigF{H}{\vartheta}^{-1}}$
+Si $A \vartheta = 0$, alors par Slutsky: 
+$$ \sqrt n A( \hat{\vartheta} - \vartheta ) \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 A \BigF{H}{\vartheta}^{-1}A^T}$$
+
+\Q{c) }
+On propose 
+$$\sigma_n^2 = \frac{ \sum_{i,j} (\varepsilon_{i,j}^{(mai)})^2  + \sum_{i,j} (\varepsilon_{i,j}^{(juin)})^2}{2n}  \overset{ps} \longrightarrow \sigma^2$$ 
+Par LGN 
+parceque $\mathbb{V}[{\epsilon_{i,j}^{(mois)}}] = \sigma^2$.
+
+Comme $\sqrt n (\hat{\vartheta} - \vartheta)  \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 \BigF{H}{\vartheta}^{-1}}$, alors
+$\hat{\vartheta} - \vartheta  \overset {\mathbb{P}_{\vartheta}} \longrightarrow 0$.
+
+Si $A\vartheta \neq 0$, alors 
+$$(A\hat \vartheta_n)^T \hat V (\hat \vartheta_n) ^{-1} A \hat \vartheta _n 
+\overset {\mathbb{P}_{\vartheta}} \longrightarrow 
+(A\vartheta)^T \hat V ( \vartheta) ^{-1} A  \vartheta \neq 0$$
+
+donc $$T_n \overset {\mathbb{P}_{\vartheta}} \longrightarrow + \infty$$
+Si $A\vartheta = 0$ alors comme on a:
+\begin{itemize}
+	\item  
+	$\sqrt n A( \hat{\vartheta} - \vartheta ) \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 V( \vartheta )}$
+	\item
+	$ \hat{V}(\hat \vartheta_n ) \overset { \mathbb{P}_{\vartheta}}{ \longrightarrow} V( \vartheta )$
+	\item
+	$\sigma_n^2 \overset { \mathbb{P}_{\vartheta}}{ \longrightarrow} \sigma^2$
+\end{itemize}
+Alors par Slutsky:
+$$ T_n = \frac{1}{\hat \sigma_n^2 } ( \sqrt n A \hat \vartheta _n)^T \hat{V}(\hat \vartheta_n ) ( \sqrt n A \hat \vartheta _n)
+\overset d \longrightarrow \frac{1}{\sigma^2} Z^T V(\vartheta) Z $$
+où $Z \sim \BigF{\mathcal{N}}{0, \sigma^2 V( \vartheta )}$.
+
+Or $V( \vartheta )$ est définie positive, en effet:
+\begin{align*}
+(\forall X \in \mathbb{R}^3 - \{0\}) \, X^T V( \vartheta ) X > 0 
+& \Leftrightarrow  X^T A H(\vartheta) A^T X > 0 \\
+& \Leftrightarrow  X^T A H(\vartheta) A^T X > 0 \\
+& \Leftrightarrow  (A^T X)^T H(\vartheta) A^T X > 0 & \text{(car $H(\vartheta) > 0$ et $A^T X \neq 0$)} \\
+\end{align*}
+
+Donc:
+$$ \frac{1}{\sigma^2} Z^T V(\vartheta) Z = \left\| \frac{V(\vartheta)^{-\frac{1}{2}}}{\sigma} Z \right\|^2 \sim \chi^2(3) $$
+
+\Q{d)}
+On propose le test suivant:
+
+$$
+\varphi(\hat \vartheta _n) = \left\{
+    \begin{array}{ll}
+        1 & T_n > \beta \\
+        0 & \mbox{sinon}
+    \end{array}
+\right.
+$$
+Sous \textbf{$H_0$}, si $\vartheta$ et tel que $A \vartheta  = 0$:
+\begin{align*}
+\mathbb{P}_\vartheta(\varphi = 1) 
+&= \mathbb{P}_\vartheta(T_n > \beta ) \\
+&  \to 1 - \mathbb{P}_\vartheta( \chi^2(3) \leq \beta ) \\
+&= 5\%
+\end{align*}
+Où $\beta = 7.81$ est  le quantile de $\chi2(3)$ à $95\%$.
+
+\Q{2 a) }
+$\hat \vartheta_n = 
+\bigl(\begin{smallmatrix}
+0.042 & 0.059 \\
+1.94 & 1.91 \\
+2.56 & 2.84 \\
+3.47 & 3.25 \\
+\end{smallmatrix} \bigr)$,
+$T_n = 2.1 < \beta$ donc $\varphi = 0$. \textbf{On ne peut rien dire}.
+
+\Q{2 b)}
+On trouve $\hat \rho = 0.6$
+
+\Q{3 a)}
+$I_B(\alpha = 5\%) = \left[ 0.48, 0.75 \right] $
+
+\Q{3 b)}
+Posons $g(x) = 10^x$, de dérivé $g'(x) = ln(10) g(x)$.
+
+\begin{align*}
+\sqrt n (\hat \rho - \rho) 
+&= \sqrt n \left( 10^{\tilde \vartheta^{(juin)}_4 -  \tilde \vartheta^{(mai)}_4} - 10^{ \vartheta^{(juin)}_4 - \vartheta^{(mai)}_4} \right) \\
+&= \sqrt n \left( \BigF{g}{ \tilde \vartheta^{(juin)}_4 -  \tilde \vartheta^{(mai)}_4 } - \BigF{g}{ \vartheta^{(juin)}_4 - \vartheta^{(mai)}_4} \right)
+\end{align*}
+Par le théorème des accroissement finis, il existe $\tilde \eta \in \left( \tilde \vartheta^{(juin)}_4 -  \tilde \vartheta^{(mai)}_4, \vartheta^{(juin)}_4 - \vartheta^{(mai)}_4 \right)$ tel que
+$$\sqrt n (\hat \rho - \rho) 
+= g'( \tilde \eta ) \left(  \tilde \vartheta^{(juin)}_4 - \vartheta^{(juin)}_4 +  \tilde \vartheta^{(mai)}_4  - \vartheta^{(mai)}_4 \right)
+$$
+Sous $H_0$ on a:
+$$ \sqrt n ( \tilde{\vartheta} - \vartheta ) \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2  \BigF{H}{\vartheta}^{-1}}$$
+donc par projection sur la quatrième coordonnée:
+$$ \tilde \vartheta^{(juin)}_4 - \vartheta^{(juin)}_4 \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 \nu_1}$$
+et
+$$ \tilde \vartheta^{(mai)}_4 - \vartheta^{(mai)}_4 \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 \nu_2}$$
+où $\nu_1$ (resp. $\nu_2$ ) est la composante $(4,4)$ de la matrice $H(\vartheta^{(juin)})^{-1}$ (resp. $H(\vartheta^{(mai)})^{-1}$)
+
+Par indépendance:
+$$  \tilde \vartheta^{(juin)}_4 - \vartheta^{(juin)}_4 
++ \tilde \vartheta^{(mai)}_4 - \vartheta^{(mai)}_4 
+ \overset d \longrightarrow \BigF{\mathcal{N}}{0, \sigma^2 (\nu_1 + \nu_2) }$$
+
+Et comme:
+$$  g'( \tilde \eta ) \overset {\mathbb{P}_{\vartheta}} \longrightarrow g'( \vartheta^{(juin)}_4 -  \vartheta^{(mai)}_4)
+$$
+Alors par Slutsky:
+$$ \sqrt n (\hat \rho - \rho)  \overset d \longrightarrow \BigF{\mathcal{N}}{0, s^2 }$$
+avec $s = g'( \vartheta^{(juin)}_4 -  \vartheta^{(mai)}_4) \, \sigma \, \sqrt{\nu_1 + \nu_2}$.
+
+On estime $s$ par  $\hat s = g'( \tilde \vartheta^{(juin)}_4 -  \tilde \vartheta^{(mai)}_4)  \, \sigma_n \, \sqrt{\hat \nu_1 + \hat \nu_2}$, avec
+$\hat \nu_1$ (resp. $\hat \nu_2$ ) est la composante $(4,4)$ de la matrice $H(\hat \vartheta^{(juin)})^{-1}$ (resp. $H(\hat \vartheta^{(mai)})^{-1}$).
+
+On a $\hat s \overset {\mathbb{P}_{\vartheta}} \longrightarrow s$.
+
+\Q{ b) }
+\begin{align*}
+1 - \alpha &= \mathbb{P}\left(\hat Z ^ b \in \left[G^*(\alpha/2), G^*(1-\alpha/2)\right]\right) \\
+&= \mathbb{P}\left(G^*(\alpha/2) < \sqrt \frac{n}{\hat s_b}(\hat \rho_b - \rho) < G^*(1-\alpha/2)\right) \\
+&= \mathbb{P}\left(\hat \rho_b - \sqrt \frac{\hat s_b}{n}G^*(1-\alpha/2) <  \rho < \hat \rho_b - \sqrt \frac{\hat s_b}{n}G^*(\alpha/2)\right)
+\end{align*}
+
+Donc $ I'_B(\alpha) = [ \rho_b - \sqrt \frac{\hat s_b}{n}G^*(1-\alpha/2), \hat \rho_b - \sqrt \frac{\hat s_b}{n}G^*(\alpha/2)]$ est un intervalle de confiance (non asymptotique) de niveau $\alpha$.
+
+\subsection*{Code du programme:}
+\inputminted{r}{script.R}
+
+\subsection*{Sortie du programme:}
+\inputminted{r}{sortie.R}
+
+\end{document}
+
+

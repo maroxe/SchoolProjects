@@ -1,0 +1,100 @@
+
+// Définition de Omega
+border B1(t=0,1) {x=t;y=0 ;label =1;};
+border B2(t=0,1) {x=1;y=t ;label =1;};
+border B3(t=1, 0) {x=t;y=1 ;label =1;};
+border B4(t=1,0) {x=0;y=t ;label =1;};
+
+real Rc = 0.075;
+border C11(t=0,2*pi){x=1*0.2+Rc*cos(t); y=1*0.2+Rc*sin(t); label=2;};
+border C12(t=0,2*pi){x=1*0.2+Rc*cos(t); y=2*0.2+Rc*sin(t); label=2;};
+border C13(t=0,2*pi){x=1*0.2+Rc*cos(t); y=3*0.2+Rc*sin(t); label=2;};
+border C14(t=0,2*pi){x=1*0.2+Rc*cos(t); y=4*0.2+Rc*sin(t); label=2;};
+border C21(t=0,2*pi){x=2*0.2+Rc*cos(t); y=1*0.2+Rc*sin(t); label=2;};
+border C22(t=0,2*pi){x=2*0.2+Rc*cos(t); y=2*0.2+Rc*sin(t); label=2;};
+border C23(t=0,2*pi){x=2*0.2+Rc*cos(t); y=3*0.2+Rc*sin(t); label=2;};
+border C24(t=0,2*pi){x=2*0.2+Rc*cos(t); y=4*0.2+Rc*sin(t); label=2;};
+border C31(t=0,2*pi){x=3*0.2+Rc*cos(t); y=1*0.2+Rc*sin(t); label=2;};
+border C32(t=0,2*pi){x=3*0.2+Rc*cos(t); y=2*0.2+Rc*sin(t); label=2;};
+border C33(t=0,2*pi){x=3*0.2+Rc*cos(t); y=3*0.2+Rc*sin(t); label=2;};
+border C34(t=0,2*pi){x=3*0.2+Rc*cos(t); y=4*0.2+Rc*sin(t); label=2;};
+border C41(t=0,2*pi){x=4*0.2+Rc*cos(t); y=1*0.2+Rc*sin(t); label=2;};
+border C42(t=0,2*pi){x=4*0.2+Rc*cos(t); y=2*0.2+Rc*sin(t); label=2;};
+border C43(t=0,2*pi){x=4*0.2+Rc*cos(t); y=3*0.2+Rc*sin(t); label=2;};
+border C44(t=0,2*pi){x=4*0.2+Rc*cos(t); y=4*0.2+Rc*sin(t); label=2;};
+
+
+int Nb=50;
+int Nc=20;
+
+mesh Th=buildmesh(B1(Nb)+B2(Nb)+B3(Nb)+B4(Nb)+C11(Nc)+C12(Nc)+C13(Nc)+C14(Nc)+C21(Nc)+C22(Nc)+C23(Nc)+C24(Nc)+C31(Nc)+C32(Nc)+C33(Nc)+C34(Nc)+C41(Nc)+C42(Nc)+C43(Nc)+C44(Nc));
+
+// Espaces d'éléments finis
+fespace Vh(Th, P1);
+fespace Xh(Th, P0);
+
+// Calcul de A0 et A1
+Xh coeffB = (region==16);
+Xh coeffC = (region<16);
+
+varf A0p(u,v,solver=UMFPACK) =
+int2d (Th)( u*v + coeffB * (dx(u)*dx(v)+dy(u)*dy(v)) ) + on(1,u=0);
+matrix A0 = A0p(Vh,Vh);
+
+varf A1p(u,v,solver=UMFPACK) =
+int2d (Th)( coeffC * (dx(u)*dx(v)+dy(u)*dy(v)) ) + on(1,u=0);
+matrix A1 = A1p(Vh,Vh);
+
+// Choix de P0 et initialisation des matrices réduites A0red et A1red
+int nrb=3;
+real [int] select(nrb);
+select[0]=.1;select[1]=.5;select[2]=1.;
+real [int,int] A0red(nrb,nrb);
+real [int,int] A1red(nrb,nrb);
+real[int] Bred(nrb);
+
+// Calcul du deuxième terme
+func f = sin(2*pi*x)*sin(2*pi*y);
+varf L(u, v)=int2d(Th) (v*f) + on(1, u=0);
+real[int] F = L(0, Vh);
+
+//Calcul des fonctions de la base réduite
+Vh [int] solutions(nrb);
+Vh u=0;
+
+for(int k=0;k<nrb;k++){
+	real mu = select(k);
+	matrix A = A0+mu*A1;
+	set(A,eps=1e-10);
+	u[]=A^-1*F;
+	solutions[k]=u;
+}
+
+int nddl= Vh.ndof;
+
+real [int] buffer(nddl);
+for(int i=0;i<nrb;i++){
+	for(int j=0;j<nrb;j++){
+		buffer = (A0*solutions[j][]);
+		A0red(i,j) =solutions[i][]'*buffer;
+		buffer = (A1*solutions[j][]);
+		A1red(i,j) =solutions[i][]'*buffer;
+	}
+	Bred(i) = F' * solutions[i][];
+}
+
+// Résolution du sysètme pour mu=0.075
+for(int i=0; i < 1000; i++) {
+	real mu = 0.01*i;
+	matrix mA0 = A0red;
+	matrix mA1 = A1red;
+	matrix mA = (mA0 + mA1*mu);
+	set(mA,eps=1e-10);
+	real[int] buff =  (mA^-1) * Bred;
+	Vh U=0;
+
+	for(int j=0;j<nrb;j++) 
+		U[] = U[] +  (solutions[j][] * buff(j));
+	plot(U, wait=1);
+}
+

@@ -27,7 +27,7 @@
 \author{EL KHADIR Bachir}
 
 
-%\maketitle
+\maketitle
 
 \Q{1}
 
@@ -46,18 +46,36 @@ $$u|_{]-D/2,D/2[} \in H^1(]-\frac{D}{2}, \frac{D}{2}[) \rightarrow \sum_{L \in \
 
 \Q{2}
 En injectant $u(x, z) = u_L(z) e^{i K_L x}$ dans l'équation, on trouve:
-$$ -\delta u = (u_L''(z) - K_L^2 u_L(z)) e^{iK_L x} = 0$$
+$$ -\Delta u = (u_L''(z) - K_L^2 u_L(z)) e^{iK_L x} = 0$$
 Les solution sont donc de la forme:
 \begin{align*}
-u(x, z) &= (A e^{K_L z} + B e^{-K_L z}) e^{i K_L x} & \text{avec} \, A, B \in \mathbb{C}
+u(x, z) &= (A e^{K_L z} + B e^{-K_L z}) e^{i K_L x} & \text{avec} \, A, B \in \mathbb{C} \\
+\text{qui s'écrit encore:} \\
+u(x, z) &= (A e^{|K_L| z} + B e^{-|K_L| z}) e^{i K_L x} & \text{avec} \, A, B \in \mathbb{C}
 \end{align*}
-Pour que cette fonction appartiennent à $H^1(]-D/2, D/2[ \times ]0, +\infty[ )$, il faut que $A = 0$.\\
-Et dans ce cas, la solution s'écrit: $u(x, z) =   C e^{K_L (i x - z) }$ avec $C \in \mathbb{C}$.
+
+Pour que cette fonction appartiennent à $H^1(]-D/2, D/2[ \times ]0, +\infty[ )$, il faut que $A = 0$ si $K_L \neq 0$, et $A = B = 0$ sinon.\\
+Donc:
+$$u(x, z) =   \left\{
+   \begin{array}{ll}
+       C e^{i K_L x - |K_L| z } & \mbox{si} \, K_L \neq 0 \, \mbox{avec} \, C \in \mathbb{C} \\
+       0 & \mbox{sinon.}
+   \end{array}
+\right.
+$$
+
 
 \Q{3}
-$$u_L'(H) = -K_L u_L(H)$$
+$$u_L'(H) = - |K_L| u_L(H)$$
 
 \Q{4}
+Si on note $u = \sum_{L \in \mathbb{Z}} u_L(z) e^{iK_Lx}$ alors on a $\gamma_H u (x) = \sum_{L \in \mathbb{Z}} u_L(H) e^{iK_Lx}$.\\
+$K_L = 0  \Rightarrow u_L = 0 $ pour que $u_L(z) e^{iK_Lx}$ reste $H_1(]-D/2,D/2[ \times ]H, +\infty[)$.\\
+
+Les $e^{iK_Lx}$ forment une base, donc:
+$$0 = -\Delta u =  \sum_{L \in \mathbb{Z}}  (u_L''(z) - K_L^2 u_L(z)) e^{iK_L x} \Rightarrow (\forall L \in \mathbb{Z}) u_L''(z) - K_L^2 u_L(z) = 0$$
+On est dans les condition la question 3, donc $u_L'(H) = - |K_L| u_L(H)$. Ainsi:
+$\frac{\partial u}{\partial n} = \sum_{L \in \mathbb{Z}} u_L'(H) e^{iK_Lx} = \sum_{L \in \mathbb{Z}} -|K_L| e^{iK_Lx} = T(\gamma_H u)$
 
 \Q{5}
 
@@ -65,29 +83,128 @@ $$u_L'(H) = -K_L u_L(H)$$
 \nabla u &= \sum_{L\in\mathbb{Z}} \nabla (u_L(z)e^{iK_Lx})  \\
 &= \sum_{L\in\mathbb{Z}} \begin{pmatrix} i K_L u_L(z) \\ u_L'(z) \end{pmatrix} e^{iK_Lx}
 \end{align*}
-D'où (puisque les $e{iK_x}$ forme une famille orthonormée):
-$$ ||u||_{L_2}^2 = \int_{z \in ]H, + \infty[} \int_{x \in ]-D/2, D/2[} \sum_{L\in\mathbb{Z}} u_L(z)e^{iK_Lx} dx \, dz 
+D'où (puisque les $e^{iK_Lx}$ forme une famille orthonormée):
+$$ ||u||_{L_2(]-D/2,D/2[ \times ]H, +\infty[)}^2 = \int_{z \in ]H, + \infty[} \int_{x \in ]-D/2, D/2[} \sum_{L\in\mathbb{Z}} u_L(z)e^{iK_Lx} dx \, dz 
 = \int_{z \in ]H, + \infty[} \sum_{L\in\mathbb{Z}} |u_L(z)|^2 dz$$
-$$ ||\nabla u||_{L_2}^2 
+$$ ||\nabla u||_{L_2(]-D/2,D/2[ \times ]H, +\infty[)}^2 
 = \int_{z \in ]H, + \infty[} \sum_{L\in\mathbb{Z}} |K_L u_L(z) |^2 + |u_L'(z)|^2 dz$$
 
 Puis par fubini:
-$$ ||u||_{H^1}^2 = ||u||_{L_2}^2 + ||\nabla u||_{L_2}^2 = \sum_{L\in\mathbb{Z}} \int_{z \in ]H, + \infty[} \left( (1+|K_L|^2)|u_L(z)^2 + |u_L'(z)|^2\right) dz$$
+$$ ||u||_{H^1(]-D/2,D/2[ \times ]H, +\infty[)}^2 = ||u||_{L_2((]-D/2,D/2[ \times ]H, +\infty[)}^2 + ||\nabla u||_{L_2(]-D/2,D/2[ \times ]H, +\infty[)}^2 = \sum_{L\in\mathbb{Z}} \int_{z \in ]H, + \infty[} \left( (1+|K_L|^2)|u_L(z)^2 + |u_L'(z)|^2\right) dz$$
 
-bla bla
+$u$ étant à support compact, donc $t \rightarrow u_L(t)$ aussi. 
+$$ -2 Re\left(\int_H^{+\infty} u_L' \bar{u_L} \right) = - \left(\int_H^{+\infty }u_L' \bar{u_L }+ u_L \bar{u_L'}\right) 
+= - \left(\int_H^{+\infty } \frac{\mathrm{d}}{\mathrm{d}t} |u|^2 \right) = |u_L(H)|^2$$
 
 On en conclut que:
 \begin{align*}
 \sum_{L \in \mathbb Z} |K_L| |u_L(H)|^2 & \leq 2 \sum_{L \in \mathbb Z} |K_L| \int_H^{+\infty} |u_L'(t)| |u_L(t)| dt \\
 & \leq  2 \sum_{L \in \mathbb Z}  \int_H^{+\infty} (|u_L'(t)|^2 + |K_L u_L(t)|^2) dt & \text{par Cauchy Schwartz} \\
-& \leq C ||u||^2
+& \leq C ||u||^2_{H_1(]-D/2,D/2[ \times ]H, +\infty[)}
 \end{align*}
 
 Soit $u \in H^1$.
-$C^\infty_c$ étant dense dans $H^1$, il existe une suite de fonction $(u^n)$ de $C^\infty_c$ tel  que $u^n \rightarrow u$.
-L'application trace étant continue, on a aussi /* par densité bla bla bla */
+$C^\infty_c$ étant dense dans $H^1$, il existe une suite de fonction $(u^n)$ de $C^\infty_c$ (vérifiant $(6)$ ) tel  que $u^n \rightarrow u$ dans $H_1$.\\
+L'application trace étant continue, on a aussi $(\forall L \in \mathbb Z) \,  u^n_L(H) \rightarrow u_L(H)$. D'où le résultat.
+
+\Q{6}
+
+\begin{align*}
+\left|\int_{\Gamma_H} T(\gamma_H u) \gamma_H \bar v \right| 
+&= \left|<\sum_{L \in \mathbb Z, K_L \neq 0} -|K_L| u_L e^{i K_L x}, \sum_{L \in \mathbb Z, K_L \neq 0} v_L e^{-i K_L x}>_{L_2(\Gamma_H)}\right| \\
+&= \sum_{L \in \mathbb Z, K_L \neq 0} (\sqrt{|K_L|} |u_L|) (\sqrt{|K_L|} |v_L|) \\
+&\leq \left(\sum_{L \in \mathbb Z, K_L \neq 0} |K_L| |u_L|^2 \right)^{\frac{1}{2}}  \left(\sum_{L \in \mathbb Z, K_L \neq 0} |K_L| |v_L|^2 \right)^{\frac{1}{2}} &\text{Par C-S} \\
+&\leq C ||u||_{H_1(]-D/2,D/2[ \times ]H, +\infty[)} ||v||_{H_1(]-D/2,D/2[ \times ]H, +\infty[)}
+\end{align*}
+
+\Q{7}
+Soit $u$, un solution de $(4)$, notons $u_H$ sa restriction à $\Omega^H_D$ qui appartient $H_1(\Omega^H_D)$. Les 7 premières équations sont les mêmes dans les deux systèmes. 
+Pour la dernière équation, comme on a :
+\begin{itemize}
+	\item $u_H - u^i \in H_1(]-D/2, D/2[ \times ]H, +\infty[)$ par hypothèse .
+	\item $\Delta (u_H - u^i ) = \Delta u_H - \Delta u^i$ sur $]-D/2, D/2[ \times ]H, +\infty[$.
+	\item $u_H - u^i$ quasi-périodique.
+\end{itemize}
+
+alors par $Q4$ on a: $$ \frac{\partial}{\partial n} (u_H - u^i) = T \gamma_H(u_H - u^i) \, \text{sur} \, \Gamma_H$$
+Et donc $u_H$ est solution de $(7)$ aussi.
+
+Réciproquement, soit $u_H$ une solution de $(7)$. On prolonge $u_H$ par $u$ tel que
+$$
+u(x, z) = 
+\left\{
+   \begin{array}{ll}
+			u_H(x, z) & \mbox{si} \, (x, z) \in \Omega^H_D \\
+			v & \mbox{sinon} 
+   \end{array}
+\right.
+$$
+Où $v$ est la solution (unique) du problème variationel sur $H_1(\Omega_D \setminus \Omega_D^H)$ suivant :
+$$\left\{
+   \begin{array}{ll}
+			- \nabla (u - u^i) = 0 & \mbox{sur} \, \Omega_D \setminus \Omega_D^H \\
+			\frac{\partial}{\partial n} (u-u^i) = T(\gamma_H(u_H-u^i))  & \mbox{sur} \, \Gamma_H  \\
+			(u-u^i)(-D/2, z) = (u-u^i)(D/2, z)  & \mbox{pour} \, z > H  \\
+   \end{array}
+\right.
+$$
+
+En tenant compte des relation $(1)$ et $(2)$, on trouve que $u \in u^i + H_1(\Omega_D)$ et vérifie toutes les équations de $(4)$.
 
 
+\Q{8}
+
+\subsubsection*{Formule variationelle du sytème $(7)$}
+Notons $$V = \{ v \in H_1(\Omega_D^h) \, | \,  v_{|\Gamma} = 0, v(x, 0) = 0, v(D/2, z) = e^{i\phi}v(-D/2, z) \}$$
+$V$ est un espace de Hilbert comme sous espace fermé de $H_1(\Omega_D^h)$.
+Soit $u$ une solution de $(A)$. Soit $v \in V$, multiplions la première et deuxième équation de $(A)$ par $\bar v$:
+\begin{align*}
+0 &=\int_{\Omega_D^h} -\bar v \, div(A \nabla u) + \int_{\Omega_D^H \setminus \bar \Omega_D^h } -\bar v \, \nabla u \\
+&=\int_{\Omega_D^h} \nabla \bar v A \nabla u + \int_{\Omega_D^H \setminus \bar \Omega_D^h } \nabla \bar v \, \nabla u \\
+& - \int_0^h ( (\bar v A \nabla u)(D/2, z) - (\bar v A \nabla u)(-D/2, z) ) \, e_x \, \mathrm{d}z
+- \int_h^H ((\bar v \nabla u)(D/2, z) - (\bar v \nabla u)(-D/2, z) ) \, e_x \, \mathrm{d}z \\
+& - \int_{\Gamma_H} \bar v \nabla u e_z
+- \int_{-\frac{D}{2}}^{\frac{D}{2}} (\bar v A \nabla u - \bar v \nabla u)(x, h)  \, e_z \, \mathrm{d}z\\
+\end{align*}
+
+
+On a:
+\begin{itemize}
+	\item 
+	Pour $z \in [0, h]$:
+	\begin{align*}(\bar v A \nabla u)(D/2, z) &= \bar{ v(D/2, z) } A(D/2, z) u(D/2, z)\\ &= (e^{-i\phi} \bar v (-D/2, z) ) A(D/2, z) (e^{i\phi} u(-D/2, z)) 
+	\\ &= \bar v (-D/2, z)  A(D/2, z) u(-D/2, z)\end{align*}
+	\item $(\bar v \nabla u)(D/2, z) - (\bar v \nabla u)(-D/2, z) = 0$  pour $z \in [h, H]$.
+	\item $(\bar v A \nabla u - \bar v \nabla u)(x, h)  \, e_z = 0$.
+	\item $\nabla u e_z = \frac{\partial u^i}{\partial n} + T(\gamma_H(u-u^i))$ sur $\Gamma_H$.
+\end{itemize}
+
+La relation précédente se simplifie en:
+\begin{align*}
+0 &= \int_{\Omega_D^h} \nabla \bar v A \nabla u + \int_{\Omega_D^H \setminus \bar \Omega_D^h } \nabla \bar v \, \nabla u \\
+& - \int_0^h (\bar v(-D/2, z) \left(A(D/2, z) - A(-D/2, z)\right) \nabla u(-D/2, z) \, e_x \, \mathrm{d}z\\
+& - \int_{\Gamma_H} \bar v T(\gamma_H(u)) -  \int_{\Gamma_H} \bar v (\frac{\partial u^i}{\partial n}  + T(\gamma_H(u^i)))
+\end{align*}
+
+Posons:
+\begin{align*}
+a(u, v) &= \int_{\Omega_D^h} \nabla \bar v A \nabla u + \int_{\Omega_D^H \setminus \bar \Omega_D^h } \nabla \bar v \, \nabla u \\
+& - \int_0^h \bar v(-D/2, z) \left(A(D/2, z) - A(-D/2, z)\right) \nabla u(-D/2, z) \, e_x \, \mathrm{d}z\\
+& - \int_{\Gamma_H} \bar v T(\gamma_H(u))
+\end{align*}
+et 
+$$ L(v) = \int_{\Gamma_H} \bar v (\frac{\partial u^i}{\partial n}  + T(\gamma_H(u^i)))$$
+
+Alors:
+\begin{itemize}
+	\item $L(v)$ est une forme linéaire continue (par l'inégalité de point carré).
+	\item $a(u,v)$ est une forme bilinéaire.
+	\item $a(u,v)$ est continue parce que $A$ est bornée, et par la question $6$.
+	\item $a(u,v)$ est coercive (j'admet ce résultat)
+\end{itemize}
+
+\subsubsection*{Méthode numérique:}
+On résout le système $(7)$ grâce à la formule variationnelle trouvée précédement par la méthode des éléments finis(par Fem++ par exemple), on trouve $u_H$. On prolonge cette fonction par la solution du problème variationnelle sur $\Omega_D \setminus \bar \Omega_D^H$ posé à la question $(7)$.
 
 \end{document}
 

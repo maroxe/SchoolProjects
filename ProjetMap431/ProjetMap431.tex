@@ -25,10 +25,14 @@
 \newcommand{\Wrap}[1]{\ensuremath{\left(#1\right)}}
 \newcommand{\Q}[1]{\subsubsection*{Question #1}}
 
+\newcommand{\Code}[2]{\textbf{#1}: #2\\}
+\newcommand{\Source}[0]{\subsubsection*{Code sources:}}
+
+
 \begin{document}
 
 \title{MAP431 - Projet}
-\author{BIAD Anas / EL KHADIR Bachir}
+\author{Anas BIAD  - Bachir EL KHADIR }
 
 
 \maketitle
@@ -73,23 +77,25 @@ B_i = b(\varphi_{i}) &= \int_{0}^{1} \varphi_{i}(x) sin(2\pi x)dx  \\
 
 %---------------------------------------   QUESTION 3 --------------------------------
 \Q{3}
-\subsubsection*{Le fichier calcul.sce contenant les fonctions calculant A, B puis la solution X}
-\inputminted{scilab}{codes/calcul.sce}
 
-\subsubsection*{Le fichier question3.sce qui calcule et affiche le résultat pour $\mu \in \{0.01, 0.1, 1\}$}
-\inputminted{scilab}{codes/question3.sce}
+\Source
+\Code{calcul.sce}{contient les fonctions calculant A, B puis la solution X}
+\Code{question3.sce}{calcule et affiche le résultat pour $\mu \in \{0.01, 0.1, 1\}$}
 
-\subsubsection*{Le résultat graphique}
 
-\begin{figure}
-\centering
+\subsubsection*{courbe de $u_\mu$ pour $\mu \in \{0.01, 0.1, 1\}$}
 \includegraphics[scale=0.25]{img/q3.png}
-\caption{courbe de $u_\mu$ pour $\mu \in \{0.01, 0.1, 1\}$}
-\end{figure}
+
 
 
 \subsubsection*{Commentaire}
-commenatire ici
+\begin{itemize}
+	\item Les profils pour $\mu \in \{0.01, 0.1\}$ ne varient que dans la partie où $\kappa$ est différent.
+	\item On remarque une discontinuité brusque de la tendance des courbes lors du passage de $\Omega_1$ à $\Omega_2$.
+	\item Le calcul prend beaucoup de temps.
+\end{itemize}
+
+
 
 % ---------------------------------------   QUESTION 4 --------------------------------------------
 \Q{4}
@@ -146,21 +152,78 @@ $$ (B^{RB})_{i} = b(u_{i}) = B^T X_i $$
 
 %--------------------------------------------- QUESTION 6 ----------------------------
 \Q{6}
-\inputminted{scilab}{codes/calcul2.sce}
-\inputminted{scilab}{codes/question6.sce}
 
-Graphie ici
-Commentaire ici
+\Source
+\Code{calcul2.sce}{qui permet de calculer la solution avec la nouvelle méthode}
+\Code{question6.sce}{calcule et affiche les solutions}
+
+\begin{center}
+\includegraphics[scale=0.25]{img/q6-1.png}
+
+Graphe de $u_\mu$ et $u_{rb}$
+\end{center}
+
+Les deux solutions sont quasiment confondues.
+
+\begin{center}
+\includegraphics[scale=0.25]{img/q6-2.png}
+
+Graphe de $|u_\mu -u_{rb}|$
+\end{center}
+
+
+
+L'erreur est de l'ordre de $10^{-4}$. La nouvelle méthode en plus d'être efficace, fournit des solutions acceptables.
 
 %---------------------------------------------   QUESTION 7 -----------------------
 \Q{7}
-\inputminted{scilab}{codes/question7.sce}
-Graphie ici
-Commentaire ici
+\Source
+\Code{question7.sce}{applique la méthode de l'énoncé}
+
+\begin{center}
+\includegraphics[scale=0.25]{img/q7-1.png}
+
+$\mu$ uniforme sur $[1.1, 1]$
+\end{center}
+\begin{itemize}
+	\item Les deux solutions sont assez différentes. 
+	\item La nouvelle de méthode de résolution de Galerkin permet de simuler un grand nombre de solutions en un temps raisonnable.
+\end{itemize}
+\begin{center}
+\includegraphics[scale=0.25]{img/q7-2.png}
+
+$\mu$ de loi log-uniforme
+\end{center}
+Les deux solutions sont proche dans ce cas de figure. 
+
+
 
 %---------------------------------------------   QUESTION 8 -----------------------
 \Q{8}
-\inputminted{scilab}{codes/equation.edp}
+\Source
+\Code{equation.edp}{implémente l'algorithme sur FreeFem++ }
 
+\subsubsection*{Résultat graphique}
+\begin{center}
+\begin{tabular}{cc}
 
+  \includegraphics[scale=0.5]{img/q8-1.png}	
+  &
+  \includegraphics[scale=0.5]{img/q8-2.png}	
+	\\
+	
+	$\mu = 0.01$
+	 & 
+	 $\mu = 0.075$
+	\\
+  \includegraphics[scale=0.5]{img/q8-3.png}	
+  &
+  \includegraphics[scale=0.5]{img/q8-4.png}	
+	\\
+	
+	$\mu = 0.1$
+	 & 
+	 $\mu = 1$
+	\end{tabular}
+\end{center}
 \end{document}

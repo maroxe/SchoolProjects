@@ -12,6 +12,7 @@ B = calc_B()
 solutions = zeros(N, N0)
 for j=1:N0
     solutions(:, j) = resoudre(tab_mu(j))
+    disp(j);
 end
 
 // Evaluation de A0_RB, A1_RB et B_RB

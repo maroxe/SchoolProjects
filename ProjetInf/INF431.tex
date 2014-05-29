@@ -1,9 +1,22 @@
-
 \documentclass{article}
 
 \usepackage{minted}
 \usepackage{graphicx}
+\usepackage{geometry}
+\geometry{hmargin=1.5cm,vmargin=1.5cm}
 
+
+\newcommand{\IMG}[3]{
+\begin{figure}[H]
+\centering
+\includegraphics[scale=#3]{img/#1}%
+\caption{#2}%
+\label{#1}%
+\end{figure}
+
+}
+
+\newcommand{\Stats}{\subsubsection{Stats}}
 
 \begin{document}
 
@@ -15,11 +28,14 @@ Ecole Polytechnique}
 
 
 \begin{abstract}
-This paper presents the result ...
+This paper presents the results of the application of Evolutionary algorithms on various problems. The problems are different, but the modelling remane the same. The first section presents a generic class EA implementing the base mechanism of genetic algorithm. For each problem, we must find a suitable representation (tuple, a matrix ...), then we must implement a fitness function and a mutation/crossover operator.
+
 I choose \textit{Python} as a programming langage.
 \end{abstract}
 
-\section{Implementation of the GA algorithm}
+\tableofcontents
+
+\section{Implementation of the GA algorithm (file "ga.py") }
 The EA class implmenets the $(1+(\lambda, \lambda))$ GA in a generic form. The constructor is:
 \mint{python}|def __init__(self, fitness, mutation=None, crossover=None)|
 It requires:
@@ -28,49 +44,53 @@ It requires:
 	\item a mutation operator, by default, this operator is used:
 \begin{minted}{python}
 	def default_mutation(l, x):
-		bits_to_change 	= random.sample(range(len(x)), l)
-		x_mut 					= list(x)
+		bits_to_change = random.sample(range(len(x)), l)
+		x_mut = list(x)
 		for b in bits_to_change:
-				x_mut[b] = random.choice([0, 1])
+			x_mut[b] = 1 - x_mut[b]
 		return x_mut
 \end{minted}
 	\item a crossover operator
 \begin{minted}{python}
 	def default_crossover(c, x, xx):
-			parent 				= [x, xx]
-			parent_choice = bernoulli.rvs(c, size=len(x))
-			return [ parent[p][i] for i, p in enumerate(parent_choice) ]
+		parent = [x, xx]
+		parent_choice = bernoulli.rvs(c, size=len(x))
+		return [ parent[p][i] for i, p in enumerate(parent_choice) ]
 \end{minted}
 		
 \end{itemize}
 
-Then, the \textit{run} function /* bla bla bla */
+Then, the \textit{run} function does all the work. It generate the children, select the best one, does the crossover and mutation phase, and then repeat the process \textit{n generations} times.  
+
 \mint{python}|def run(self, n, x_init, offspring_size=5, n_generations=10, p=None, c=None, self_adapt=False, max_fitness=None)|
 
-\subsection{The One-Max problem}
+\subsection{The One-Max problem  (file "onemax.py")}
 The implmentation of the one-max problem is straight forward. 
-We start with a random vector in ${0, 1}^n$. Default mutation and crossover operator work fine. 
-For the fitness function, we sum up all the bits in x (there is a builtin function \textit{sum} provided with \textit{Python}). The code is as follow:
+We start with a random vector in $\{0, 1\}^n$. Default mutation and crossover operator work fine. 
+For the fitness function, we sum all the bits in x (there is a builtin function \textit{sum} provided with \textit{Python}). The code is as follow:
 \begin{minted}{python}
 ea_algo = ga.EA(fitness=sum)
 x_init 	= np.random.random_integers(0, 1, size=n)
 best_x 	= ea_algo.run(n, x_init, offspring_size=5, n_generations=100)
 \end{minted}
 
-\textbf{Self adaptative rule}
+\Stats
 
-\subsection{The Maximum Matching}
-We represent an undirected graph like suggested in the **** Feuille de projet ****. For example:
+\IMG{stat_onemax_1.png}{Number of fitness evaluations for $\lambda \in \{1, 4, 8, 12\}$}{0.25}
 
+
+
+\subsection{The Maximum Matching  (file "matching.py")}
+We represent an undirected graph by it's adjacency list. 
 \begin{minted}{python}
 vertices = range(n)
-edges = [(i, i+1) if i+1 < n else (n-1, 0) for i in range(n)]
+edges = [(1, 2), (3, 4)]
 \end{minted}
 
 The function reponsible for calculating the degree of a vertex $v$ in ine the subgraph consisting of the edges of $M$:
 \begin{minted}{python}
 def deg(M):
-    deg_m = np.zeros(m)
+    deg_m = np.zeros(n)
     for i, (e, f) in enumerate(edges):
         if M[i]:
             deg_m[e] += 1
@@ -86,8 +106,153 @@ def fitness(M):
 \end{minted}
 
 Here is the result (edges of the best matching are coloured in red):\\
-\includegraphics[scale=0.5]{img/max_graph.png}
+\IMG{max_graph.png}{Best matching}{0.25}
 
-\subsection{Euler cycles}
+\Stats
+\IMG{stat_matching_1.png}{Number of fitness evaluations for $\lambda \in \{1, 3\}$ and for the self adaptative rule}{0.5}
+
+
+\subsection{Euler cycles (file eulerian\_cycle.py)}
+We represent graphes by an adjacency matrix. The function responsible for calculating the degree of a vertex $v$ in the graph is:
+\begin{minted}{python}
+def deg(v):
+    return sum([edges[v][i] for i in vertices if i != v])
+\end{minted}
+
+We can use the default \textit{crossover} operator.
+The implementation of the mutation operator as suggested:
+\begin{minted}{python}
+
+def find_match_and_remove(Mv, e):
+    f = None
+    k = len(Mv)-1
+    
+    # Look for an edge f matched to e
+    while k >= 0 and f is None:
+			i, j = Mv[k]
+			if i == e:
+				f = j
+			if j == e:
+				f = i
+			k -= 1
+    # Remove the matching (if possible)
+    if f != None:
+			Mv.pop(k+1)
+    return f
+        
+def mutation(l, x):
+	x_mut = deepcopy(x)
+	for _ in range(l):  
+		# Choose a random vertex v
+		v = random.randint(0, n-1)
+		# if deg(v) == 2, a trivial perfect matching is [ (i, j) ]
+		if deg(v) == 2:
+			i, j = [w for w in vertices if edges[v][w] and v != w]
+			x_mut[v] = [(i,j)]
+		else:
+			# Choose a random edge e incident to v, 
+			e = random.choice([i for i in vertices if i != v and edges[v][i]])
+			# See if it is matched. If it's the case, remove the match
+			f = find_match_and_remove(x_mut[v], e)
+			
+			# Same thing for (ee, ff)
+			ee = random.choice([i for i in vertices if (not i in[ v, e, f]) and edges[v][i]])
+			ff = find_match_and_remove(x_mut[v], ee)
+			
+			# match (e, ee) and (f, ff) if possible
+			x_mut[v].append( (e, ee) )
+			if f and ff:
+				x_mut[v].append( (f, ff) )
+	return x_mut
+\end{minted}
+
+And the fitness function:
+\begin{minted}{python}
+def fitness(x):
+	cycles_penality = nb_edges - sum(map(len, x))  
+	return  - cycles_penality
+\end{minted}
+
+After the algorithm has finished, we can reconstruct the path from the maximum matching:
+
+\begin{minted}{python}
+def reconstruct_path(xx):
+	x = deepcopy(xx)
+	v = 0
+	try:
+		(i,j) = x[v][0]
+	except IndexError:
+		return []
+	path = [i, v]
+	
+	while j != None:
+		j = find_match_and_remove(x[v], i)
+		path.append(j)
+		i, v = v, j
+	return path[:-2]
+\end{minted}
+
+\IMG{euler_cycle.png}{Euler cycle}{0.25}
+
+\Stats
+
+
+\subsection{Own Idea}
+\subsubsection{The N-Queen's Problem  (file "chess.py")}
+In chess, a queen can move  horizontally, vertically, or diagonally. Given a chess board with $N$ rows and $N$ columns, N-Queen's problem asks how to place N queens on the chess board so that none of them can hit any other in one move.
+
+
+Since the number of queens is equal to the number of rows/columns, in each row there is exactly one queen, and two different queens are placed in two different columns. Therefore a configuration (position of the queens on the chess board) is represented with a permutation of $\{0, ..., N-1\}$.
+An individual is a N-tuple $x = (x_1, ..., x_N)$, where $0 \leq x_i < N$  is the column of the queen placed on the row $i$. We start with the N-tuple $(0, ..., N-1)$: \mint{python}|x_init = range(n)|
+
+
+With this representation, there will be no queens on the same row/column. We only have to check for possible collisions diagonally. The fitness function counts the number of those collisions: 
+\begin{minted}{python}
+def fitness(t): 
+    x = np.zeros((n , n))
+    for i, j in enumerate(t):
+        x[i][j] = 1
+ 
+    s = 0
+    # diags
+    for k in range(-n + 1, n):
+        # diag (i, i+k) (n-i-1, i+k)
+        q_diag = sum([ x[i][i + k] for i in range(max(0, -k), min(n, n - k))])
+        s += max(0, q_diag - 1) 
+        q_diag = sum([ x[n - i - 1][i + k] for i in range(max(0, -k), min(n, n - k))])
+        s += max(0, q_diag - 1)
+    return -s 
+\end{minted}
+
+\IMG{queen.png}{Valid configuration}{0.25}
+
+
+\subsubsection{2D Image reconstruction  (file "2d_reconstruct.py")}
+This program tries to rebuild a 2D grey scale image using only disks. Individuals are strings representing lists of 256 circles $\{ (x, y, radius, color, alpha) \}$ in binary format where:
+\begin{itemize}
+	\item $x$ and $y$ are the position of the center of the circle
+	\item $color$ is an integer between $0$ and $255$ giving the tone of grey the circle must be filled with
+	\item $alpha$ is the transparency
+\end{itemize}
+
+
+The fitness function is a per-pixel RGB comparison:
+\begin{minted}{python}
+def fitness(x):
+	draw_spheres(x)
+	pixels = array2d(srf)
+	return -np.linalg.norm((reference_pixels - pixels) / M)
+\end{minted}
+
+Since we use a string based representation, we can use the default crossover and mutation operators as in the first algorithm.
+
+Here is the result:
+\IMG{source.jpg}{Source image}{0.75}
+
+\IMG{evolution.png}{Evolution}{0.75}
+
+
+\subsubsection{Finance}
+
 
 \end{document}

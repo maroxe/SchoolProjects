@@ -1,5 +1,5 @@
 clear
-N = 100
+N = 999
 h = 1/(N+1)
 omega_2 = [0.19, 0.21; 0.38, 0.42; 0.58, 0.62; 0.79, 0.81]
 mailles = [1:N]*h
@@ -55,3 +55,12 @@ function X=resoudre(mu)
     B = calc_B()
     X = inv(A) * B
 endfunction
+
+
+// Affichage
+a=get("current_axes");
+l=a.children(2);
+
+a=gca();
+a.font_size=4;
+a.thickness=2;

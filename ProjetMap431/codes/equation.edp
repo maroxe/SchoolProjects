@@ -84,8 +84,8 @@ for(int i=0;i<nrb;i++){
 }
 
 // Résolution du sysètme pour mu=0.075
-for(int i=0; i < 1000; i++) {
-	real mu = 0.01*i;
+
+	real mu = 0.075;//0.01, 0.1, 1
 	matrix mA0 = A0red;
 	matrix mA1 = A1red;
 	matrix mA = (mA0 + mA1*mu);
@@ -96,5 +96,5 @@ for(int i=0; i < 1000; i++) {
 	for(int j=0;j<nrb;j++) 
 		U[] = U[] +  (solutions[j][] * buff(j));
 	plot(U, wait=1);
-}
+
 

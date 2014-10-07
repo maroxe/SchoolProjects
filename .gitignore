@@ -1,4 +1,13 @@
 #################
+## Custom
+#################
+EA/articles
+EA/data
+EA/hawkes
+EA/scipack
+EA/test
+
+#################
 ## Eclipse
 #################
 

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="table.css" />
+
+</head>
+
+<body>
+<div id="columns"></div>
+  {{ table }}
+
+  <script>
+
+
+function hide_col(i) { $('td:nth-child('+i+'),th:nth-child('+i+')').toggle(); }
+
+$("th").each(function(i, val) { $('#columns')
+.append("<span onClick='hide_col(" + (i+1) + ")'>" + $(this).text() + "<\span> | "); });
+
+
+function replace_all(rep, by) {
+	
+$table = $("table");
+$table.html($table.html().replace(new RegExp(rep, 'g'), by));
+}
+replace_all("<td>0</td>", "<td>-</td>");
+replace_all("<td>0.0</td>", "<td>-</td>");
+	
+ </script>
+</body>
+
+</html>

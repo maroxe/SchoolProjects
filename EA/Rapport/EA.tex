@@ -1,0 +1,54 @@
+\documentclass{article}
+
+\usepackage{minted}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage[final]{pdfpages} 
+
+
+\geometry{hmargin=0.5cm,vmargin=0.5cm}
+\newcommand{\g}[2]{g_{#1}^{#2}}
+%\newcommand{\g}[2]{g(#1, #2)}
+
+
+\begin{document}
+
+
+\begin{align*}
+\g{s}{1} &= z ( p  \g{s+1}{1} + q \g{s-1}{-1} ) \\
+\g{s+1}{1} &= \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} 
+\end{align*}
+
+\begin{align*}
+\g{s}{-1} &= z ( q \g{s+1}{1} + p \g{s-1}{-1} ) \\
+\g{s+1}{-1} &= z ( q \g{s+2}{1} + p \g{s}{-1} ) \\
+\g{s+1}{-1} &= z ( \frac{q}{z p} \g{s+1}{1} - \frac{q^2}{p} \g{s}{-1} + p \g{s}{-1} ) \\
+\g{s+1}{-1} &= z ( \frac{q}{z p} \g{s+1}{1} + (p - \frac{q^2}{p}) \g{s}{-1}  ) \\
+\g{s+1}{-1} &=  \frac{q}{p} \g{s+1}{1} + z(p - \frac{q^2}{p}) \g{s}{-1}  \\
+\g{s+1}{-1} &=  \frac{q}{p} ( \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} ) + z(p - \frac{q^2}{p}) \g{s}{-1}  \\
+\g{s+1}{-1} &=  \frac{q}{z p^2} \g{s}{1} + \left( z(p - \frac{q^2}{p}) - ( \frac{q}{p} )^2 \right) \g{s}{-1}  
+\end{align*}
+
+\begin{align*}
+G_{s+1} = 
+\begin{pmatrix} 
+\g{s+1}{1} \\ \g{s+1}{-1} \\ \g{s}{1} \\ \g{s}{-1} 
+\end{pmatrix}
+&= 
+\begin{pmatrix} 
+\frac{1}{z p} & 0 &  0 &  \frac{q}{p} \\
+\frac{q}{p} & z(p - \frac{q^2}{p}) - ( \frac{q}{p} )^2 &  0 & 0\\
+1 & 0 &  0 & 0\\
+0 & 1 &  0 & 0
+\end{pmatrix}
+.
+\begin{pmatrix} 
+\g{s}{1} \\ \g{s}{-1} \\ \g{s-1}{1} \\ \g{s-1}{-1} 
+\end{pmatrix} \\
+&= 
+A(z). G_s
+\end{align*}
+
+
+\end{document}

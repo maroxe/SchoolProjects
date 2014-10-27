@@ -1,0 +1,89 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[final]{pdfpages} 
+\usepackage{cases}
+
+\usepackage[top=2cm, bottom=2cm, left=2cm, right=2cm]{geometry}
+\newcommand{\g}[2]{g_{#1}^{#2}}
+
+
+\begin{document}
+
+\section{First time of reach for a sum of a Markov sum}
+
+\subsection{Defining the problem}
+
+Let $(X_{n})_{n\geq0}$ be a markov chain such as :
+\begin{itemize}
+\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
+\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_{i}=1 ) = \mathbb{P}( X_{i+1}=-1 | X_{i}=-1 ) = p = 1-q$
+\end{itemize}
+Let $(S_{n})_{n\geq0}$ be a sequence such as :
+$$ S_{n} = \sum_{k=1}^{n}X_{k} $$
+Let $T$ be the first time when $S_{n}$ reaches $-1$, i.e  :
+$$ T= \inf \{ n\geq0 , S_{n}=-1   \} $$
+Let us define the  probability-generating function of T such as :
+$$ g_{s}^{x}(z) = \mathbb{E}(z^{T} | S_{0}=s, X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
+
+\subsection{The probability-generating function dynamic}
+Given the transition matrix of $(X_{n})_{n\geq0}$, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in [0,1]$ \footnote{For clarity, we omit to note the dependence of G in z} :
+
+\begin{numcases}
+		\strut 
+       	\g{s}{1} = z\,(p\,\g{s+1}{1}+ q\,\g{s-1}{-1})\\
+       	\g{s}{-1} = z\,(q\,\g{s+1}{1}+ p\,\g{s-1}{-1}) 
+\end{numcases}
+Thus :
+\begin{align}
+		\g{s+1}{1} = \frac{1}{zp}\, \g{s}{1} - \frac{q}{p}\, \g{s-1}{-1} \\
+		\g{s+1}{1} = \frac{1}{zq}\, \g{s}{-1} - \frac{p}{q}\, \g{s-1}{-1}
+\end{align}
+Which implies that :
+\begin{equation}
+		\g{s}{-1} =\frac{q}{p}\, \g{s}{1}+\frac{z\, (p^{2}-q^{2})}{p}\, \g{s-1}{-1}
+\end{equation}
+Leading to :
+\begin{equation}
+		\g{s+1}{-1} =  (\frac{1}{z\,p}   + z\,(2 - \frac{1}{p}))\, \g{s}{-1}  -  \g{s-1}{-1} 
+\end{equation}
+Consequently : 
+$$
+G_{s+1} = 
+\begin{pmatrix} 
+\g{s+1}{1} \\ \g{s+1}{-1} \\ \g{s}{1} \\ \g{s}{-1} 
+\end{pmatrix}
+= 
+\begin{pmatrix} 
+\frac{1}{z p} & 0 &  0 &  -\frac{q}{p} \\
+0 & \frac{1}{z p}   + z(2 - \frac{1}{p}) & 0 & -1 \\
+1 & 0 &  0 & 0\\
+0 & 1 &  0 & 0
+\end{pmatrix}
+.
+\begin{pmatrix} 
+\g{s}{1} \\ \g{s}{-1} \\ \g{s-1}{1} \\ \g{s-1}{-1} 
+\end{pmatrix} \\
+$$
+Noting :
+
+$$
+A(z) = 
+\begin{pmatrix} 
+\frac{1}{z p} & 0 &  0 &  -\frac{q}{p} \\
+0 & \frac{1}{z p}   + z(2 - \frac{1}{p}) & 0 & -1 \\
+1 & 0 &  0 & 0\\
+0 & 1 &  0 & 0
+\end{pmatrix}
+$$
+and by imposing a Dirichlet boundary condition we finally get the following second order system :  
+
+\begin{numcases}
+		\strut 
+       	 G_{s+1}(z) = A(z). G_{s}(z)\\
+       	\g{-1}{1} = \g{-1}{-1} = 0\\
+       	\lim_{s \to +\infty} \g{s}{-1} = \lim_{s \to +\infty} \g{s}{1} = 0
+\end{numcases}
+\end{document}

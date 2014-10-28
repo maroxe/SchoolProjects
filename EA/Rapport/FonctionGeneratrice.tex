@@ -96,7 +96,7 @@ Autrement:
 \end{numcases}
 
 
-$A(z) $is diagnolisable, therefore there exist a matrix $Q(z)$, and $ \lambda_i \in \mathBB{R}, i = 1..4 $ so that:
+$A(z) $is diagnolisable, therefore there exist a matrix $Q(z)$, and $ \lambda_i \in \mathbb{R}, i = 1..4 $ so that:
 $$ A(z) = Q(z) diag(\lambda_i, i =1..4) Q(z)^{-1} $$
 
 A quick analysis using Maple shows that exactly two eigen values have theire absolute value greater than $1$, hence we can write that: 
@@ -112,5 +112,11 @@ ie
 \end{numcases}
 
 these 2x2 system gives $x(z)$ and $y(z)$
+
+\subsection{First results}
+$$ \mathbb{E}[T| S_0 = 0, x_0 = i ] = \g{0}{i}'(1) = +\infty $$ 
+
+$$ \mathbb{P}(T = k | S_0 = 0, x_0 = i) = \frac{ (\g{0}{i})^{k}(0)}{k!}$$ 
+
 
 \end{document}

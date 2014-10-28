@@ -86,4 +86,31 @@ and by imposing a Dirichlet boundary condition we finally get the following seco
        	\g{-1}{1} = \g{-1}{-1} = 0\\
        	\lim_{s \to +\infty} \g{s}{-1} = \lim_{s \to +\infty} \g{s}{1} = 0
 \end{numcases}
+
+Autrement:
+\begin{numcases}
+		\strut 
+       	 G_{s+1}(z) = A(z). G_{s}(z)\\
+       	G_{0}(z) = \begin{pmatrix} x(z) && y(z) && 1 && 1\end{pmatrix}^T \\ 
+       	\lim_{s \to +\infty} A(z)^s . G_0(z) = 0
+\end{numcases}
+
+
+$A(z) $is diagnolisable, therefore there exist a matrix $Q(z)$, and $ \lambda_i \in \mathBB{R}, i = 1..4 $ so that:
+$$ A(z) = Q(z) diag(\lambda_i, i =1..4) Q(z)^{-1} $$
+
+A quick analysis using Maple shows that exactly two eigen values have theire absolute value greater than $1$, hence we can write that: 
+$ |\lambda_i| < 1$ for $ i = 1, 2$ and $|\lambda_i| \geq 1$ for $i = 3, 4$.
+
+Let $U(z) = Q(z)^-1 G_0(z)$, dirichlet condition in infinity are equivalent to
+$$ \lambda_i ^ s . (U(z))_i \stackrel{\infty}{\rightarrow} 0 $$
+ie 
+\begin{numcases}
+		\strut 
+       	U(z)_3 = 0 \\
+				U(z)_4 = 0
+\end{numcases}
+
+these 2x2 system gives $x(z)$ and $y(z)$
+
 \end{document}

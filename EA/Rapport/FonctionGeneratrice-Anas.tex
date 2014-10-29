@@ -1,0 +1,351 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage[final]{pdfpages} 
+\usepackage{cases}
+\usepackage{soul}
+
+\usepackage[top=2.25cm, bottom=2.25cm, left=2cm, right=2cm]{geometry}
+\newcommand{\g}[2]{g_{#1}^{#2}}
+
+
+\begin{document}
+
+\section{First time of reach for a sum of a Markov chain}
+
+\subsection{Defining the problem}
+
+Let $(X_{n})_{n\geq0}$ be a markov chain such as :
+\begin{itemize}
+\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
+\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_{i}=1 ) = \mathbb{P}( X_{i+1}=-1 | X_{i}=-1 ) = p = 1-q$ \footnote{We assume that $p \ne 0$ and $p \ne 1$. Otherwise, the problem is trivial.}
+\end{itemize}
+Let $(S_{n})_{n\geq0}$ be a sequence such as :
+$$ S_{n} = \sum_{k=1}^{n}X_{k} $$
+Let $T$ be the first time when $S_{n}$ reaches $-1$, i.e  :
+$$ T= \inf \{ n\geq0 , S_{n}=-1   \} $$
+Let us define the  probability-generating function of T such as :
+$$ g_{s}^{x}(z) = \mathbb{E}(z^{T} | S_{0}=s, X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
+
+\subsection{The probability-generating function dynamic}
+Given the transition matrix of $(X_{n})_{n\geq0}$, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in ]0,1]$ \footnote{For clarity, we omit to note the dependence of G in z.} :
+
+\begin{numcases}
+		\strut 
+       	\g{s}{1} = z(p\g{s+1}{1}+ q\g{s-1}{-1})\\
+       	\g{s}{-1} = z(q\g{s+1}{1}+ p\g{s-1}{-1}) 
+\end{numcases}
+Thus, for $z > 0$ \footnote{The case of $z=0$ is trivial since $ \g{s}{x}(0)=0$ } :
+\begin{align}
+		\g{s+1}{1} = \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} \\
+		\g{s+1}{1} = \frac{1}{ zq} \g{s}{-1} - \frac{p}{q} \g{s-1}{-1}
+\end{align}
+Which implies that :
+\begin{equation}
+		\g{s}{-1} =\frac{q}{p} \g{s}{1}+\frac{z (p^{2}-q^{2})}{p} \g{s-1}{-1}
+\end{equation}
+Leading to :
+\begin{equation}
+		\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} 
+\end{equation}
+Consequently : 
+$$
+G_{s+1} = 
+\begin{pmatrix} 
+\g{s+1}{1} \\ \g{s+1}{-1} \\ \g{s}{1} \\ \g{s}{-1} 
+\end{pmatrix}
+= 
+\begin{pmatrix} 
+\frac{1}{z p} & 0 &  0 &  -\frac{q}{p} \\
+0 & \frac{1}{ zp}   + z(2 - \frac{1}{p}) & 0 & -1 \\
+1 & 0 &  0 & 0\\
+0 & 1 &  0 & 0
+\end{pmatrix}
+.
+\begin{pmatrix} 
+\g{s}{1} \\ \g{s}{-1} \\ \g{s-1}{1} \\ \g{s-1}{-1} 
+\end{pmatrix} \\
+$$
+By noting :
+
+$$
+A = A(z) = 
+\begin{pmatrix} 
+\frac{1}{z p} & 0 &  0 &  -\frac{q}{p} \\
+0 & \frac{1}{z p}   + z(2 - \frac{1}{p}) & 0 & -1 \\
+1 & 0 &  0 & 0\\
+0 & 1 &  0 & 0
+\end{pmatrix}
+$$
+and by imposing a Dirichlet boundary condition we finally get the following second order system :  
+
+\begin{numcases}
+		\strut 
+       	 G_{s+1}(z) = A(z). G_{s}(z)\\
+       	\g{-1}{1} = \g{-1}{-1} = 0\\
+       	\lim_{s \to +\infty} \g{s}{-1} = \lim_{s \to +\infty} \g{s}{1} = 0
+\end{numcases}
+
+\subsection{Expression of the characteristic polynomial of the recursion matrix A }
+For clarity we define the following notations :
+$$
+a= \frac{1}{z p}
+\quad,\quad
+b= z(2-\frac{1}{p})
+\quad and \quad
+c= -\frac{q}{p}
+$$
+such that :
+$$
+A = 
+\begin{pmatrix} 
+a & 0 &  0 &  c \\
+0 & a+b & 0 & -1 \\
+1 & 0 &  0 & 0\\
+0 & 1 &  0 & 0
+\end{pmatrix}
+$$
+The characteristic polynomial of the matrix A can be thus written :
+\begin{equation}
+\chi_{A}(X) = det(A-XI_{4}) = X(X-a)P(X)
+\end{equation}
+where : 
+\begin{equation}
+P_{z}(X) = X^{2}-(a+b)X+1 
+\end{equation} 
+In order to determine all the eigenvalues of A we need to study the polynomial P.
+
+\subsection{Studying the polynomial P}
+For recall :
+$$ 
+P_{z}(X) = X^{2}-(a+b)X+1 
+$$
+Thus, the discriminant is given by :
+\begin{equation}
+\Delta_{P}(z) = (a+b)^{2}-4 = \frac{[z-1][z+1][(2p-1)z+1][(2p-1)z-1]}{(z p)^{2}}
+\end{equation}
+
+
+\begin{flushleft}
+\textbf{Case :}  $p=\frac{1}{2}$
+\medbreak
+In this case, $a=\frac{2}{z}$ and $b=0$. It implies that :
+$$
+\Delta_{P}(z) = (\frac{2}{z})^{2}-4 = 4 (\frac{1}{z^2}-1) \geq 0
+$$
+Thereby :
+$$ 
+P_{z}(X) = \left(X-\frac{1}{z}-\sqrt{\frac{1}{z^2}-1}\right)\left(X-\frac{1}{z}+\sqrt{\frac{1}{z^2}-1}\right)
+$$
+\end{flushleft}
+
+
+\begin{flushleft}
+\textbf{Case :}  $p \in ]0,1[$ 
+\medbreak
+In this case :
+\begin{equation}
+\Delta_{P}(z) = (a+b)^{2}-4 = 
+\frac{[z^{2}-1][(2p-1)^{2}z^{2}-1]}{(z p)^{2}}
+\end{equation}
+Since $z \in ]0,1]$ and $p \in ]0,1[$, we get : 
+$$
+\Delta_{P}(z) \geq 0 \quad  \forall z\in ]0,1]
+$$
+Thus, $P_{z}$ can be written :
+$$
+	P_{z}(X) = (X-x_{1}(z))(X-x_{2}(z))
+$$
+where :
+\begin{numcases}
+		\strut 
+       	x_{1}(z) = \frac{a+b-\sqrt{(a+b)^{2}-4}}{2}\\
+       	x_{2}(z) = \frac{a+b+\sqrt{(a+b)^{2}-4}}{2} 
+\end{numcases}
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{Remarks :} 
+\medbreak
+\begin{itemize}
+\item $ x_{1}(z) = x_{2}(z) \Leftrightarrow \Delta_{P}(z) = 0 \Leftrightarrow z = 1 $ \footnote{$z \in ]0,1] $}
+\item The case where $ p=\frac{1}{2} $ is highlighted because it is a typical case.
+\end{itemize}
+\end{flushleft}
+
+Finally, all information required for the reduction of the matrix A is now avaible.
+
+\subsection{Reduction of the matrix A}
+\begin{flushleft}
+\textbf{Case :}  $z \in ]0,1[$ 
+\medbreak
+In this case,  $ x_{1}(z) \ne x_{2}(z) $ and the characteristic polynomial of the matrix A can be thus written :
+\begin{equation}
+\chi_{A}(X) = det(A-XI_{4}) = X(X-a)(X-x_{1}(z))(X-x_{2}(z))
+\end{equation}
+We can easily check that \footnote{At least, when $ p \ne 1 $} :
+\begin{itemize}
+\item $a \ne 0$
+\item $x_{1}(z) \notin \{0,a\}$ and $x_{2}(z) \notin \{0,a\}$
+\end{itemize}
+
+On the other hand, the spectrum of the matrix A is given by: 
+\begin{equation}
+Sp_{\mathbb{R}}(A) =\{0,a,x_{1}(z),x_{2}(z)\}
+\end{equation}
+With the associated eigenspaces \footnote{For clarity, we omit to note the dependence of $x_{1}$ and $x_{2}$ in z.} :
+$$
+ E_{A}(0) = vect
+ \begin{pmatrix}
+ 0\\
+ 0\\
+ 1\\
+ 0
+ \end{pmatrix}
+ \quad
+ E_{A}(a) = vect
+ \begin{pmatrix} 
+ a\\
+ 0\\
+ 1\\
+ 0
+ \end{pmatrix}
+ \quad
+ E_{A}(x_{1}) = vect
+ \begin{pmatrix} 
+ \frac{c}{x_{1}-a}\\
+ x_{1}\\
+ \frac{c}{x_{1}(x_{1}-a)}\\
+ 1
+ \end{pmatrix}
+ \quad
+ E_{A}(x_{2}) = vect
+ \begin{pmatrix} 
+ \frac{c}{x_{2}-a}\\
+ x_{2}\\
+ \frac{c}{x_{2}(x_{2}-a)}\\
+ 1
+ \end{pmatrix}
+$$
+Leading to :
+\begin{equation}
+A(z) = P(z).D(z).P(z)^{-1}
+\end{equation}
+
+Where :
+\begin{equation}
+P(z) = 
+\begin{pmatrix} 
+0 & a &  \frac{c}{x_{1}-a} &  \frac{c}{x_{2}-a} \\
+0 & 0 & x_{1} & x_{2} \\
+1 & 1 &  \frac{c}{x_{1}(x_{1}-a)} &  \frac{c}{x_{2}(x_{2}-a)}\\
+0 & 0 &  1 & 1
+\end{pmatrix}
+\quad \quad
+D(z) = 
+\begin{pmatrix} 
+0 & 0 & 0 &  0 \\
+0 & a & 0 & 0\\
+0 & 0 & x_{1}(z) &  0\\
+0 & 0 &  0&  x_{2}(z)
+\end{pmatrix}
+\end{equation}
+
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{Case :}  $z = 1$ 
+\medbreak
+In this case,  $ a= \frac{1}{p} $ and $ b= 2- \frac{1}{p}$. Which implies that :
+\begin{equation}
+x_{1}(z) = x_{2}(z) = 1
+\end{equation}
+Thus, the spectrum of the matrix A is given by: 
+\begin{equation}
+Sp_{\mathbb{R}}(A) =\{0,\frac{1}{p},1\}
+\end{equation}
+
+With the associated eigenspaces  :
+$$
+ E_{A}(0) = vect
+ \begin{pmatrix} 
+ 0\\
+ 0\\
+ 1\\
+ 0
+ \end{pmatrix}
+ \quad
+ E_{A}(\frac{1}{p}) = vect
+ \begin{pmatrix} 
+ \frac{1}{p}\\
+ 0\\
+ 1\\
+ 0
+ \end{pmatrix}
+ \quad
+ E_{A}(1) = vect
+ \begin{pmatrix} 
+ 1\\
+ 1\\
+ 1\\
+ 1
+ \end{pmatrix} 
+$$
+Thereby, the matrix A can be written in a Jordan form :
+\begin{equation}
+A = Q.T.Q^{-1}
+\end{equation}
+
+Where :
+\begin{equation}
+Q = 
+\begin{pmatrix} 
+0 & \frac{p}{q} &  -1 &  \frac{p}{q} \\
+0 & 0 & -1 & 0 \\
+-2q & \frac{p^{2}}{q} &  -1 &  2-\frac{p}{q}\\
+0 & 0 &  -1 & 1
+\end{pmatrix}
+\quad \quad
+T = 
+\begin{pmatrix} 
+0 & 0 & 0 &  0 \\
+0 & \frac{1}{p} & 0 & 0\\
+0 & 0 & 1 &  1\\
+0 & 0 &  0&  1
+\end{pmatrix}
+\end{equation}
+\end{flushleft}
+
+\begin{flushleft}
+\textbf{Remarks :} 
+\medbreak
+By a simple induction, we can easily prove that :
+\begin{equation}
+\forall \, s\in \mathbb{N} \quad
+D(z)^{s} = 
+\begin{pmatrix} 
+0 & 0 & 0 &  0 \\
+0 & a^{s} & 0 & 0\\
+0 & 0 & x_{1}(z)^{s} &  0\\
+0 & 0 &  0&  x_{2}(z)^{s}
+\end{pmatrix}
+\end{equation}
+and
+\begin{equation}
+\forall \, s\in \mathbb{N} \quad
+T^{s} = 
+\begin{pmatrix} 
+0 & 0 & 0 &  0 \\
+0 & \frac{1}{p^{s}} & 0 & 0\\
+0 & 0 & 1 &  s\\
+0 & 0 &  0&  1
+\end{pmatrix}
+\end{equation}
+\end{flushleft}
+
+
+
+
+\end{document}

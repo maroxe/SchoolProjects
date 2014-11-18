@@ -126,7 +126,7 @@ Finally, we denote $c_{wait}$ the waiting cost per unit of time.
 Recall that we want to find a solution for the problematic described in section 1.1.
 Using all the previous definitions, the problem could be seen as a minimization problem  :
 \begin{equation}
-\min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{min(k,N)}\tau_{i} + (S_{min(k,N)}+1)*\delta\right] = \min\limits_{k \in \mathbb{N}} \quad f(k)
+\min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{min(k,N)}\tau_{i} c_{wait} + (S_{min(k,N)}+1)*\delta\right] = \min\limits_{k \in \mathbb{N}} \quad f(k)
 \end{equation}
 We shall notice that $f(0) = \delta$. This minimization problem seeks to minimize the cost of the purchase order. 
 
@@ -258,7 +258,7 @@ q & p
 a_{i-1} \\ b_{i-1}
 \end{pmatrix} 
 \end{equation}
-Solutions are the given by \footnote{calculs had been made by Maple}:
+Solutions are then given by \footnote{calculs had been made by Maple}:
 \begin{numcases}
 		\strut
         \mathbb{P}(X_{i}=1) =  \left( \frac{1}{2} + \frac{1}{2}(2p-1)^{i}  \right) \mathbb{P}(X_{0}=1) + \left( \frac{1}{2} - \frac{1}{2}(2p-1)^{i}  \right) \mathbb{P}(X_{0}=-1)\\
@@ -269,7 +269,7 @@ Finally :
 	\mathbb{E}(X_{i}) =  (2p-1)^{i} \left( \mathbb{P}(X_{0}=1) - \mathbb{P}(X_{0}=-1) \right) 
 \end{equation}
 \subsubsection{Results}
-We finally obtain using the sum of a geometrical sequence :
+We finally obtain, using the sum of a geometrical sequence :
 \begin{equation*}
 	\begin{cases}
         \mathbb{E}(S_{n}) = \left( \mathbb{P}(X_{0}=1) - \mathbb{P}(X_{0}=-1) \right) \frac{1-(2p-1)^{n}}{ 2p} & if \quad n > 0 \\

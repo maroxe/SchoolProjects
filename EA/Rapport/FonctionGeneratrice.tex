@@ -11,8 +11,55 @@
 
 \usepackage[top=2.25cm, bottom=2.25cm, left=2cm, right=2cm]{geometry}
 \newcommand{\g}[2]{g_{#1}^{#2}}
+\newcommand{\Min}[2]{ {#1} \wedge {#2} }
+\newcommand{\undemi}{ \frac{1}{2} }
 
 \begin{document}
+ $$\mathbb{E}\,\left[ (\Min k N) c_{wait} + (1+S_{\Min k N}) \delta\right] $$
+
+\begin{align*}
+u &= \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p}) \\
+&= a z + \frac{b}{z} \\
+a &= 1-\frac{1}{2p} \\
+b(p) &= \frac{1}{2p} \\
+a + b &= 1
+\end{align*}
+
+
+\begin{align*}
+(u^2 - 1)^{\undemi} &= \sum_i \binom \undemi i (-1)^i z^{2i-1} (b + a z^2)^{1-2i} \\ 
+&= \sum_i \binom \undemi i  (-1)^i z^{2i-1} \sum_j \binom {1-2i} j b^{1-2i-j}  a^j z^{2j} \\ 
+&= \sum_{i, j} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  a^j z^{2(i+j)-1} \\ 
+&= \sum_k \left( \sum_{2(i+j)-1 = k} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  a^j \right) z^k \\ 
+&= \sum_r \left( \sum_{i+j = r} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  a^j \right) z^{2r-1} \\ 
+&= \sum_r \left( \sum_{i+j = r} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j \right) z^{2r-1} \\ 
+&= \sum_r c_{2r-1} z^{2r-1} \\ 
+\end{align*}
+
+$k$ impaire $\geq -1$
+$$ c_k  =  \sum_{2(i+j)= k+1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j   $$
+$$ c_{-1}  =   \binom \undemi 0  \binom {1} 0 (-1)^0 b^{1}  (1-b)^0   = b$$
+$$ c_1  =    \sum_{ i+j= 1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j  = a - p$$
+
+
+donc 
+
+\begin{align*}
+\g{1}{0}(z) &= u - (u^2 - 1)^{\undemi} \\
+&= (a - c_1) z - (b + c_{-1}) z^{-1} -   \sum_{k > 1}  c_{k} z^{k} \\ 
+&= p z -   \sum_{k > 1}  c_{k} z^{k} \\
+&=  \sum_{k \geq 1}  d_k z^{k}
+\end{align*}
+
+avec \begin{equation*}
+     d_{2r+1} = 
+		\begin{cases}
+        p & \text{if} \quad r = 0 \\
+        - \sum_{i \leq r+1} \binom \undemi i  \binom {1-2i}{1+r-i} (-1)^i (2p)^{2i-1}  (2p-1)^{1+r-i}  & \text{else}
+     \end{cases}
+\end{equation*}
+
+\tableofcontents
 
 \section{Presentation of the problem}
 
@@ -54,19 +101,19 @@ times with rate $\lambda$,
 \end{itemize}
 \newpage 
 \subsubsection{Definitions}
-Denoting by ($T^{a}_{i} ; i \geq 1$) (resp. $T^{b}_{i}$ ) the times at which the size of ask (resp. the bid) queue changes
-and $V^{a}_{i}$ (resp. $V^{b}_{i}$ ) the size of the associated change in queue size, the above assumptions translate
-into the following properties for the sequences $T^{a}_{i}; T^{b}_{i}; V^{a}_{i}; V^{b}_{i}$ :
+Denoting by ($T^{a}_i ; i \geq 1$) (resp. $T^{b}_i$ ) the times at which the size of ask (resp. the bid) queue changes
+and $V^{a}_i$ (resp. $V^{b}_i$ ) the size of the associated change in queue size, the above assumptions translate
+into the following properties for the sequences $T^{a}_i; T^{b}_i; V^{a}_i; V^{b}_i$ :
 \begin{itemize}
-\item $(T^{a}_{i+1} - T^{a}_{i})_{i \geq 0}$ is a sequence of independent random variables with exponential distribution
+\item $(T^{a}_{i+1} - T^{a}_i)_{i \geq 0}$ is a sequence of independent random variables with exponential distribution
 with parameter $\lambda+\theta+\mu$
 
-\item $(T^{b}_{i+1} - T^{b}_{i})_{i \geq 0}$ is a sequence of independent random variables with exponential distribution
+\item $(T^{b}_{i+1} - T^{b}_i)_{i \geq 0}$ is a sequence of independent random variables with exponential distribution
 with parameter $\lambda+\theta+\mu$
 
-\item $(V^{a}_{i})_{i \geq 0}$ and $(V^{b}_{i})_{i \geq 0}$ are sequences of independent random variables with :
+\item $(V^{a}_i)_{i \geq 0}$ and $(V^{b}_i)_{i \geq 0}$ are sequences of independent random variables with :
 \begin{equation}
-\mathbb{P}[V^{a}_{i} = 1] = \mathbb{P}[V^{b}_{i} = 1]  = \frac{\lambda}{\lambda+\theta+\mu} \quad and \quad \mathbb{P}[V^{a}_{i} = -1] = \mathbb{P}[V^{b}_{i} = -1] = \frac{\theta+\mu}{\lambda+\theta+\mu}
+\mathbb{P}[V^{a}_i = 1] = \mathbb{P}[V^{b}_i = 1]  = \frac{\lambda}{\lambda+\theta+\mu} \quad and \quad \mathbb{P}[V^{a}_i = -1] = \mathbb{P}[V^{b}_i = -1] = \frac{\theta+\mu}{\lambda+\theta+\mu}
 \end{equation}
 
 \item All the previous sequences are independent.
@@ -75,19 +122,19 @@ with parameter $\lambda+\theta+\mu$
 \subsection{Summary}
 In this section we summarize the price dynamic according to what is presented in Cont and Larrard article.
 the process $X_{t} = (s_{t}^{b}, q_{t}^{b}, q_{t}^{a})$ is a continuous-time process with right-continuous, piecewise
-constant sample paths whose transitions correspond to the order book events \{$T_{i}^{a} ; i \geq 1$\} $\cup$ \{$T_{i}^{b} ; i \geq 1$\}. At each event :
+constant sample paths whose transitions correspond to the order book events \{$T_i^{a} ; i \geq 1$\} $\cup$ \{$T_i^{b} ; i \geq 1$\}. At each event :
 \begin{itemize}
-\item If an order or cancelation arrives on the ask side i.e. $T \in $ \{$T_{i}^{a} ; i \geq 1$\} :
+\item If an order or cancelation arrives on the ask side i.e. $T \in $ \{$T_i^{a} ; i \geq 1$\} :
 \begin{equation}
-(s_{T}^{b}, q_{T}^{b}, q_{T}^{a}) = (s_{T^{-}}^{b}, q_{T^{-}}^{b}, q_{T^{-}}^{a}+V_{i}^{a}) \, 1_{q_{T^{-}}^{a}+V_{i}^{a}>0} + (s_{T^{-}}^{b}+ \delta, R_{i}^{b}, R_{i}^{a}+V_{i}^{a}) \, 1_{q_{T^{-}}^{a}+V_{i}^{a}<0}
+(s_{T}^{b}, q_{T}^{b}, q_{T}^{a}) = (s_{T^{-}}^{b}, q_{T^{-}}^{b}, q_{T^{-}}^{a}+V_i^{a}) \, 1_{q_{T^{-}}^{a}+V_i^{a}>0} + (s_{T^{-}}^{b}+ \delta, R_i^{b}, R_i^{a}+V_i^{a}) \, 1_{q_{T^{-}}^{a}+V_i^{a}<0}
 \end{equation}
 
-\item If an order or cancelation arrives on the best side i.e. $T \in $ \{$T_{i}^{b} ; i \geq 1$\} :
+\item If an order or cancelation arrives on the best side i.e. $T \in $ \{$T_i^{b} ; i \geq 1$\} :
 \begin{equation}
-(s_{T}^{b}, q_{T}^{b}, q_{T}^{a}) = (s_{T^{-}}^{b}, q_{T^{-}}^{b}+V_{i}^{b}, q_{T^{-}}^{a}) \, 1_{q_{T^{-}}^{b}+V_{i}^{b}>0} + (s_{T^{-}}^{b}- \delta, \overline{R}_{i}^{b}, \overline{R}_{i}^{a}+V_{i}^{a}) \, 1_{q_{T^{-}}^{b}+V_{i}^{b}<0}
+(s_{T}^{b}, q_{T}^{b}, q_{T}^{a}) = (s_{T^{-}}^{b}, q_{T^{-}}^{b}+V_i^{b}, q_{T^{-}}^{a}) \, 1_{q_{T^{-}}^{b}+V_i^{b}>0} + (s_{T^{-}}^{b}- \delta, \overline{R}_i^{b}, \overline{R}_i^{a}+V_i^{a}) \, 1_{q_{T^{-}}^{b}+V_i^{b}<0}
 \end{equation}
 \end{itemize}
-Where $(V^{a}_{i})_{i \geq 1} and (V^{b}_{i})_{i \geq 1}$ are sequences of IID variables with distribution given by $(2)-(3)$, $(R_{i})_{i \geq 1} = (R^{a}_{i},R^{b}_{i})$ is a sequence of IID variables with (joint) distribution $f$, and $(\overline{R}_{i})_{i \geq 1} = (\overline{R}^{a}_{i},\overline{R}^{b}_{i})$ is a sequence of IID variables with (joint) distribution $\tilde{f}$.
+Where $(V^{a}_i)_{i \geq 1} and (V^{b}_i)_{i \geq 1}$ are sequences of IID variables with distribution given by $(2)-(3)$, $(R_i)_{i \geq 1} = (R^{a}_i,R^{b}_i)$ is a sequence of IID variables with (joint) distribution $f$, and $(\overline{R}_i)_{i \geq 1} = (\overline{R}^{a}_i,\overline{R}^{b}_i)$ is a sequence of IID variables with (joint) distribution $\tilde{f}$.
 Note that $f(x,y) = \tilde{f}(y,x)$ and that those distribution can be estimated thanks to available information about the market.
 
 
@@ -98,23 +145,23 @@ Note that $f(x,y) = \tilde{f}(y,x)$ and that those distribution can be estimated
 \subsection{Some definitions}
 We denote :
 \begin{itemize}
-\item $(\tau_{i})_{_{i \geq 1}}$ the sequence of IID random integer variables  ($\tau_{i} \in \mathbb{N}$) which stands for times where the price moves.
-\item $(X_{i})_{_{i \geq 1}}$ the successive moves in the price. Note that according to our hypothesis ($\delta = 1$) : $X_{i} \in \{-1,1\}$ .
+\item $(\tau_i)_{_{i \geq 1}}$ the sequence of IID random integer variables  ($\tau_i \in \mathbb{N}$) which stands for times where the price moves.
+\item $(X_i)_{_{i \geq 1}}$ the successive moves in the price. Note that according to our hypothesis ($\delta = 1$) : $X_i \in \{-1,1\}$ .
 \end{itemize}
-For clarification, remark that for all $ i \in \mathbb{N^{*}} $ the move $X_{i}$ in the price occurs at the time $\tau_{i}$.\newline
-Cont and Larrard's article presents an expression for the cumulative distribution function of each $\tau_{i}$ \footnote{See equations (3)-(4) of Cont and Larrard's article}
+For clarification, remark that for all $ i \in \mathbb{N^{*}} $ the move $X_i$ in the price occurs at the time $\tau_i$.\newline
+Cont and Larrard's article presents an expression for the cumulative distribution function of each $\tau_i$ \footnote{See equations (3)-(4) of Cont and Larrard's article}
 \newline
-Under these definitions, we assume that $(X_{i})_{_{i \geq 0}}$ is a markov chain such as :
+Under these definitions, we assume that $(X_i)_{_{i \geq 0}}$ is a markov chain such as :
 \begin{itemize}
 \item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
-\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_{i}=1 ) = \mathbb{P}( X_{i+1}=-1 | X_{i}=-1 ) = p = 1-q$
+\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_i=1 ) = \mathbb{P}( X_{i+1}=-1 | X_i=-1 ) = p = 1-q$
 \end{itemize}
 We assume, with no loss of generality, that the price at the initial time 0 is null. \footnote{In this model, prices could be negative. In fact, prices $\in \mathbb{Z}$}
 Let $(S_{n})_{n\geq0}$ be the sequence which represents such the price after $n$ moves in the price. Thus :
 \begin{equation*}
      \begin{cases}
-        S_{n} = \sum_{k=1}^{n}X_{k} & if \quad n > 0 \\
-        S_{0} = 0
+        S_{n} = \sum_{k=1}^{n}X_k & if \quad n > 0 \\
+        S_0 = 0
      \end{cases}
 \end{equation*}
 Then, we denote N the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
@@ -126,7 +173,7 @@ Finally, we denote $c_{wait}$ the waiting cost per unit of time.
 Recall that we want to find a solution for the problematic described in section 1.1.
 Using all the previous definitions, the problem could be seen as a minimization problem  :
 \begin{equation}
-\min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{min(k,N)}\tau_{i} c_{wait} + (S_{min(k,N)}+1)*\delta\right] = \min\limits_{k \in \mathbb{N}} \quad f(k)
+\min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{min(k,N)}\tau_i c_{wait} + (S_{min(k,N)}+1)*\delta\right] = \min\limits_{k \in \mathbb{N}} \quad f(k)
 \end{equation}
 We shall notice that $f(0) = \delta$. This minimization problem seeks to minimize the cost of the purchase order. 
 
@@ -139,19 +186,19 @@ We shall notice that $f(0) = \delta$. This minimization problem seeks to minimiz
 Let $(X_{n})_{n\geq0}$ be a markov chain such as :
 \begin{itemize}
 \item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
-\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_{i}=1 ) = \mathbb{P}( X_{i+1}=-1 | X_{i}=-1 ) = p = 1-q$ \footnote{We assume that $p \ne 0$ and $p \ne 1$. Otherwise, the problem is trivial.}
+\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_i=1 ) = \mathbb{P}( X_{i+1}=-1 | X_i=-1 ) = p = 1-q$ \footnote{We assume that $p \ne 0$ and $p \ne 1$. Otherwise, the problem is trivial.}
 \end{itemize}
 Let $(S_{n})_{n\geq0}$ be a sequence such as :
 \begin{equation}
      \begin{cases}
-        S_{n} = \sum_{k=1}^{n}X_{k} & if \quad n > 0 \\
-        S_{0} = 0
+        S_{n} = \sum_{k=1}^{n}X_k & if \quad n > 0 \\
+        S_0 = 0
      \end{cases}
 \end{equation}
 Let $T$ be the first time when $S_{n}$ reaches $-1$, i.e  :
 $$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
 Let us define the  probability-generating function of T such as :
-$$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_{0}=s, X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
+$$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_0=s, X_0=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
 
 \subsubsection{The probability-generating function dynamic}
 Given the transition matrix of $(X_{n})_{n\geq0}$, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in ]0,1[$ \footnote{For clarity, we omit to note the dependence of G in z.} :
@@ -200,11 +247,11 @@ We then prove as previously that :
 \end{equation}
 
 \subsubsection{Results}
-Since $\g{s}{x}$ is the probability-generating function of N and$S_{0} = 0$, the low of N is given by :
+Since $\g{s}{x}$ is the probability-generating function of N and$S_0 = 0$, the low of N is given by :
 \begin{numcases}
 \strut
-		\mathbb{P}_{X_{0}=x}(N=k) = \frac{ \mathrm{d^{k} \g{0}{x} }}{ \mathrm{d} z}(z=0) \\
-		\mathbb{E}_{X_{0}=x}(T) = \frac{ \mathrm{d \g{x}{1} }}{ \mathrm{d} z}(z=1) = +\infty
+		\mathbb{P}_{X_0=x}(N=k) = \frac{ \mathrm{d^k \g{0}{x} }}{ \mathrm{d} z^k}(z=0) \\
+		\mathbb{E}_{X_0=x}(T) = \frac{ \mathrm{d \g{x}{1} }}{ \mathrm{d} z}(z=1) = +\infty
 \end{numcases}
 
 \subsection{Expected value of the price move at time n}
@@ -212,41 +259,41 @@ Since $\g{s}{x}$ is the probability-generating function of N and$S_{0} = 0$, the
 Recall that :
 \begin{equation*}
 	\begin{cases}
-        S_{n} = \sum_{k=1}^{n}X_{k} & if \quad n > 0 \\
-        S_{0} = 0
+        S_{n} = \sum_{k=1}^{n}X_k & if \quad n > 0 \\
+        S_0 = 0
      \end{cases}
 \end{equation*}
 Then :
 \begin{equation*}
 	\begin{cases}
-        \mathbb{E}(S_{n}) = \sum_{k=1}^{n}\mathbb{E}(X_{k}) & if \quad n > 0 \\
-        \mathbb{E}(S_{0}) = 0
+        \mathbb{E}(S_{n}) = \sum_{k=1}^{n}\mathbb{E}(X_k) & if \quad n > 0 \\
+        \mathbb{E}(S_0) = 0
      \end{cases}
 \end{equation*}
 \subsubsection{Expected value of one price move}
 We shall remark that for $i\geq0$:
 \begin{equation}
-	\mathbb{E}(X_{i}) = \mathbb{P}(X_{i}=1) - \mathbb{P}(X_{i}=-1)
+	\mathbb{E}(X_i) = \mathbb{P}(X_i=1) - \mathbb{P}(X_i=-1)
 \end{equation}
 For $i\geq0$, we note :
 \begin{itemize}
-\item $a_{i} = \mathbb{P}(X_{i}=1)$
-\item $b_{i} = \mathbb{P}(X_{i}=-1)$
+\item $a_i = \mathbb{P}(X_i=1)$
+\item $b_i = \mathbb{P}(X_i=-1)$
 \end{itemize}
 We then prove that :
 \begin{equation}
-	a_{i} = \mathbb{P}(X_{i}=1,X_{i-1}=-1) + \mathbb{P}(X_{i}=1,X_{i-1}=1) \newline
+	a_i = \mathbb{P}(X_i=1,X_{i-1}=-1) + \mathbb{P}(X_i=1,X_{i-1}=1) \newline
 	= q b_{i-1} + p a_{i-1}
 \end{equation}
 and that :
 \begin{equation}
-	b_{i} = \mathbb{P}(X_{i}=-1,X_{i-1}=-1) + \mathbb{P}(X_{i}=-1,X_{i-1}=1) \newline
+	b_i = \mathbb{P}(X_i=-1,X_{i-1}=-1) + \mathbb{P}(X_i=-1,X_{i-1}=1) \newline
 	= q b_{i-1} + p a_{i-1}
 \end{equation}
 Leading then to :
 \begin{equation}
 \begin{pmatrix} 
-a_{i} \\ b_{i}
+a_i \\ b_i
 \end{pmatrix}
 = 
 \begin{pmatrix} 
@@ -261,19 +308,22 @@ a_{i-1} \\ b_{i-1}
 Solutions are then given by \footnote{calculs had been made by Maple}:
 \begin{numcases}
 		\strut
-        \mathbb{P}(X_{i}=1) =  \left( \frac{1}{2} + \frac{1}{2}(2p-1)^{i}  \right) \mathbb{P}(X_{0}=1) + \left( \frac{1}{2} - \frac{1}{2}(2p-1)^{i}  \right) \mathbb{P}(X_{0}=-1)\\
-         \mathbb{P}(X_{i}=-1) =  \left( \frac{1}{2} - \frac{1}{2}(2p-1)^{i}  \right) \mathbb{P}(X_{0}=1) + \left( \frac{1}{2} + \frac{1}{2}(2p-1)^{i}  \right) \mathbb{P}(X_{0}=-1)
+        \mathbb{P}(X_i=1) =  \left( \frac{1}{2} + \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=1) + \left( \frac{1}{2} - \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=-1)\\
+         \mathbb{P}(X_i=-1) =  \left( \frac{1}{2} - \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=1) + \left( \frac{1}{2} + \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=-1)
 \end{numcases}
 Finally :
 \begin{equation}
-	\mathbb{E}(X_{i}) =  (2p-1)^{i} \left( \mathbb{P}(X_{0}=1) - \mathbb{P}(X_{0}=-1) \right) 
+	\mathbb{E}(X_i) =  (2p-1)^i \left( \mathbb{P}(X_0=1) - \mathbb{P}(X_0=-1) \right) 
 \end{equation}
 \subsubsection{Results}
 We finally obtain, using the sum of a geometrical sequence :
 \begin{equation*}
 	\begin{cases}
-        \mathbb{E}(S_{n}) = \left( \mathbb{P}(X_{0}=1) - \mathbb{P}(X_{0}=-1) \right) \frac{1-(2p-1)^{n}}{ 2p} & if \quad n > 0 \\
-         \mathbb{E}(S_{0}) = 0
+        \mathbb{E}(S_{n}) = \left( \mathbb{P}(X_0=1) - \mathbb{P}(X_0=-1) \right) \frac{1-(2p-1)^{n}}{ 2p} & if \quad n > 0 \\
+         \mathbb{E}(S_0) = 0
      \end{cases}
 \end{equation*}
+
+
+
 \end{document}

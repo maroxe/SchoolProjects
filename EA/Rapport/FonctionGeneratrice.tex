@@ -11,6 +11,7 @@
 
 \usepackage[top=2.25cm, bottom=2.25cm, left=2cm, right=2cm]{geometry}
 \newcommand{\g}[2]{g_{#1}^{#2}}
+\newcommand{\f}[2]{f_{#1}^{#2}}
 \newcommand{\Min}[2]{ {#1} \wedge {#2} }
 \newcommand{\undemi}{ \frac{1}{2} }
 
@@ -247,10 +248,10 @@ We then prove as previously that :
 \end{equation}
 
 \subsubsection{Results}
-Since $\g{s}{x}$ is the probability-generating function of N and$S_0 = 0$, the low of N is given by :
+Since $\g{s}{x}$ is the probability-generating function of N and$S_0 = 0$, the law of N is given by :
 \begin{numcases}
 \strut
-		\mathbb{P}_{X_0=x}(N=k) = \frac{ \mathrm{d^k \g{0}{x} }}{ \mathrm{d} z^k}(z=0) \\
+		\mathbb{P}_{X_0=x}(N=k) = \frac{1}{k!}\frac{ \mathrm{d^k \g{0}{x} }}{ \mathrm{d} z^k}(z=0) \\
 		\mathbb{E}_{X_0=x}(T) = \frac{ \mathrm{d \g{x}{1} }}{ \mathrm{d} z}(z=1) = +\infty
 \end{numcases}
 
@@ -319,10 +320,112 @@ Finally :
 We finally obtain, using the sum of a geometrical sequence :
 \begin{equation*}
 	\begin{cases}
-        \mathbb{E}(S_{n}) = \left( \mathbb{P}(X_0=1) - \mathbb{P}(X_0=-1) \right) \frac{1-(2p-1)^{n}}{ 2p} & if \quad n > 0 \\
+        \mathbb{E}(S_{n}) = \left( \mathbb{P}(X_0=1) - \mathbb{P}(X_0=-1) \right) (2p-1)\frac{1-(2p-1)^{n}}{ 2(1-p)} & if \quad n > 0 \\
          \mathbb{E}(S_0) = 0
      \end{cases}
 \end{equation*}
+
+
+\subsection{The law of a sum of Markov Chain}
+\subsubsection{Defining the problem}
+As previously, we define a Markov Chain $(X_{n})_{n\geq0}$ and its sum  $(S_{n})_{n\geq0}$ such as :
+\begin{itemize}
+\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
+\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_{i}=1 ) = \mathbb{P}( X_{i+1}=-1 | X_{i}=-1 ) = p = 1-q$ \footnote{We assume that $p \ne 0$ and $p \ne 1$. Otherwise, the problem is trivial.}
+\item $\forall \, n>0 \quad S_{n} = \sum_{k=1}^{n}X_{k}$
+\item $S_{0} = 0$
+\end{itemize}
+In order to get the law of the r.v $(S_{n})_{n\geq0}$ we define its conditional probability-generating function as :
+$$ f_{n}^{x}(z) = \mathbb{E}(z^{S_{n}} | X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in [0,1]  $$
+
+\subsubsection{The probabilite-generating function dynamic}
+Let us consider $x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in ]0,1]\footnote{The case where z=0 can be obtained by continuity.} $. Thanks to the definition of $ f_{n}^{x}(z)$ we can write :
+
+\begin{align*}
+\f{n+1}{x}(z) &= \mathbb{E}(z^{S_{n+1}} | X_{0}=x)\\
+&= \mathbb{E}(z^{S_{n+1}} 1_{\{X_{1}=1\}} | X_{0}=x) + \mathbb{E}(z^{S_{n+1}} 1_{\{X_{1}=-1\}} | X_{0}=x) \\
+&= \mathbb{E}( z^{S_{n+1}}  |  X_{1}=1, X_{0}=x) \mathbb{P}(X_{1}=1 | X_{0}=x) + \mathbb{E}(z^{S_{n+1}} |  X_{1}=-1, X_{0}=x) \mathbb{P}(X_{1}=-1 | X_{0}=x) \\
+&= z\mathbb{E}(z^{X_{2}+...+X_{n+1}}|  X_{1}=1, X_{0}=x) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z}\mathbb{E}(z^{X_{2}+...+X_{n+1}} |  X_{1}=-1, X_{0}=x) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{align*}
+By using the strong Markov property, we get :
+\begin{equation}
+	\f{n+1}{x}(z) = z \mathbb{E}( z^{S_{n}}  |  X_{0}=1) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \mathbb{E}(z^{S_{n}} |  X_{0}=-1) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{equation}
+Thus :
+\begin{equation}
+		\f{n+1}{x}(z) = z \f{n+1}{x}(z) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \f{n+1}{x}(z) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{equation}
+Leading thus to the following system with the appropriate initial conditions : 
+\begin{numcases}
+		\strut 
+        \f{n+1}{1}(z) = z p \f{n}{1}(z) + \frac{1}{z} q \f{n}{-1}(z)\\
+        \f{n+1}{-1}(z) = z q \f{n}{1}(z) + \frac{1}{z} p \f{n}{-1}(z)\\
+       	\f{0}{1}(z) = \f{0}{-1}(z) = 1 \\
+       	\f{1}{1}(z) = z p + \frac{1}{z} q \\
+       	\f{1}{-1}(z) = z q + \frac{1}{z} p
+\end{numcases}
+Equations (31) -(32) implies that :
+\begin{equation}
+\f{n}{1} = \frac{1}{z p} \f{n+1}{1} - \frac{q}{z^2 p} \f{n}{-1} = \frac{1}{z q} \f{n+1}{-1} - \frac{p}{z^2 q} \f{n}{-1}
+\end{equation}
+Equations (31) -(36) implies that :
+\begin{equation}
+\f{n+1}{1} = \frac{p}{q} \f{n+1}{-1} - \frac{p^2}{z q} \f{n}{-1} + \frac{q}{z}\f{n}{-1}
+\end{equation}
+On the other hand, due to equation (36)
+\begin{equation}
+\f{n+1}{1} = \frac{1}{z q} \f{n+2}{-1} - \frac{p}{z^2 q} \f{n+1}{-1}
+\end{equation}
+Thereby, we get thanks to equations (37)-(38)
+\begin{equation}
+\f{n+2}{-1} -p(\frac{1}{z}+z) \f{n+1}{-1} + (2 p -1) \f{n}{-1} = 0
+\end{equation}
+Which is a classical linear recurrent sequence of order 2. The solution is given by :
+\begin{equation}
+\f{n}{-1}(z) = \alpha \left(a(z) -  s(z)\right)^n+ \beta \left(a(z) +  s(z)\right)^n
+\end{equation}
+Where :
+\begin{numcases}
+		\strut 
+        a(z) = \frac{p}{2}(z+\frac{1}{z})\\
+        s(z) = \sqrt{a(z)^2-(2 p-1)}
+\end{numcases}
+
+And by using the initial conditions (33)-(35) we finally get : 
+\begin{equation}
+\f{n}{-1}(z) = \frac{1}{2 s(z)}\left(-z q - \frac{1}{z} p +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zq+\frac{1}{z}p\right) \left(a(z) +  s(z)\right)^n
+\end{equation}
+
+As previously, we also get :
+\begin{equation}
+\f{n}{1}(z) = \frac{1}{2 s(z)}\left(-z p - \frac{1}{z} q +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zp+\frac{1}{z}q\right) \left(a(z) +  s(z)\right)^n
+\end{equation}
+
+\subsubsection{Results}
+$\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall notice that $\forall n \in \mathbb{N} -n \leq S_{n} \leq n$. We then get :
+\begin{numcases}
+\strut
+		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
+		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
+\end{numcases} 
+Consequently :
+
+\begin{flushleft}
+\textbf{Case :}  $X_0=1$
+\medbreak
+We shall remember that :
+$$
+\f{n}{1}(z) = \frac{1}{2 s(z)}\left(-z p - \frac{1}{z} q +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zp+\frac{1}{z}q\right) \left(a(z) +  s(z)\right)^n
+$$
+We need to calculate multiple derivatives near 0. In this purpose we use the software Maple to compute the Taylor series expansion near 0.
+We obtain then :
+\begin{equation}
+contenu...
+\end{equation}
+\end{flushleft}
+
+\end{document}
+
 
 
 

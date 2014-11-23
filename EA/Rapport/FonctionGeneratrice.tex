@@ -406,9 +406,16 @@ $\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall 
 \begin{numcases}
 \strut
 		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
-		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
+		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{k=-n}^{n} \mathbb{P}(S_n=k) z^k 
 \end{numcases} 
+Thus :
+\begin{equation}
+z^n \f{n}{x}(z)= \sum_{k=0}^{2n} \mathbb{P}(S_n=k-n) z^k 
+\end{equation}
 Consequently :
+\begin{equation}
+\mathbb{P}(S_n=k) = \frac{1}{(n+k)!}  \frac{ \mathrm{d^{(n+k)} [z^n \f{n}{x}(z)] }}{ \mathrm{d} z^{n+k}}(z=0) \quad k\in {\{-n,...,n\}}
+\end{equation}
 
 \begin{flushleft}
 \textbf{Case :}  $X_0=1$
@@ -417,6 +424,7 @@ We shall remember that :
 $$
 \f{n}{1}(z) = \frac{1}{2 s(z)}\left(-z p - \frac{1}{z} q +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zp+\frac{1}{z}q\right) \left(a(z) +  s(z)\right)^n
 $$
+
 We need to calculate multiple derivatives near 0. In this purpose we use the software Maple to compute the Taylor series expansion near 0.
 We obtain then :
 \begin{equation}

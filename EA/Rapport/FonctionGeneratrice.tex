@@ -18,12 +18,12 @@
 \newcommand{\undemi}{ \frac{1}{2} }
 \newcommand{\proba}[3]{ \mathbb{P}_{X_0=#1} (#3 | S_0=#2) }
 \newcommand{\comment}[1]{}
-\newcommand{\IMG}[1] { \includegraphics[scale=0.5]{img/#1.png} }
+\newcommand{\IMG}[1] { \includegraphics[scale=0.25]{img/#1.png} }
 
 \begin{document}
 
 
-
+ \includegraphics[scale=0.75]{img/donnees.png}
 
 \tableofcontents
 
@@ -82,6 +82,9 @@ We denote :
 
 
 The state  of the order book is modified by order book events. When the bid (resp. ask) queue is empty, the price moves down (resp. up), and $(q_t^a, q_t^b)$ (resp.$ (q_t^b, q_t^a)$ is generated from a distribution $f(x, y) \mathrm{d}x \mathrm{d}y $ (resp. $\tilde f(x, y) \mathrm{d}x \mathrm{d}y $) independently from the rest of the historical variables.
+$f$ will be estimated from historical data:
+
+\IMG{hist_f}
 
 
 This property give the market a markovian property: the new state of the market after a price move does only depend on the direction of this move.

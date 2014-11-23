@@ -5,7 +5,7 @@
 import sys
 import time
 import numpy as np
-fro
+
 
 def gen_events(freq):
     return np.random.exponential(scale=1./freq, size=size)

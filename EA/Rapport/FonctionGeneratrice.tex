@@ -7,6 +7,8 @@
 \usepackage{cases}
 \usepackage{soul}
 \usepackage{pict2e}
+ \usepackage{graphicx}
+
 
 
 \usepackage[top=2.25cm, bottom=2.25cm, left=2cm, right=2cm]{geometry}
@@ -14,9 +16,263 @@
 \newcommand{\f}[2]{f_{#1}^{#2}}
 \newcommand{\Min}[2]{ {#1} \wedge {#2} }
 \newcommand{\undemi}{ \frac{1}{2} }
+\newcommand{\proba}[3]{ \mathbb{P}_{X_0=#1} (#3 | S_0=#2) }
+\newcommand{\comment}[1]{}
+\newcommand{\IMG}[1] { \includegraphics[scale=0.5]{img/#1.png} }
 
 \begin{document}
- $$\mathbb{E}\,\left[ (\Min k N) c_{wait} + (1+S_{\Min k N}) \delta\right] $$
+
+
+
+
+\tableofcontents
+
+\section{Presentation of the problem}
+
+\subsection{Problematic}
+Given the state of an order book, we want to place purchase orders. Trought this document, we try to define an efficient and optimal strategy in order to reduce the cost of such orders. Since it is quite complex to define this kind of strategy, we focus on the case where we have only one purchase order to make and a time horizon before which the trade must be excuted. We have the choice between executing the order directly (market order), or placing a limit order. Since we are never sure that a limit order will be executed, we have to remove it after a certain time k and place a market order at the best offer available. Notice that the case where $k = 0$ is when a market order is executed immediately.
+The cost related to these kind of strategies can be of two types:
+
+\begin{itemize}
+	\item Cost related to the spread when executing a market order.
+	\item Cost related to the uncertainty of future price movements that we denote $c$.
+\end{itemize}
+While the first is easily measurable, the second is dependant on many factors: volatility of the market, the risk aversion of the trader... 
+We will discuss this issue further in the following sections.
+
+The goal of this document becomes:
+\begin{quote}
+\textit{Given the state of an order book and a single purchase order we want to make, What it is the best choice of $k$ to minimize the cost of the trade  ?}
+\end{quote}
+
+
+\subsection{The model and its dynamic}
+Let us present the basic model which our study is based on. It is the classical Cont and Larrard model. For more details please refer to their article \textit{"Price dynamics in a Markovian limit order market"} [1]
+\newline
+We shall agree that most of this section is an extract from the article of Cont and Larrard. This section aims only to set up the framework of our study.
+\subsubsection{The model}
+The order book is represented by its best ask and bid queues. The state of the limit order book is represented by :
+\begin{itemize}
+\item the bid price $ s_{t}^{a} $ and the ask price $ s_{t}^{b} $ 
+\item the size of the bid queue $ q_{t}^{a} $ representing the outstanding limit buy orders at the bid, and 
+\item the size of the ask queue $ q_{t}^{b} $ representing the outstanding limit sell orders at the ask 
+\end{itemize}
+The bid and ask prices are multiples of the tick size $\delta = s_{t}^{a} - s_{t}^{b}$ which we consider constant.
+The state of the limit order book is thus described by the triplet $X_{t} = (s_{t}^{b}, q_{t}^{b}, q_{t}^{a})$ which takes values in the discrete state space $\delta \mathbb{Z} \times \mathbb{N}^{2} $. With no loss of generality, we can assume that  :
+\begin{equation}
+\delta = 1
+\end{equation}
+
+We assume that orders arriving at the best bid/ask follow a poissonion process and are all of the same size $1$:
+\begin{itemize}
+	\item A market/cancelation order arriving at the $q_t^a$ (resp $q_t^b$) reduces its size by 1 if it is not empty
+	\item A limit order arriving at the $q_t^a$ (resp $q_t^b$) adds 1 to its size 
+\end{itemize}
+
+ Therefore $q_t^a$ and $q_t^b$ follow a birth/death process.
+
+We denote :
+\begin{itemize}
+\item $(\tau_i)_{_{i \geq 1}}$ the sequence of random variables  which stands for times between successive price changes. \footnote { Cont and Larrard's article presents an expression for the cumulative distribution function of each $\tau_i$ \footnote{See equations (3)-(4) of Cont and Larrard's article}. }
+\item $(X_i)_{_{i \geq 1}}$ the successive moves in the price. Note that according to our hypothesis ($\delta = 1$) : $X_i \in \{-1,1\}$ .
+\item $(S_k)_{_{i \geq 0}}$ the cumulative moves in the price after the $n^{th}$ change, ie $S_n = \sum{1 \ leq i \ leq n } X_i$.  
+\end{itemize}
+
+\subsubsection{The dynamic}
+
+
+The state  of the order book is modified by order book events. When the bid (resp. ask) queue is empty, the price moves down (resp. up), and $(q_t^a, q_t^b)$ (resp.$ (q_t^b, q_t^a)$ is generated from a distribution $f(x, y) \mathrm{d}x \mathrm{d}y $ (resp. $\tilde f(x, y) \mathrm{d}x \mathrm{d}y $) independently from the rest of the historical variables.
+
+
+This property give the market a markovian property: the new state of the market after a price move does only depend on the direction of this move.
+Therefore,  $(X_i)_{_{i \geq 0}}$ is markov process such as 
+
+\begin{itemize}
+\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
+\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_i=1 ) = \mathbb{P}( X_{i+1}=-1 | X_i=-1 ) = p = 1-q$
+\end{itemize}
+
+Given the symmetry of the market, we may assume that $f(x, y) = \tilde f(y, x)$. This assumption makes the process $(\tau_i)_i$ a sequence of IID random variables independent from $(X_i)_i$.
+
+\subsection{The optimization problem}
+Recall how our strategy works:
+\begin{itemize}
+	\item An limit order is placed at t=0 at the best bid.
+	\item after some time $T = \sum_{i \leq k} \tau_i$, if the order is not executed, we cancel it and make a market order at the ask side.
+\end{itemize}
+where $k$ is the parameter of the strategy we seek to optimize. 
+
+Let N denote the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
+$$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
+Finally, we denote $c_{wait}$ the waiting cost per unit of time.
+
+The problem could be seen as a minimization problem  :
+\begin{align*}
+ \min\limits_{k \in \mathbb{N}} \quad f(k) &:= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{\Min k N}\tau_i c_{wait} + (S_{\Min k N)}+1)\delta\right] \\
+&= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ ({\Min k N})  \mathbb{E}(\tau) c + (S_{\Min k N}+1) \right]
+\end{align*}
+
+\newpage
+\section{Solving the minimization problem}
+\subsection{First time of reach for a sum of a Markov chain}
+In this section we adress the issue of finding the law of the variable $N$.
+
+Let us define the  probability-generating function of T such as :
+$$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_0=s, X_0=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
+so that
+$$\mathbb{E}(z^{N} | S_0=s) = \alpha  g_{s}^{1}(z) + (1-\alpha) g_{s}^{-1} $$
+where $\alpha := \mathbb{P}(X_0 = 1)$.
+
+Given that $(S_n, X_n)$ is a markov chain, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in ]0,1[$ \footnote{For clarity, we omit to note the dependence of $g$ in z.} :
+
+\begin{numcases}
+		\strut 
+       	\g{s}{1} = z(p\g{s+1}{1}+ q\g{s-1}{-1}) \\
+       	\g{s}{-1} = z(q\g{s+1}{1}+ p\g{s-1}{-1})
+				\label{rec_N}	
+\end{numcases}
+
+Denoting :
+\begin{equation}
+		u = \frac{1}{2} \left(  \frac{1}{z p}   + z(2 - \frac{1}{p}) \right) \footnote{ u $\geq$ 1}
+\end{equation}
+
+and by imposing a Dirichlet boundary condition, we can prove \footnote{see Annexe} that $\g{s}{1}$ dynamic is given by the following second order system :  
+
+\begin{numcases}
+		\strut 
+        \g{s+1}{-1} - 2 u  \g{s}{-1} + \g{s-1}{-1} = 0\\
+       	\g{-1}{-1} = 1\\
+       	\lim_{s \to +\infty} \g{s}{-1} = 0
+\end{numcases}
+
+Which is a classical linear recurrent sequence of order 2. The solution is given by :
+\begin{equation}
+	 \g{s}{-1} = \left( u-\sqrt{u^{2}-1}    \right)^{s+1}
+\end{equation}
+
+Changing $1$ to $-1$ in ~\eqref{rec_N} we see that $\g{s}{1}$ follow the same dynamic as $\g{s}{-1}$ if we change $p$ to $1-p$, therefore we can deduce all the properties of the first from the second.
+
+
+Since $\g{s}{x}$ is the probability-generating function of $N$ , the law of $N$  conditional to $S_0 = 0$ and $X_0 = x$ is given by :
+\begin{numcases}
+\strut
+		\g{s}{-1}(z) = \sum_{j = 0}^{+\infty} \proba{-1}{s}{N = j} z^j \\
+		\g{s}{1}(z) = \sum_{j = 0}^{+\infty} \proba{1}{s}{N = j} z^j 
+\end{numcases}
+
+$\proba{-1}{s}{N = j}$ can be calculated using taylor expansion, and $\proba{1}{s}{N = j}$ can be deduced as discussed above.
+
+
+\subsection{The law of a sum of dependent random variables}
+
+As previously, we define a Markov Chain $(X_{n})_{n\geq0}$ and its sum  $(S_{n})_{n\geq0}$ 
+In order to get the law of the r.v $(S_{n})_{n\geq0}$ we define its conditional probability-generating function as :
+$$ f_{n}^{x}(z) = \mathbb{E}(z^{S_{n}} | X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in [0,1]  $$
+
+Let us consider $x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in ]0,1]\footnote{The case where z=0 can be obtained by continuity.} $. Thanks to the fact that $(S_n, X_n)$ is a markov chain, we can write :
+
+\begin{equation}
+	\f{n+1}{x}(z) = z \mathbb{E}( z^{S_{n}}  |  X_{0}=1) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \mathbb{E}(z^{S_{n}} |  X_{0}=-1) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{equation}
+
+\comment{
+Thus :
+\begin{equation}
+		\f{n+1}{x}(z) = z \f{n+1}{x}(z) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \f{n+1}{x}(z) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{equation}
+}
+
+Leading thus to the following system with the appropriate initial conditions : 
+\begin{numcases}
+		\strut 
+        \f{n+1}{1}(z) = z p \f{n}{1}(z) + \frac{1}{z} q \f{n}{-1}(z)\\
+        \f{n+1}{-1}(z) = z q \f{n}{1}(z) + \frac{1}{z} p \f{n}{-1}(z)\\
+       	\f{0}{1}(z) = \f{0}{-1}(z) = 1 \\
+       	\f{1}{1}(z) = z p + \frac{1}{z} q \\
+       	\f{1}{-1}(z) = z q + \frac{1}{z} p
+\end{numcases}
+
+We then prove that $\f{n}{1}$ and $\f{n}{-1}$ follow the same equation, ie for $x \in \{-1,1\}$
+\begin{equation}
+\f{n+2}{x} -p(\frac{1}{z}+z) \f{n+1}{x} + (2 p -1) \f{n}{x} = 0
+\end{equation}
+
+Which is a classical linear recurrent sequence of order 2. The solution is given by :
+\begin{equation}
+\f{n}{x}(z) = \frac{ \f{1}{x} - v + \sqrt{u^2 - (2p-1)}} {2  \sqrt{v^2 - (2p-1) } }  \left(  (v + \sqrt{v^2 - (2p-1)})^n - (v - \sqrt{v^2 - (2p-1)})^n) \right) + (v - \sqrt{v^2 - (2p-1)})^n 
+\end{equation}
+
+Where :
+$$ v = \frac{p}{2} (z + \frac{1}{z} ) $$
+
+
+$\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall notice that $\forall n \in \mathbb{N} -n \leq S_{n} \leq n$. We then get :
+\begin{numcases}
+\strut
+		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
+		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
+\end{numcases} 
+
+\section{Numerical Results}
+\subsection{Parmater estimation from market data}
+All experiments are done using the historical data of the Bund. In this section we try to estimate some parameters of the model.
+$$ p = \mathbb{P}(X_{i+1} = X_i)  \approx \frac{ \sum_{i \leq M} 1_{ \{X_{i+1} = X_i \} } }{M} $$
+
+$c$ is taken to be in $\{0.1, 1, 10\}$:
+
+$E[S_{\Min k n}]$ is calculated using Monte Carlo algorithm \footnote{see Annexe for more details about the implementation}.
+
+\newpage
+
+\subsection{Graphical results}
+Here are the results for different combination of the parameters $(p, c, \alpha)$.
+\subsubsection*{When $X_0 = -1$, ie $\alpha=0$}
+\IMG{0}
+\IMG{1} \\
+\IMG{2}
+\IMG{3} \\
+\IMG{4}
+\IMG{5} \\
+\IMG{6}
+\IMG{7} \\
+\IMG{8}
+\IMG{9} \\
+
+\newpage
+
+\subsubsection*{When $X_0 = 1$, ie $\alpha=1$}
+\IMG{10}
+\IMG{11} \\
+\IMG{12}
+\IMG{13} \\
+\IMG{14}
+\IMG{15} \\
+\IMG{16}
+\IMG{17} \\
+\IMG{18}
+\IMG{19} \\
+\appendix
+\section{ Some Proofs }
+\subsection{ Reccurence equation of $\g{-1}{s}$ }
+From ~\ref{rec_N}  we deduce:
+\begin{align*}
+		\g{s+1}{1} = \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} \\
+		\g{s+1}{1} = \frac{1}{ zq} \g{s}{-1} - \frac{p}{q} \g{s-1}{-1}
+\end{align*}
+
+Which implies that :
+\begin{equation*}
+		\g{s}{-1} =\frac{q}{p} \g{s}{1}+\frac{z (p^{2}-q^{2})}{p} \g{s-1}{-1}
+\end{equation*}
+
+Leading to :
+\begin{equation*}
+		\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} 
+\end{equation*}
+
+
+\subsection{Taylor expansion of $\g{-1}{s}$}
 
 \begin{align*}
 u &= \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p}) \\
@@ -60,373 +316,6 @@ avec \begin{equation*}
      \end{cases}
 \end{equation*}
 
-\tableofcontents
-
-\section{Presentation of the problem}
-
-\subsection{Problematic}
-Given the state of an order book, we want to place purchase orders. Trought this document, we try to define an efficient and optimal strategy in order to reduce the cost of such orders. Since it is quite complex to define this kind of strategy, we focus on the case where we have only one purchase order to make. Based on the work of Cont and Larard, we simplify even more and consider the state of the order book only at the best bid and the best ask. Then, the goal of this document becomes :
-\begin{quote}
-\textit{Given the state of an order book and a single purchase order we want to make, would it better to make a market order or a limit order at the best bid ?}
-\end{quote}
-
-
-\subsection{The model and its dynamic}
-Let us present the basic model which our study is based on. It is the classical Cont and Larrard model. For more details please refer to their article \textit{"Price dynamics in a Markovian limit order market"} [1]
-\newline
-We shall agree that most of this section is an extract from the article of Cont and Larrard. This section aims only to set up the framework of our study.
-\subsubsection{The model}
-The order book is represented by its best ask and bid queues. The state of the limit order book is represented by :
-\begin{itemize}
-\item the bid price $ s_{t}^{a} $ and the ask price $ s_{t}^{b} $ 
-\item the size of the bid queue $ q_{t}^{a} $ representing the outstanding limit buy orders at the bid, and 
-\item the size of the ask queue $ q_{t}^{b} $ representing the outstanding limit sell orders at the ask 
-\end{itemize}
-The bid and ask prices are multiples of the tick size $\delta = s_{t}^{a} - s_{t}^{b}$ which we consider constant.
-The state of the limit order book is thus described by the triplet $X_{t} = (s_{t}^{b}, q_{t}^{b}, q_{t}^{a})$ which takes values in the discrete state space $\delta \mathbb{Z} \times \mathbb{N}^{2} $. With no loss of generality, we can assume that  :
-\begin{equation}
-\delta = 1
-\end{equation}
-
-\subsubsection{The dynamic}
-The state $X_{t}$ of the order book is modified by order book events: limit orders (at the bid or ask),
-market orders and cancelations. A limit buy (resp.sell) order of size $x$ increases the size of the bid (resp. ask) queue by $x$, while a market buy (resp. sell) order decreases the corresponding queue size by $x$. Cancellation of $x$ orders in a given queue reduces the queue size by $x$. Given that we are interested in the queue sizes at the best bid/ask levels, market orders and cancellations have the same effect on the state variable $X_{t}$.
-We will assume that these events occur according to independent Poisson processes:
-\begin{itemize}
-\item Market buy (resp. sell) orders arrive at independent, exponential times with rate $\mu$.
-\item Limit buy (resp. sell) orders at the (best) bid (resp. ask) arrive at independent, exponential
-times with rate $\lambda$,
-\item Cancellations occur at independent, exponential times with rate $\theta$.
-\item These events are mutually independent.
-\item All orders sizes are equal (assumed to be 1 without loss of generality).
-\end{itemize}
-\newpage 
-\subsubsection{Definitions}
-Denoting by ($T^{a}_i ; i \geq 1$) (resp. $T^{b}_i$ ) the times at which the size of ask (resp. the bid) queue changes
-and $V^{a}_i$ (resp. $V^{b}_i$ ) the size of the associated change in queue size, the above assumptions translate
-into the following properties for the sequences $T^{a}_i; T^{b}_i; V^{a}_i; V^{b}_i$ :
-\begin{itemize}
-\item $(T^{a}_{i+1} - T^{a}_i)_{i \geq 0}$ is a sequence of independent random variables with exponential distribution
-with parameter $\lambda+\theta+\mu$
-
-\item $(T^{b}_{i+1} - T^{b}_i)_{i \geq 0}$ is a sequence of independent random variables with exponential distribution
-with parameter $\lambda+\theta+\mu$
-
-\item $(V^{a}_i)_{i \geq 0}$ and $(V^{b}_i)_{i \geq 0}$ are sequences of independent random variables with :
-\begin{equation}
-\mathbb{P}[V^{a}_i = 1] = \mathbb{P}[V^{b}_i = 1]  = \frac{\lambda}{\lambda+\theta+\mu} \quad and \quad \mathbb{P}[V^{a}_i = -1] = \mathbb{P}[V^{b}_i = -1] = \frac{\theta+\mu}{\lambda+\theta+\mu}
-\end{equation}
-
-\item All the previous sequences are independent.
-\end{itemize}
-
-\subsection{Summary}
-In this section we summarize the price dynamic according to what is presented in Cont and Larrard article.
-the process $X_{t} = (s_{t}^{b}, q_{t}^{b}, q_{t}^{a})$ is a continuous-time process with right-continuous, piecewise
-constant sample paths whose transitions correspond to the order book events \{$T_i^{a} ; i \geq 1$\} $\cup$ \{$T_i^{b} ; i \geq 1$\}. At each event :
-\begin{itemize}
-\item If an order or cancelation arrives on the ask side i.e. $T \in $ \{$T_i^{a} ; i \geq 1$\} :
-\begin{equation}
-(s_{T}^{b}, q_{T}^{b}, q_{T}^{a}) = (s_{T^{-}}^{b}, q_{T^{-}}^{b}, q_{T^{-}}^{a}+V_i^{a}) \, 1_{q_{T^{-}}^{a}+V_i^{a}>0} + (s_{T^{-}}^{b}+ \delta, R_i^{b}, R_i^{a}+V_i^{a}) \, 1_{q_{T^{-}}^{a}+V_i^{a}<0}
-\end{equation}
-
-\item If an order or cancelation arrives on the best side i.e. $T \in $ \{$T_i^{b} ; i \geq 1$\} :
-\begin{equation}
-(s_{T}^{b}, q_{T}^{b}, q_{T}^{a}) = (s_{T^{-}}^{b}, q_{T^{-}}^{b}+V_i^{b}, q_{T^{-}}^{a}) \, 1_{q_{T^{-}}^{b}+V_i^{b}>0} + (s_{T^{-}}^{b}- \delta, \overline{R}_i^{b}, \overline{R}_i^{a}+V_i^{a}) \, 1_{q_{T^{-}}^{b}+V_i^{b}<0}
-\end{equation}
-\end{itemize}
-Where $(V^{a}_i)_{i \geq 1} and (V^{b}_i)_{i \geq 1}$ are sequences of IID variables with distribution given by $(2)-(3)$, $(R_i)_{i \geq 1} = (R^{a}_i,R^{b}_i)$ is a sequence of IID variables with (joint) distribution $f$, and $(\overline{R}_i)_{i \geq 1} = (\overline{R}^{a}_i,\overline{R}^{b}_i)$ is a sequence of IID variables with (joint) distribution $\tilde{f}$.
-Note that $f(x,y) = \tilde{f}(y,x)$ and that those distribution can be estimated thanks to available information about the market.
-
-
-
-
-\newpage
-\section{Mathematical model of the solution}
-\subsection{Some definitions}
-We denote :
-\begin{itemize}
-\item $(\tau_i)_{_{i \geq 1}}$ the sequence of IID random integer variables  ($\tau_i \in \mathbb{N}$) which stands for times where the price moves.
-\item $(X_i)_{_{i \geq 1}}$ the successive moves in the price. Note that according to our hypothesis ($\delta = 1$) : $X_i \in \{-1,1\}$ .
-\end{itemize}
-For clarification, remark that for all $ i \in \mathbb{N^{*}} $ the move $X_i$ in the price occurs at the time $\tau_i$.\newline
-Cont and Larrard's article presents an expression for the cumulative distribution function of each $\tau_i$ \footnote{See equations (3)-(4) of Cont and Larrard's article}
-\newline
-Under these definitions, we assume that $(X_i)_{_{i \geq 0}}$ is a markov chain such as :
-\begin{itemize}
-\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
-\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_i=1 ) = \mathbb{P}( X_{i+1}=-1 | X_i=-1 ) = p = 1-q$
-\end{itemize}
-We assume, with no loss of generality, that the price at the initial time 0 is null. \footnote{In this model, prices could be negative. In fact, prices $\in \mathbb{Z}$}
-Let $(S_{n})_{n\geq0}$ be the sequence which represents such the price after $n$ moves in the price. Thus :
-\begin{equation*}
-     \begin{cases}
-        S_{n} = \sum_{k=1}^{n}X_k & if \quad n > 0 \\
-        S_0 = 0
-     \end{cases}
-\end{equation*}
-Then, we denote N the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
-$$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
-Finally, we denote $c_{wait}$ the waiting cost per unit of time.
-
-
-\subsection{The optimization problem}
-Recall that we want to find a solution for the problematic described in section 1.1.
-Using all the previous definitions, the problem could be seen as a minimization problem  :
-\begin{equation}
-\min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{min(k,N)}\tau_i c_{wait} + (S_{min(k,N)}+1)*\delta\right] = \min\limits_{k \in \mathbb{N}} \quad f(k)
-\end{equation}
-We shall notice that $f(0) = \delta$. This minimization problem seeks to minimize the cost of the purchase order. 
-
-
-\newpage
-\section{Solving the minimization problem}
-\subsection{First time of reach for a sum of a Markov chain}
-\subsubsection{Defining the problem}
-
-Let $(X_{n})_{n\geq0}$ be a markov chain such as :
-\begin{itemize}
-\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
-\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_i=1 ) = \mathbb{P}( X_{i+1}=-1 | X_i=-1 ) = p = 1-q$ \footnote{We assume that $p \ne 0$ and $p \ne 1$. Otherwise, the problem is trivial.}
-\end{itemize}
-Let $(S_{n})_{n\geq0}$ be a sequence such as :
-\begin{equation}
-     \begin{cases}
-        S_{n} = \sum_{k=1}^{n}X_k & if \quad n > 0 \\
-        S_0 = 0
-     \end{cases}
-\end{equation}
-Let $T$ be the first time when $S_{n}$ reaches $-1$, i.e  :
-$$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
-Let us define the  probability-generating function of T such as :
-$$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_0=s, X_0=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
-
-\subsubsection{The probability-generating function dynamic}
-Given the transition matrix of $(X_{n})_{n\geq0}$, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in ]0,1[$ \footnote{For clarity, we omit to note the dependence of G in z.} :
-
-\begin{numcases}
-		\strut 
-       	\g{s}{1} = z(p\g{s+1}{1}+ q\g{s-1}{-1}) \\
-       	\g{s}{-1} = z(q\g{s+1}{1}+ p\g{s-1}{-1})
-\end{numcases}
-Thus, for $z > 0$ and $ s \neq -1 $ \footnote{The case where $z=0$ or $z=1$ can be deduced from the one where $z\in ]0,1[$ since $\g{x}{s}$ is continuous. } :
-\begin{align}
-		\g{s+1}{1} = \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} \\
-		\g{s+1}{1} = \frac{1}{ zq} \g{s}{-1} - \frac{p}{q} \g{s-1}{-1}
-\end{align}
-Which implies that :
-\begin{equation}
-		\g{s}{-1} =\frac{q}{p} \g{s}{1}+\frac{z (p^{2}-q^{2})}{p} \g{s-1}{-1}
-\end{equation}
-Leading to :
-\begin{equation}
-		\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} 
-\end{equation}
-Denoting :
-\begin{equation}
-		u = \frac{1}{2} \left(  \frac{1}{z p}   + z(2 - \frac{1}{p}) \right) \footnote{ u $\geq$ 1}
-\end{equation}
-and by imposing a Dirichlet boundary condition we finally get the following second order system :  
-
-\begin{numcases}
-		\strut 
-        \g{s+1}{-1} - 2 u  \g{s}{-1} + \g{s-1}{-1} = 0\\
-       	\g{-1}{-1} = 1\\
-       	\lim_{s \to +\infty} \g{s}{-1} = 0
-\end{numcases}
-Which is a classical linear recurrent sequence of order 2. The solution is given by :
-\begin{equation}
-	 \g{s}{-1} = \left( u-\sqrt{u^{2}-1}    \right)^{s+1}
-\end{equation}
-Denoting :
-\begin{equation}
-		v = \frac{1}{2} \left(  \frac{1}{z q}   + z(2 - \frac{1}{q}) \right) \footnote{ u $\geq$ 1}
-\end{equation}
-We then prove as previously that :
-\begin{equation}
-	 \g{s}{1} = \left( v-\sqrt{v^{2}-1}    \right)^{s+1}
-\end{equation}
-
-\subsubsection{Results}
-Since $\g{s}{x}$ is the probability-generating function of N and$S_0 = 0$, the law of N is given by :
-\begin{numcases}
-\strut
-		\mathbb{P}_{X_0=x}(N=k) = \frac{1}{k!}\frac{ \mathrm{d^k \g{0}{x} }}{ \mathrm{d} z^k}(z=0) \\
-		\mathbb{E}_{X_0=x}(T) = \frac{ \mathrm{d \g{x}{1} }}{ \mathrm{d} z}(z=1) = +\infty
-\end{numcases}
-
-\subsection{Expected value of the price move at time n}
-\subsubsection{First steps}
-Recall that :
-\begin{equation*}
-	\begin{cases}
-        S_{n} = \sum_{k=1}^{n}X_k & if \quad n > 0 \\
-        S_0 = 0
-     \end{cases}
-\end{equation*}
-Then :
-\begin{equation*}
-	\begin{cases}
-        \mathbb{E}(S_{n}) = \sum_{k=1}^{n}\mathbb{E}(X_k) & if \quad n > 0 \\
-        \mathbb{E}(S_0) = 0
-     \end{cases}
-\end{equation*}
-\subsubsection{Expected value of one price move}
-We shall remark that for $i\geq0$:
-\begin{equation}
-	\mathbb{E}(X_i) = \mathbb{P}(X_i=1) - \mathbb{P}(X_i=-1)
-\end{equation}
-For $i\geq0$, we note :
-\begin{itemize}
-\item $a_i = \mathbb{P}(X_i=1)$
-\item $b_i = \mathbb{P}(X_i=-1)$
-\end{itemize}
-We then prove that :
-\begin{equation}
-	a_i = \mathbb{P}(X_i=1,X_{i-1}=-1) + \mathbb{P}(X_i=1,X_{i-1}=1) \newline
-	= q b_{i-1} + p a_{i-1}
-\end{equation}
-and that :
-\begin{equation}
-	b_i = \mathbb{P}(X_i=-1,X_{i-1}=-1) + \mathbb{P}(X_i=-1,X_{i-1}=1) \newline
-	= q b_{i-1} + p a_{i-1}
-\end{equation}
-Leading then to :
-\begin{equation}
-\begin{pmatrix} 
-a_i \\ b_i
-\end{pmatrix}
-= 
-\begin{pmatrix} 
-p & q \\
-q & p
-\end{pmatrix}
-.
-\begin{pmatrix} 
-a_{i-1} \\ b_{i-1}
-\end{pmatrix} 
-\end{equation}
-Solutions are then given by \footnote{calculs had been made by Maple}:
-\begin{numcases}
-		\strut
-        \mathbb{P}(X_i=1) =  \left( \frac{1}{2} + \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=1) + \left( \frac{1}{2} - \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=-1)\\
-         \mathbb{P}(X_i=-1) =  \left( \frac{1}{2} - \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=1) + \left( \frac{1}{2} + \frac{1}{2}(2p-1)^i  \right) \mathbb{P}(X_0=-1)
-\end{numcases}
-Finally :
-\begin{equation}
-	\mathbb{E}(X_i) =  (2p-1)^i \left( \mathbb{P}(X_0=1) - \mathbb{P}(X_0=-1) \right) 
-\end{equation}
-\subsubsection{Results}
-We finally obtain, using the sum of a geometrical sequence :
-\begin{equation*}
-	\begin{cases}
-        \mathbb{E}(S_{n}) = \left( \mathbb{P}(X_0=1) - \mathbb{P}(X_0=-1) \right) (2p-1)\frac{1-(2p-1)^{n}}{ 2(1-p)} & if \quad n > 0 \\
-         \mathbb{E}(S_0) = 0
-     \end{cases}
-\end{equation*}
-
-
-\subsection{The law of a sum of Markov Chain}
-\subsubsection{Defining the problem}
-As previously, we define a Markov Chain $(X_{n})_{n\geq0}$ and its sum  $(S_{n})_{n\geq0}$ such as :
-\begin{itemize}
-\item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
-\item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_{i}=1 ) = \mathbb{P}( X_{i+1}=-1 | X_{i}=-1 ) = p = 1-q$ \footnote{We assume that $p \ne 0$ and $p \ne 1$. Otherwise, the problem is trivial.}
-\item $\forall \, n>0 \quad S_{n} = \sum_{k=1}^{n}X_{k}$
-\item $S_{0} = 0$
-\end{itemize}
-In order to get the law of the r.v $(S_{n})_{n\geq0}$ we define its conditional probability-generating function as :
-$$ f_{n}^{x}(z) = \mathbb{E}(z^{S_{n}} | X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in [0,1]  $$
-
-\subsubsection{The probabilite-generating function dynamic}
-Let us consider $x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in ]0,1]\footnote{The case where z=0 can be obtained by continuity.} $. Thanks to the definition of $ f_{n}^{x}(z)$ we can write :
-
-\begin{align*}
-\f{n+1}{x}(z) &= \mathbb{E}(z^{S_{n+1}} | X_{0}=x)\\
-&= \mathbb{E}(z^{S_{n+1}} 1_{\{X_{1}=1\}} | X_{0}=x) + \mathbb{E}(z^{S_{n+1}} 1_{\{X_{1}=-1\}} | X_{0}=x) \\
-&= \mathbb{E}( z^{S_{n+1}}  |  X_{1}=1, X_{0}=x) \mathbb{P}(X_{1}=1 | X_{0}=x) + \mathbb{E}(z^{S_{n+1}} |  X_{1}=-1, X_{0}=x) \mathbb{P}(X_{1}=-1 | X_{0}=x) \\
-&= z\mathbb{E}(z^{X_{2}+...+X_{n+1}}|  X_{1}=1, X_{0}=x) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z}\mathbb{E}(z^{X_{2}+...+X_{n+1}} |  X_{1}=-1, X_{0}=x) \mathbb{P}(X_{1}=-1 | X_{0}=x)
-\end{align*}
-By using the strong Markov property, we get :
-\begin{equation}
-	\f{n+1}{x}(z) = z \mathbb{E}( z^{S_{n}}  |  X_{0}=1) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \mathbb{E}(z^{S_{n}} |  X_{0}=-1) \mathbb{P}(X_{1}=-1 | X_{0}=x)
-\end{equation}
-Thus :
-\begin{equation}
-		\f{n+1}{x}(z) = z \f{n+1}{x}(z) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \f{n+1}{x}(z) \mathbb{P}(X_{1}=-1 | X_{0}=x)
-\end{equation}
-Leading thus to the following system with the appropriate initial conditions : 
-\begin{numcases}
-		\strut 
-        \f{n+1}{1}(z) = z p \f{n}{1}(z) + \frac{1}{z} q \f{n}{-1}(z)\\
-        \f{n+1}{-1}(z) = z q \f{n}{1}(z) + \frac{1}{z} p \f{n}{-1}(z)\\
-       	\f{0}{1}(z) = \f{0}{-1}(z) = 1 \\
-       	\f{1}{1}(z) = z p + \frac{1}{z} q \\
-       	\f{1}{-1}(z) = z q + \frac{1}{z} p
-\end{numcases}
-Equations (31) -(32) implies that :
-\begin{equation}
-\f{n}{1} = \frac{1}{z p} \f{n+1}{1} - \frac{q}{z^2 p} \f{n}{-1} = \frac{1}{z q} \f{n+1}{-1} - \frac{p}{z^2 q} \f{n}{-1}
-\end{equation}
-Equations (31) -(36) implies that :
-\begin{equation}
-\f{n+1}{1} = \frac{p}{q} \f{n+1}{-1} - \frac{p^2}{z q} \f{n}{-1} + \frac{q}{z}\f{n}{-1}
-\end{equation}
-On the other hand, due to equation (36)
-\begin{equation}
-\f{n+1}{1} = \frac{1}{z q} \f{n+2}{-1} - \frac{p}{z^2 q} \f{n+1}{-1}
-\end{equation}
-Thereby, we get thanks to equations (37)-(38)
-\begin{equation}
-\f{n+2}{-1} -p(\frac{1}{z}+z) \f{n+1}{-1} + (2 p -1) \f{n}{-1} = 0
-\end{equation}
-Which is a classical linear recurrent sequence of order 2. The solution is given by :
-\begin{equation}
-\f{n}{-1}(z) = \alpha \left(a(z) -  s(z)\right)^n+ \beta \left(a(z) +  s(z)\right)^n
-\end{equation}
-Where :
-\begin{numcases}
-		\strut 
-        a(z) = \frac{p}{2}(z+\frac{1}{z})\\
-        s(z) = \sqrt{a(z)^2-(2 p-1)}
-\end{numcases}
-
-And by using the initial conditions (33)-(35) we finally get : 
-\begin{equation}
-\f{n}{-1}(z) = \frac{1}{2 s(z)}\left(-z q - \frac{1}{z} p +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zq+\frac{1}{z}p\right) \left(a(z) +  s(z)\right)^n
-\end{equation}
-
-As previously, we also get :
-\begin{equation}
-\f{n}{1}(z) = \frac{1}{2 s(z)}\left(-z p - \frac{1}{z} q +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zp+\frac{1}{z}q\right) \left(a(z) +  s(z)\right)^n
-\end{equation}
-
-\subsubsection{Results}
-$\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall notice that $\forall n \in \mathbb{N} -n \leq S_{n} \leq n$. We then get :
-\begin{numcases}
-\strut
-		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
-		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
-\end{numcases} 
-Consequently :
-
-\begin{flushleft}
-\textbf{Case :}  $X_0=1$
-\medbreak
-We shall remember that :
-$$
-\f{n}{1}(z) = \frac{1}{2 s(z)}\left(-z p - \frac{1}{z} q +a(z)+s(z)\right) \left(a(z) -  s(z)\right)^n+ \frac{1}{2 s(z)}\left(-a(z)+s(z)+zp+\frac{1}{z}q\right) \left(a(z) +  s(z)\right)^n
-$$
-We need to calculate multiple derivatives near 0. In this purpose we use the software Maple to compute the Taylor series expansion near 0.
-We obtain then :
-\begin{equation}
-contenu...
-\end{equation}
-\end{flushleft}
-
-\end{document}
-
-
-
+\section{Source Code}
 
 \end{document}

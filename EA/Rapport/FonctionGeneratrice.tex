@@ -8,7 +8,7 @@
 \usepackage{soul}
 \usepackage{pict2e}
  \usepackage{graphicx}
-
+\usepackage{minted}
 
 
 \usepackage[top=2.25cm, bottom=2.25cm, left=2cm, right=2cm]{geometry}
@@ -75,7 +75,7 @@ We denote :
 \begin{itemize}
 \item $(\tau_i)_{_{i \geq 1}}$ the sequence of random variables  which stands for times between successive price changes. \footnote { Cont and Larrard's article presents an expression for the cumulative distribution function of each $\tau_i$ \footnote{See equations (3)-(4) of Cont and Larrard's article}. }
 \item $(X_i)_{_{i \geq 1}}$ the successive moves in the price. Note that according to our hypothesis ($\delta = 1$) : $X_i \in \{-1,1\}$ .
-\item $(S_k)_{_{i \geq 0}}$ the cumulative moves in the price after the $n^{th}$ change, ie $S_n = \sum{1 \ leq i \ leq n } X_i$.  
+\item $(S_k)_{_{i \geq 0}}$ the cumulative moves in the price after the $n^{th}$ change, ie $S_n = \sum{1 \leq i \leq n } X_i$. \footnote{ see Annexe \ref{loi_S} for the generating function of $S_n$ }  
 \end{itemize}
 
 \subsubsection{The dynamic}
@@ -112,12 +112,12 @@ The problem could be seen as a minimization problem  :
 &= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ ({\Min k N})  \mathbb{E}(\tau) c + (S_{\Min k N}+1) \right]
 \end{align*}
 
+To compute the first term, we calculate the law of $N$ analytically. For the second term, we use a Monte-Carlo Algorithm.
+
 \newpage
 \section{Solving the minimization problem}
 \subsection{First time of reach for a sum of a Markov chain}
-In this section we adress the issue of finding the law of the variable $N$.
-
-Let us define the  probability-generating function of T such as :
+In this section we adress the issue of finding the law of the variable $N$. Let us define the  probability-generating function of $N$ such as :
 $$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_0=s, X_0=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
 so that
 $$\mathbb{E}(z^{N} | S_0=s) = \alpha  g_{s}^{1}(z) + (1-\alpha) g_{s}^{-1} $$
@@ -163,65 +163,73 @@ Since $\g{s}{x}$ is the probability-generating function of $N$ , the law of $N$ 
 
 $\proba{-1}{s}{N = j}$ can be calculated using taylor expansion, and $\proba{1}{s}{N = j}$ can be deduced as discussed above.
 
+\subsection{ Esperance of stopped $S_n$ }
+$E[S_{\Min k n}]$ is calculated using Monte Carlo algorithm.
 
-\subsection{The law of a sum of dependent random variables}
+\begin{minted}{cpp}
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include <map>
+#include <random>
 
-As previously, we define a Markov Chain $(X_{n})_{n\geq0}$ and its sum  $(S_{n})_{n\geq0}$ 
-In order to get the law of the r.v $(S_{n})_{n\geq0}$ we define its conditional probability-generating function as :
-$$ f_{n}^{x}(z) = \mathbb{E}(z^{S_{n}} | X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in [0,1]  $$
+using namespace std;
 
-Let us consider $x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in ]0,1]\footnote{The case where z=0 can be obtained by continuity.} $. Thanks to the fact that $(S_n, X_n)$ is a markov chain, we can write :
+int main()
+{
+  int k = 5;
+  double p = 0.2;
 
-\begin{equation}
-	\f{n+1}{x}(z) = z \mathbb{E}( z^{S_{n}}  |  X_{0}=1) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \mathbb{E}(z^{S_{n}} |  X_{0}=-1) \mathbb{P}(X_{1}=-1 | X_{0}=x)
-\end{equation}
+  // Number of independant simulations
+  int M = 1e6;
 
-\comment{
-Thus :
-\begin{equation}
-		\f{n+1}{x}(z) = z \f{n+1}{x}(z) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \f{n+1}{x}(z) \mathbb{P}(X_{1}=-1 | X_{0}=x)
-\end{equation}
+  // generator of X_i
+  random_device rd;
+  mt19937 gen(rd());
+  map<int, bernoulli_distribution> alea;
+  // generator of X_i conditional to  X_{i-1} = 1
+  alea[1] = std::bernoulli_distribution(p);
+  // generator of X_i conditional to  X_{i-1} = -1
+  alea[-1] = std::bernoulli_distribution(1 - p);
+  
+  double mean = 0;
+  for (int m = 0; m < M; m++) {
+    int S = 0;
+    int X0 = 1;
+    for (int i = 0; i < k && S >= 0; i++) {
+      X0 = 2*alea[X0](gen)-1;
+      S += X0;
+    }
+    mean += S;
+  }
+  
+  mean /= M;
+  cout << mean << endl;
+  
+return 0;
 }
+\end{minted}
 
-Leading thus to the following system with the appropriate initial conditions : 
-\begin{numcases}
-		\strut 
-        \f{n+1}{1}(z) = z p \f{n}{1}(z) + \frac{1}{z} q \f{n}{-1}(z)\\
-        \f{n+1}{-1}(z) = z q \f{n}{1}(z) + \frac{1}{z} p \f{n}{-1}(z)\\
-       	\f{0}{1}(z) = \f{0}{-1}(z) = 1 \\
-       	\f{1}{1}(z) = z p + \frac{1}{z} q \\
-       	\f{1}{-1}(z) = z q + \frac{1}{z} p
-\end{numcases}
-
-We then prove that $\f{n}{1}$ and $\f{n}{-1}$ follow the same equation, ie for $x \in \{-1,1\}$
-\begin{equation}
-\f{n+2}{x} -p(\frac{1}{z}+z) \f{n+1}{x} + (2 p -1) \f{n}{x} = 0
-\end{equation}
-
-Which is a classical linear recurrent sequence of order 2. The solution is given by :
-\begin{equation}
-\f{n}{x}(z) = \frac{ \f{1}{x} - v + \sqrt{u^2 - (2p-1)}} {2  \sqrt{v^2 - (2p-1) } }  \left(  (v + \sqrt{v^2 - (2p-1)})^n - (v - \sqrt{v^2 - (2p-1)})^n) \right) + (v - \sqrt{v^2 - (2p-1)})^n 
-\end{equation}
-
-Where :
-$$ v = \frac{p}{2} (z + \frac{1}{z} ) $$
-
-
-$\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall notice that $\forall n \in \mathbb{N} -n \leq S_{n} \leq n$. We then get :
-\begin{numcases}
-\strut
-		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
-		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
-\end{numcases} 
+\newpage
 
 \section{Numerical Results}
 \subsection{Parmater estimation from market data}
 All experiments are done using the historical data of the Bund. In this section we try to estimate some parameters of the model.
+
+
 $$ p = \mathbb{P}(X_{i+1} = X_i)  \approx \frac{ \sum_{i \leq M} 1_{ \{X_{i+1} = X_i \} } }{M} $$
+The following progam gives $p \approx 0.2$
+\begin{minted}{python}
+r=pickle.load(input)
+X = r['BidPrice']
+X = X[1:] - X[:-1]
+X = X[ abs(X) > 1e-3] # Keep only the entries where the price change
+X = np.array(map(lambda x: 1 if x > 0 else -1, X))
+p = np.count_nonzero(X[1:] == X[:-1]) / len(X)
+\end{minted}
 
-$c$ is taken to be in $\{0.1, 1, 10\}$:
+$$\mathbb{E}[ \tau ] \approx 3.75 ms$$
 
-$E[S_{\Min k n}]$ is calculated using Monte Carlo algorithm \footnote{see Annexe for more details about the implementation}.
 
 \newpage
 
@@ -229,20 +237,18 @@ $E[S_{\Min k n}]$ is calculated using Monte Carlo algorithm \footnote{see Annexe
 Here are the results for different combination of the parameters $(p, c, \alpha)$.
 \subsubsection*{When $X_0 = -1$, ie $\alpha=0$}
 \IMG{0}
-\IMG{1} \\
-\IMG{2}
 \IMG{3} \\
-\IMG{4}
-\IMG{5} \\
-\IMG{6}
+\IMG{4} 
 \IMG{7} \\
 \IMG{8}
 \IMG{9} \\
+\IMG{10}
 
+It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed
 \newpage
 
 \subsubsection*{When $X_0 = 1$, ie $\alpha=1$}
-\IMG{10}
+
 \IMG{11} \\
 \IMG{12}
 \IMG{13} \\
@@ -253,7 +259,9 @@ Here are the results for different combination of the parameters $(p, c, \alpha)
 \IMG{18}
 \IMG{19} \\
 \appendix
+
 \section{ Some Proofs }
+
 \subsection{ Reccurence equation of $\g{-1}{s}$ }
 From ~\ref{rec_N}  we deduce:
 \begin{align*}
@@ -315,6 +323,58 @@ avec \begin{equation*}
         - \sum_{i \leq r+1} \binom \undemi i  \binom {1-2i}{1+r-i} (-1)^i (2p)^{2i-1}  (2p-1)^{1+r-i}  & \text{else}
      \end{cases}
 \end{equation*}
+
+
+\section{The law of a sum of dependent random variables}
+\label{loi_S}
+As previously, we define a Markov Chain $(X_{n})_{n\geq0}$ and its sum  $(S_{n})_{n\geq0}$ 
+In order to get the law of the r.v $(S_{n})_{n\geq0}$ we define its conditional probability-generating function as :
+$$ f_{n}^{x}(z) = \mathbb{E}(z^{S_{n}} | X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in [0,1]  $$
+
+Let us consider $x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in ]0,1]\footnote{The case where z=0 can be obtained by continuity.} $. Thanks to the fact that $(S_n, X_n)$ is a markov chain, we can write :
+
+\begin{equation}
+	\f{n+1}{x}(z) = z \mathbb{E}( z^{S_{n}}  |  X_{0}=1) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \mathbb{E}(z^{S_{n}} |  X_{0}=-1) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{equation}
+
+\comment{
+Thus :
+\begin{equation}
+		\f{n+1}{x}(z) = z \f{n+1}{x}(z) \mathbb{P}(X_{1}=1 | X_{0}=x) + \frac{1}{z} \f{n+1}{x}(z) \mathbb{P}(X_{1}=-1 | X_{0}=x)
+\end{equation}
+}
+
+Leading thus to the following system with the appropriate initial conditions : 
+\begin{numcases}
+		\strut 
+        \f{n+1}{1}(z) = z p \f{n}{1}(z) + \frac{1}{z} q \f{n}{-1}(z)\\
+        \f{n+1}{-1}(z) = z q \f{n}{1}(z) + \frac{1}{z} p \f{n}{-1}(z)\\
+       	\f{0}{1}(z) = \f{0}{-1}(z) = 1 \\
+       	\f{1}{1}(z) = z p + \frac{1}{z} q \\
+       	\f{1}{-1}(z) = z q + \frac{1}{z} p
+\end{numcases}
+
+We then prove that $\f{n}{1}$ and $\f{n}{-1}$ follow the same equation, ie for $x \in \{-1,1\}$
+\begin{equation}
+\f{n+2}{x} -p(\frac{1}{z}+z) \f{n+1}{x} + (2 p -1) \f{n}{x} = 0
+\end{equation}
+
+Which is a classical linear recurrent sequence of order 2. The solution is given by :
+\begin{equation}
+\f{n}{x}(z) = \frac{ \f{1}{x} - v + \sqrt{u^2 - (2p-1)}} {2  \sqrt{v^2 - (2p-1) } }  \left(  (v + \sqrt{v^2 - (2p-1)})^n - (v - \sqrt{v^2 - (2p-1)})^n) \right) + (v - \sqrt{v^2 - (2p-1)})^n 
+\end{equation}
+
+Where :
+$$ v = \frac{p}{2} (z + \frac{1}{z} ) $$
+
+
+$\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall notice that $\forall n \in \mathbb{N} -n \leq S_{n} \leq n$. We then get :
+\begin{numcases}
+\strut
+		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
+		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
+\end{numcases} 
+
 
 \section{Source Code}
 

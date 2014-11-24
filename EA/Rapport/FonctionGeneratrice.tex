@@ -19,6 +19,8 @@
 \newcommand{\proba}[3]{ \mathbb{P}_{X_0=#1} (#3 | S_0=#2) }
 \newcommand{\comment}[1]{}
 \newcommand{\IMG}[1] { \includegraphics[scale=0.25]{img/#1.png} }
+\newcommand{\IMGC}[1] { \includegraphics[scale=0.25]{img/#1.png} }
+
 
 \title{Optimal Strategy of order placement in High Frequency  }
 \author{OUAALINE Anas, EL KHADIR Bachir}
@@ -286,7 +288,7 @@ p = np.count_nonzero(X[1:] == X[:-1]) / len(X)
 
 The same algorithm gives $$\mathbb{E}[ \tau ] \approx 3.75 ms$$
 
-Here is the mean cost when waiting for $k \in \{0, ... ,9 \}$ periods before placing a market order using $c=0.3$:
+Here is the mean cost when applying $\text{Strategy}(k)$ for $k \in \{0, ... ,9 \}$ periods using $c=0.3$:
 
 \IMG{esp_market}
 

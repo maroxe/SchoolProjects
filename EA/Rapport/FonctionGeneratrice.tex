@@ -7,7 +7,7 @@
 \usepackage{cases}
 \usepackage{soul}
 \usepackage{pict2e}
- \usepackage{graphicx}
+\usepackage{graphicx}
 \usepackage{minted}
 
 
@@ -23,7 +23,7 @@
 \begin{document}
 
 
- \includegraphics[scale=0.75]{img/donnees.png}
+\includegraphics[scale=0.75]{img/donnees.png}
 
 \tableofcontents
 
@@ -39,12 +39,10 @@ The cost related to these kind of strategies can be of two types:
 \end{itemize}
 While the first is easily measurable, the second is dependant on many factors: volatility of the market, the risk aversion of the trader... 
 We will discuss this issue further in the following sections.
-
 The goal of this document becomes:
 \begin{quote}
 \textit{Given the state of an order book and a single purchase order we want to make, What it is the best choice of $k$ to minimize the cost of the trade  ?}
 \end{quote}
-
 
 \subsection{The model and its dynamic}
 Let us present the basic model which our study is based on. It is the classical Cont and Larrard model. For more details please refer to their article \textit{"Price dynamics in a Markovian limit order market"} [1]
@@ -62,15 +60,12 @@ The state of the limit order book is thus described by the triplet $X_{t} = (s_{
 \begin{equation}
 \delta = 1
 \end{equation}
-
 We assume that orders arriving at the best bid/ask follow a poissonion process and are all of the same size $1$:
 \begin{itemize}
 	\item A market/cancelation order arriving at the $q_t^a$ (resp $q_t^b$) reduces its size by 1 if it is not empty
 	\item A limit order arriving at the $q_t^a$ (resp $q_t^b$) adds 1 to its size 
 \end{itemize}
-
- Therefore $q_t^a$ and $q_t^b$ follow a birth/death process.
-
+Therefore $q_t^a$ and $q_t^b$ follow a birth/death process.
 We denote :
 \begin{itemize}
 \item $(\tau_i)_{_{i \geq 1}}$ the sequence of random variables  which stands for times between successive price changes. \footnote { Cont and Larrard's article presents an expression for the cumulative distribution function of each $\tau_i$ \footnote{See equations (3)-(4) of Cont and Larrard's article}. }
@@ -80,42 +75,62 @@ We denote :
 
 \subsubsection{The dynamic}
 
-
 The state  of the order book is modified by order book events. When the bid (resp. ask) queue is empty, the price moves down (resp. up), and $(q_t^a, q_t^b)$ (resp.$ (q_t^b, q_t^a)$ is generated from a distribution $f(x, y) \mathrm{d}x \mathrm{d}y $ (resp. $\tilde f(x, y) \mathrm{d}x \mathrm{d}y $) independently from the rest of the historical variables.
 $f$ will be estimated from historical data:
 
 \IMG{hist_f}
-
-
 This property give the market a markovian property: the new state of the market after a price move does only depend on the direction of this move.
-Therefore,  $(X_i)_{_{i \geq 0}}$ is markov process such as 
-
+Therefore,  $(X_i)_{_{i \geq 0}}$ is markov process such as :
 \begin{itemize}
 \item $\forall \, n\geq0 \quad X_{n} \in \{-1,1\} $ 
 \item $\forall \, i\geq0 \quad\ \mathbb{P}( X_{i+1}=1 | X_i=1 ) = \mathbb{P}( X_{i+1}=-1 | X_i=-1 ) = p = 1-q$
 \end{itemize}
-
 Given the symmetry of the market, we may assume that $f(x, y) = \tilde f(y, x)$. This assumption makes the process $(\tau_i)_i$ a sequence of IID random variables independent from $(X_i)_i$.
 
 \subsection{The optimization problem}
 Recall how our strategy works:
 \begin{itemize}
-	\item An limit order is placed at t=0 at the best bid.
+	\item A limit order is placed at t=0 at the best bid.
 	\item after some time $T = \sum_{i \leq k} \tau_i$, if the order is not executed, we cancel it and make a market order at the ask side.
 \end{itemize}
-where $k$ is the parameter of the strategy we seek to optimize. 
-
-Let N denote the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
+$k$ is the parameter of the strategy we seek to optimize. It stants for the number of moves in price. 
+Let N be the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
 $$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
 Finally, we denote $c_{wait}$ the waiting cost per unit of time.
-
 The problem could be seen as a minimization problem  :
-\begin{align*}
- \min\limits_{k \in \mathbb{N}} \quad f(k) &:= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{\Min k N}\tau_i c_{wait} + (S_{\Min k N)}+1)\delta\right] \\
-&= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ ({\Min k N})  \mathbb{E}(\tau) c + (S_{\Min k N}+1) \right]
-\end{align*}
-
-To compute the first term, we calculate the law of $N$ analytically. For the second term, we use a Monte-Carlo Algorithm.
+\begin{equation}
+ \min\limits_{k \in \mathbb{N}} \quad f(k) := \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{\Min k N}\tau_i c_{wait} + (S_{\Min k N)}+1)\delta\right]
+\end{equation}
+We shall notice that $(\tau_i)_{(i>0)}$ are assumed to be independent. The are also assumed to be independent of $N$
+Thus we can rewrite $f$ and the problem becomes : 
+\begin{equation}
+ \min\limits_{k \in \mathbb{N}} \quad f(k)= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ ({\Min k N})  \mathbb{E}(\tau) c_{wait} + (S_{\Min k N}+1) \right]
+\end{equation}
+Since $\mathbb{E}(\tau)$ is a constant we can denote
+$c = \mathbb{E}(\tau) c_{wait}$ which is the waiting cost per price move. And the minimization problem finally becomes :
+\begin{equation}
+ \min\limits_{k \in \mathbb{N}} \quad f(k)= \min\limits_{k \in \mathbb{N}} \quad c \mathbb{E}\,\left[ {\Min k N}\right]   +  \mathbb{E}\,\left[S_{\Min k N}\right] +1
+\end{equation}
+In order to solve this problem we need to do 2 different calculations :
+\begin{itemize}
+\item $\mathbb{E}\,\left[ {\Min k N}\right]$ : we are going to explicitly calculate the Law N
+\item $\mathbb{E}\,\left[S_{\Min k N}\right]$ : since $S_i$ and $N$ are not independent, the law is quite hard to be explicitly calculated. Consequently, we are going to use a Monte-Carlo Algorithm.
+\end{itemize}
+\subsection{The parameter c}
+In the previous section we have denoted :
+$$
+	c = \mathbb{E}(\tau) c_{wait}
+$$
+It is an empirical paremeter which has to manually fixed. We notice that through its definition $c$ depends on $\mathbb{E}(\tau)$ which is the average time between two moves in the price. However we can be more accurate and see that it also depends on the volatility of the market and the operator's risk aversion. We also notice that $c$ needs to be lower than the thick $\delta$ otherwise it is not interesting to wait for a move in the price.
+Thus we came up with the following remarks.
+\begin{itemize}
+\item $c = \mathbb{E}(\tau) F(\sigma,v,r)$ where $ \mathbb{E}(\tau)$ is the average time between two moves in the price, $\sigma$ is the market volatility, $v$ is the operator's risk aversion and $r$ is some unkown parameters. $F$ is a differentiable function.
+\item $c<\delta$ where $\delta$ is the thick.
+\item $\frac{\partial c}{\partial \sigma} > 0$ 
+\item $\frac{\partial c}{\partial v} > 0$ 
+\end{itemize}
+In our model we assume that $\mathbb{E}(\tau) , \sigma, v
+$ and $r$ do not depends on $k$.
 
 \newpage
 \section{Solving the minimization problem}

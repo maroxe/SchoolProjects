@@ -20,8 +20,13 @@
 \newcommand{\comment}[1]{}
 \newcommand{\IMG}[1] { \includegraphics[scale=0.25]{img/#1.png} }
 
+\title{Optimal Strategy of order placement in High Frequency  }
+\author{OUAALINE Anas, EL KHADIR Bachir}
+\date \today
+
 \begin{document}
 
+\maketitle
 
  \includegraphics[scale=0.75]{img/donnees.png}
 
@@ -166,7 +171,7 @@ Since $\g{s}{x}$ is the probability-generating function of $N$ , the law of $N$ 
 
 $\proba{-1}{s}{N = j}$ can be calculated using taylor expansion, and $\proba{1}{s}{N = j}$ can be deduced as discussed above.
 
-\subsection{ Esperance of stopped $S_n$ }
+\subsection{Expectation  of stopped $S_n$ }
 $E[S_{\Min k n}]$ is calculated using Monte Carlo algorithm.
 
 \begin{minted}{cpp}
@@ -216,27 +221,9 @@ return 0;
 \newpage
 
 \section{Numerical Results}
-\subsection{Parmater estimation from market data}
-All experiments are done using the historical data of the Bund. In this section we try to estimate some parameters of the model.
 
 
-$$ p = \mathbb{P}(X_{i+1} = X_i)  \approx \frac{ \sum_{i \leq M} 1_{ \{X_{i+1} = X_i \} } }{M} $$
-The following progam gives $p \approx 0.2$
-\begin{minted}{python}
-r=pickle.load(input)
-X = r['BidPrice']
-X = X[1:] - X[:-1]
-X = X[ abs(X) > 1e-3] # Keep only the entries where the price change
-X = np.array(map(lambda x: 1 if x > 0 else -1, X))
-p = np.count_nonzero(X[1:] == X[:-1]) / len(X)
-\end{minted}
-
-$$\mathbb{E}[ \tau ] \approx 3.75 ms$$
-
-
-\newpage
-
-\subsection{Graphical results}
+\subsection{Model results}
 Here are the results for different combination of the parameters $(p, c, \alpha)$.
 \subsubsection*{When $X_0 = -1$, ie $\alpha=0$}
 \IMG{0}
@@ -247,7 +234,11 @@ Here are the results for different combination of the parameters $(p, c, \alpha)
 \IMG{9} \\
 \IMG{10}
 
-It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed
+It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X0 = -1$, for low values of $p$, there is a small change that the trend changes:
+$$ p = \mathbb P (X_1 = -1 | X_0 = -1) $$
+ and therefore it is more profitable to wait.
+We can also see that in the critical case when $p = 0.4$, depending on the cost of waiting $c$, it may be 
+
 \newpage
 
 \subsubsection*{When $X_0 = 1$, ie $\alpha=1$}
@@ -261,7 +252,35 @@ It is interesting to see that the behaviour changes when depending on wehter $p 
 \IMG{17} \\
 \IMG{18}
 \IMG{19} \\
+
+\newpage
+
+\subsection{Results from market data and validation}
+All experiments are done using the historical data of the Bund. Let's first try to estimate some parameters of the model.
+$$ p = \mathbb{P}(X_{i+1} = X_i)  \approx \frac{ \sum_{i \leq M} 1_{ \{X_{i+1} = X_i \} } }{M} $$
+The following progam gives $p \approx 0.1$
+
+\begin{minted}{python}
+r=pickle.load(input)
+X = r['BidPrice']
+X = X[1:] - X[:-1]
+X = X[ abs(X) > 1e-3] # Keep only the entries where the price changes
+X = np.array(map(lambda x: 1 if x > 0 else -1, X))
+p = np.count_nonzero(X[1:] == X[:-1]) / len(X)
+\end{minted}
+
+The same algorithm gives $$\mathbb{E}[ \tau ] \approx 3.75 ms$$
+
+Here is the mean cost when waiting for $k \in \{0, ... ,9 \}$ periods before placing a market order using $c=0.3$:
+
+\IMG{esp_market}
+
+The shape of the graph is very similar to the ones we found in the previous section corresponding to $p = 0.1$
+
+\newpage
+
 \appendix
+
 
 \section{ Some Proofs }
 
@@ -380,7 +399,6 @@ $\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall 
 We use mapple to compute the taylor expansion, we get for example for $X0 = 1$ and $p = 0.2$:
 
 \IMG{loi_S}
-
 
 \section{Source Code}
 

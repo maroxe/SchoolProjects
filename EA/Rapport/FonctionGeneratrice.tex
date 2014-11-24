@@ -18,8 +18,12 @@
 \newcommand{\undemi}{ \frac{1}{2} }
 \newcommand{\proba}[3]{ \mathbb{P}_{X_0=#1} (#3 | S_0=#2) }
 \newcommand{\comment}[1]{}
-\newcommand{\IMG}[1] { \includegraphics[scale=0.25]{img/#1.png} }
-\newcommand{\IMGC}[1] { \includegraphics[scale=0.25]{img/#1.png} }
+\newcommand{\IMG}[1] { \includegraphics[scale=0.35]{img/#1.png} }
+\newcommand{\IMGG}[1] { \includegraphics[scale=0.5]{img/#1.png} }
+
+\newcommand{\IMGC}[1] {
+\begin{center} \includegraphics[scale=0.5]{img/#1.png} \end{center}
+ }
 
 
 \title{Optimal Strategy of order placement in High Frequency  }
@@ -85,7 +89,8 @@ We denote :
 The state  of the order book is modified by order book events. When the bid (resp. ask) queue is empty, the price moves down (resp. up), and $(q_t^a, q_t^b)$ (resp.$ (q_t^b, q_t^a)$ is generated from a distribution $f(x, y) \mathrm{d}x \mathrm{d}y $ (resp. $\tilde f(x, y) \mathrm{d}x \mathrm{d}y $) independently from the rest of the historical variables.
 $f$ will be estimated from historical data:
 
-\IMG{hist_f}
+\IMGC{hist_f}
+
 This property give the market a markovian property: the new state of the market after a price move does only depend on the direction of this move.
 Therefore,  $(X_i)_{_{i \geq 0}}$ is markov process such as :
 \begin{itemize}
@@ -243,13 +248,20 @@ return 0;
 \subsection{Model results}
 Here are the results for different combination of the parameters $(p, c, \alpha)$.
 \subsubsection*{When $X_0 = -1$, ie $\alpha=0$}
+
+\begin{center}
+\IMGG{legend}
 \IMG{0}
-\IMG{3} \\
+\IMG{1} 
+\IMG{2} 
+\IMG{3} 
 \IMG{4} 
-\IMG{7} \\
-\IMG{8}
-\IMG{9} \\
+\IMG{5} 
+\IMG{7} 
+\IMG{8} 
+\IMG{9} 
 \IMG{10}
+\end{center}
 
 It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X0 = -1$, for low values of $p$, there is a small change that the trend changes:
 $$ p = \mathbb P (X_1 = -1 | X_0 = -1) $$
@@ -260,15 +272,21 @@ We can also see that in the critical case when $p = 0.4$, depending on the cost 
 
 \subsubsection*{When $X_0 = 1$, ie $\alpha=1$}
 
-\IMG{11} \\
-\IMG{12}
-\IMG{13} \\
-\IMG{14}
-\IMG{15} \\
-\IMG{16}
-\IMG{17} \\
-\IMG{18}
+\begin{center}
+
+
+\IMG{11} 
+\IMG{12} 
+\IMG{13} 
+\IMG{14} \\
+\IMG{15} 
+\IMG{17} 
+\IMG{18} 
 \IMG{19} \\
+\IMG{20}
+\IMG{21}
+
+\end{center}
 
 \newpage
 
@@ -290,9 +308,13 @@ The same algorithm gives $$\mathbb{E}[ \tau ] \approx 3.75 ms$$
 
 Here is the mean cost when applying $\text{Strategy}(k)$ for $k \in \{0, ... ,9 \}$ periods using $c=0.3$:
 
-\IMG{esp_market}
+\IMGC{esp_market}
 
 The shape of the graph is very similar to the ones we found in the previous section corresponding to $p = 0.1$
+\begin{center}
+\IMG{1}
+\IMG{12}
+\end{center}
 
 \newpage
 
@@ -415,8 +437,8 @@ $\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall 
 \end{numcases} 
 We use mapple to compute the taylor expansion, we get for example for $X0 = 1$ and $p = 0.2$:
 
-\IMG{loi_S}
-
+\IMGC{loi_S}
+ We can see that $\mathbb{P}(S_0 = 0) = 1$ and $\mathbb{P} (S_1 = 1) = 1 - \mathbb{P} (S_1 = -1) = 0.2 = 1$
 \section{Source Code}
 
 \end{document}

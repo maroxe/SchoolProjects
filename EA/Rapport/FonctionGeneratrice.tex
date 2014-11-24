@@ -30,6 +30,7 @@
 \author{OUAALINE Mohamed Anas, EL KHADIR Bachir}
 \date \today
 
+\input{pagedegarde.tex}
 \begin{document}
 
 \maketitle
@@ -104,7 +105,7 @@ Recall how our strategy works:
 	\item A limit order is placed at t=0 at the best bid.
 	\item after some time $T = \sum_{i \leq k} \tau_i$, if the order is not executed, we cancel it and make a market order at the ask side.
 \end{itemize}
-$k$ is the parameter of the strategy we seek to optimize. It stants for the maximum number of moves in price we are willing to wait for. 
+$k$ is the parameter of the strategy we seek to optimize. It stands for the maximum number of moves in price we are willing to wait for. 
 Let N be the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
 $$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
 Finally, we denote $c_{wait}$ the waiting cost per unit of time.
@@ -150,7 +151,7 @@ In this section we adress the issue of finding the law of the variable $N$. Let 
 $$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_0=s, X_0=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
 so that
 $$\mathbb{E}(z^{N} | S_0=s) = \alpha  g_{s}^{1}(z) + (1-\alpha) g_{s}^{-1} $$
-where $\alpha := \mathbb{P}(X_0 = 1)$.
+where $\alpha := \mathbb{P}(X_0 = -1)$.
 
 Given that $(S_n, X_n)$ is a markov chain, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in ]0,1[$ \footnote{For clarity, we omit to note the dependence of $g$ in z.} :
 
@@ -244,7 +245,7 @@ return 0;
 
 \subsection{Model results}
 Here are the results for different combination of the parameters $(p, c, \alpha)$.
-\subsubsection*{When $X_0 = -1$, ie $\alpha=0$}
+\subsubsection*{When $X_0 = 1$, ie $\alpha=0$}
 
 \begin{center}
 \IMGG{legend}
@@ -260,26 +261,27 @@ Here are the results for different combination of the parameters $(p, c, \alpha)
 \IMG{10}
 \end{center}
 
-It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a small change that the trend changes:
-$$ p = \mathbb P (X_1 = -1 | X_0 = -1) $$
- and therefore it is more profitable to wait.
-We can also see that in the critical case when $p = 0.4$, depending on the cost of waiting $c$, it may be 
+It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a big chance that the trend changes:
+$$ p = \mathbb P (X_1 = 1 | X_0 = 1) $$
+ and therefore it is more profitable to buy directly at the opposite side.
+
+The critical case when $p = 0.5$ is interesting since it is the case where the $(X_i)_i$ are independant. The random walk $(S_{n^k})_n$ is a martingale whose expectation is constant. When $c = 0$, all strategies are equivalent, and as soon as $c > 0$, the additional cost of waiting makes it better to place a market order.
 
 \newpage
 
-\subsubsection*{When $X_0 = 1$, ie $\alpha=1$}
+\subsubsection*{When $X_0 = -1$, ie $\alpha=1$}
 
 \begin{center}
 
-
+\IMGG{legend}
 \IMG{11} 
 \IMG{12} 
 \IMG{13} 
-\IMG{14} \\
+\IMG{14} 
 \IMG{15} 
 \IMG{17} 
 \IMG{18} 
-\IMG{19} \\
+\IMG{19} 
 \IMG{20}
 \IMG{21}
 
@@ -316,12 +318,22 @@ The shape of the graph is very similar to the ones we found in the previous sect
 
 \newpage
 
+\section{Model limitations and possible improvements}
+Our model presents three main limitations which can be summarized by the following :
+\begin{itemize}
+\item  $\mathbb{E} \, \left( S_{\Min k N} \right) $ has been computed through a Monte Carlo Algorithm. While we are able to compute efficiently the law of $S_i$ \footnote{see Annexe ~\ref{loi_S}}, we were not able to find a simple analytical expression. As a matter of fact, $S_i$ and $N$ are dependent and the calculus becomes quickly hard to do.
+\item Our model is markovian in the sense that we suppose that each move in price depends only on the previous move in price. This choice has been made to reduce the complexity of the calculus in particular for the law of N. This choice is also induced by a previous hypothesis that says that the state of the order book at the best bid and best ask level is randomly and independently drawn whenever the price moves. To improve the model at this point, we could consider other levels of the bid and ask queues. A more comprehensive, and thus more complex mode, would take in consideration the effect of previous trades on the intensity of arriaval of orders. Hawkes processes can be considered for this.
+\item In our strategy, the maximum number of moves in price we are willing to wait for is bounded by 10. Whereas it could be interesting to wait more. We have made this arbitrary choice just to make a proof of concept. We could go much further with  values of k above 100. The calculus remains quickly feasible.
+\end{itemize}
+
+\newpage
 \appendix
 
 
 \section{  Technical proofs}
 
-\subsection{ Reccurence equation of $\g{-1}{s}$ }
+\subsection{ Reccurence equation of $(\g{-1}{s})_s$ }
+The purpose of this section if to find the equation verified by $(\g{-1}{s})_s$.
 Equations (\ref{rec_N1})-(\ref{rec_N2}) implies that:
 \begin{align*}
 		\g{s+1}{1} &= \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} \\
@@ -337,12 +349,12 @@ Leading finally to: $\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}
 
 Recall that:$\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} $
 Let us do the following denotations :
-\begin{align*}
-u &= \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p})= a z + \frac{b}{z} \\
-a &= 1-\frac{1}{2p} \\
-b(p) &= \frac{1}{2p} \\
-a + b &= 1
-\end{align*}
+
+\begin{numcases}
+\strut
+u = \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p})= a z + \frac{b}{z} \\
+a = 1-\frac{1}{2p}; b(p) = \frac{1}{2p} \\
+\end{numcases}
 
 Using a generalized Newton's formula we get :
 \begin{align*}
@@ -432,7 +444,7 @@ $\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall 
 		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
 		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
 \end{numcases} 
-We use Mapple to compute the taylor expansion, we get for example for $X_0 = 1$ and $p = 0.2$:
+We use Mapple to compute the taylor expansion, we get for example for $X_0 = -1$ and $p = 0.2$:
 
 \IMGC{loi_S}
  We can see that $\mathbb{P}(S_0 = 0) = 1$ and $\mathbb{P} (S_1 = 1) = 1 - \mathbb{P} (S_1 = -1) = 0.2 = 1$

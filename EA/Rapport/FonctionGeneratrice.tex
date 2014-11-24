@@ -27,7 +27,7 @@
 
 
 \title{Optimal Strategy of order placement in High Frequency  }
-\author{OUAALINE Anas, EL KHADIR Bachir}
+\author{OUAALINE Mohamed Anas, EL KHADIR Bachir}
 \date \today
 
 \begin{document}
@@ -105,7 +105,7 @@ Recall how our strategy works:
 	\item A limit order is placed at t=0 at the best bid.
 	\item after some time $T = \sum_{i \leq k} \tau_i$, if the order is not executed, we cancel it and make a market order at the ask side.
 \end{itemize}
-$k$ is the parameter of the strategy we seek to optimize. It stants for the number of moves in price. 
+$k$ is the parameter of the strategy we seek to optimize. It stants for the maximum number of moves in price we are willing to wait for. 
 Let N be the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
 $$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
 Finally, we denote $c_{wait}$ the waiting cost per unit of time.
@@ -113,7 +113,7 @@ The problem could be seen as a minimization problem  :
 \begin{equation}
  \min\limits_{k \in \mathbb{N}} \quad f(k) := \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ \sum_{i=1}^{\Min k N}\tau_i c_{wait} + (S_{\Min k N)}+1)\delta\right]
 \end{equation}
-We shall notice that $(\tau_i)_{(i>0)}$ are assumed to be independent. The are also assumed to be independent of $N$
+We shall notice that $(\tau_i)_{(i>0)}$ are assumed to be independent. The are also assumed to be independent of $N$.
 Thus we can rewrite $f$ and the problem becomes : 
 \begin{equation}
  \min\limits_{k \in \mathbb{N}} \quad f(k)= \min\limits_{k \in \mathbb{N}} \quad \mathbb{E}\,\left[ ({\Min k N})  \mathbb{E}(\tau) c_{wait} + (S_{\Min k N}+1) \right]
@@ -133,13 +133,13 @@ In the previous section we have denoted :
 $$
 	c = \mathbb{E}(\tau) c_{wait}
 $$
-It is an empirical paremeter which has to manually fixed. We notice that through its definition $c$ depends on $\mathbb{E}(\tau)$ which is the average time between two moves in the price. However we can be more accurate and see that it also depends on the volatility of the market and the operator's risk aversion. We also notice that $c$ needs to be lower than the thick $\delta$ otherwise it is not interesting to wait for a move in the price.
+It is an exogenous paremeter which has to manually fixed. We notice that through its definition $c$ depends on $\mathbb{E}(\tau)$ which is the average time between two moves in the price. However we can be more accurate and see that it also depends on the volatility of the market and the operator's risk aversion. We also notice that $c$ needs to be lower than the thick $\delta$ otherwise it is not interesting to wait for a move in the price.
 Thus we came up with the following remarks.
 \begin{itemize}
-\item $c = \mathbb{E}(\tau) F(\sigma,v,r)$ where $ \mathbb{E}(\tau)$ is the average time between two moves in the price, $\sigma$ is the market volatility, $v$ is the operator's risk aversion and $r$ is some unkown parameters. $F$ is a differentiable function.
+\item $c = \mathbb{E}(\tau) F(\sigma,v,r)$ where $ \mathbb{E}(\tau)$ is the average time between two moves in the price, $\sigma$ is the market volatility, $v$ is the operator's risk aversion and $r$ is some unkown parameters. 
 \item $c<\delta$ where $\delta$ is the thick.
-\item $\frac{\partial c}{\partial \sigma} > 0$ 
-\item $\frac{\partial c}{\partial v} > 0$ 
+\item $c$ is increasing in $\sigma$ : The more the market is volatile the more it costs to wait.
+\item $c$ is increasing in $v$ : The more the operator is averse to risk the more likeliy he is to over-rate the waiting cost. 
 \end{itemize}
 In our model we assume that $\mathbb{E}(\tau) , \sigma, v
 $ and $r$ do not depends on $k$.
@@ -156,10 +156,9 @@ where $\alpha := \mathbb{P}(X_0 = 1)$.
 Given that $(S_n, X_n)$ is a markov chain, we can infer that for all $x \in \{-1,1\}$ , $s \in \mathbb{N}$ and $z \in ]0,1[$ \footnote{For clarity, we omit to note the dependence of $g$ in z.} :
 
 \begin{numcases}
-		\strut 
-       	\g{s}{1} = z(p\g{s+1}{1}+ q\g{s-1}{-1}) \\
-       	\g{s}{-1} = z(q\g{s+1}{1}+ p\g{s-1}{-1})
-				\label{rec_N}	
+		\strut 	
+				\g{s}{1} = z(p\g{s+1}{1}+ q\g{s-1}{-1}) \label{rec_N1}	\\
+       	\g{s}{-1} = z(q\g{s+1}{1}+ p\g{s-1}{-1}) \label{rec_N2}					
 \end{numcases}
 
 Denoting :
@@ -181,8 +180,7 @@ Which is a classical linear recurrent sequence of order 2. The solution is given
 	 \g{s}{-1} = \left( u-\sqrt{u^{2}-1}    \right)^{s+1}
 \end{equation}
 
-Changing $1$ to $-1$ in ~\eqref{rec_N} we see that $\g{s}{1}$ follow the same dynamic as $\g{s}{-1}$ if we change $p$ to $1-p$, therefore we can deduce all the properties of the first from the second.
-
+Changing $1$ to $-1$ in (~\eqref{rec_N1}) and (~\eqref{rec_N2}) we see that $\g{s}{1}$ follow the same dynamic as $\g{s}{-1}$ if we change $p$ to $1-p$, therefore we can deduce all the properties of the first from the second.
 
 Since $\g{s}{x}$ is the probability-generating function of $N$ , the law of $N$  conditional to $S_0 = 0$ and $X_0 = x$ is given by :
 \begin{numcases}
@@ -321,37 +319,32 @@ The shape of the graph is very similar to the ones we found in the previous sect
 \appendix
 
 
-\section{ Some Proofs }
+\section{  Technical proofs}
 
 \subsection{ Reccurence equation of $\g{-1}{s}$ }
-From ~\ref{rec_N}  we deduce:
+Equations (\ref{rec_N1})-(\ref{rec_N2}) implies that:
 \begin{align*}
-		\g{s+1}{1} = \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} \\
-		\g{s+1}{1} = \frac{1}{ zq} \g{s}{-1} - \frac{p}{q} \g{s-1}{-1}
+		\g{s+1}{1} &= \frac{1}{z p} \g{s}{1} - \frac{q}{p} \g{s-1}{-1} \\
+&= \frac{1}{ zq} \g{s}{-1} - \frac{p}{q} \g{s-1}{-1}
 \end{align*}
 
-Which implies that :
-\begin{equation*}
-		\g{s}{-1} =\frac{q}{p} \g{s}{1}+\frac{z (p^{2}-q^{2})}{p} \g{s-1}{-1}
-\end{equation*}
+Thereby :$\g{s}{-1} =\frac{q}{p} \g{s}{1}+\frac{z (p^{2}-q^{2})}{p} \g{s-1}{-1}$.
 
-Leading to :
-\begin{equation*}
-		\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} 
-\end{equation*}
+Leading finally to: $\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} $.
 
 
 \subsection{Taylor expansion of $\g{-1}{s}$}
 
+Recall that:$\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} $
+Let us do the following denotations :
 \begin{align*}
-u &= \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p}) \\
-&= a z + \frac{b}{z} \\
+u &= \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p})= a z + \frac{b}{z} \\
 a &= 1-\frac{1}{2p} \\
 b(p) &= \frac{1}{2p} \\
 a + b &= 1
 \end{align*}
 
-
+Using a generalized Newton's formula we get :
 \begin{align*}
 (u^2 - 1)^{\undemi} &= \sum_i \binom \undemi i (-1)^i z^{2i-1} (b + a z^2)^{1-2i} \\ 
 &= \sum_i \binom \undemi i  (-1)^i z^{2i-1} \sum_j \binom {1-2i} j b^{1-2i-j}  a^j z^{2j} \\ 
@@ -362,13 +355,17 @@ a + b &= 1
 &= \sum_r c_{2r-1} z^{2r-1} \\ 
 \end{align*}
 
-$k$ impaire $\geq -1$
-$$ c_k  =  \sum_{2(i+j)= k+1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j   $$
+On the one hand, for even $k$ :
+$$
+c_k = 0
+$$
+
+On the other hand, for odd $k$ $\geq -1$ we get :$$ c_k  =  \sum_{2(i+j)= k+1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j   $$
 $$ c_{-1}  =   \binom \undemi 0  \binom {1} 0 (-1)^0 b^{1}  (1-b)^0   = b$$
 $$ c_1  =    \sum_{ i+j= 1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j  = a - p$$
 
 
-donc 
+Thereby 
 
 \begin{align*}
 \g{1}{0}(z) &= u - (u^2 - 1)^{\undemi} \\
@@ -377,7 +374,7 @@ donc
 &=  \sum_{k \geq 1}  d_k z^{k}
 \end{align*}
 
-avec \begin{equation*}
+Where \begin{equation*}
      d_{2r+1} = 
 		\begin{cases}
         p & \text{if} \quad r = 0 \\
@@ -435,7 +432,7 @@ $\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall 
 		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
 		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
 \end{numcases} 
-We use mapple to compute the taylor expansion, we get for example for $X0 = 1$ and $p = 0.2$:
+We use Mapple to compute the taylor expansion, we get for example for $X_0 = 1$ and $p = 0.2$:
 
 \IMGC{loi_S}
  We can see that $\mathbb{P}(S_0 = 0) = 1$ and $\mathbb{P} (S_1 = 1) = 1 - \mathbb{P} (S_1 = -1) = 0.2 = 1$

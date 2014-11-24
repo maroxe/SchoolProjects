@@ -56,9 +56,8 @@ The goal of this document becomes:
 \end{quote}
 
 \subsection{The model and its dynamic}
-Let us present the basic model which our study is based on. It is the classical Cont and Larrard model. For more details please refer to their article \textit{"Price dynamics in a Markovian limit order market"} [1]
-\newline
-We shall agree that most of this section is an extract from the article of Cont and Larrard. This section aims only to set up the framework of our study.
+Let us present the basic model which our study is based on.
+
 \subsubsection{The model}
 The order book is represented by its best ask and bid queues. The state of the limit order book is represented by :
 \begin{itemize}
@@ -138,7 +137,7 @@ Thus we came up with the following remarks.
 \begin{itemize}
 \item $c = \mathbb{E}(\tau) F(\sigma,v,r)$ where $ \mathbb{E}(\tau)$ is the average time between two moves in the price, $\sigma$ is the market volatility, $v$ is the operator's risk aversion and $r$ is some unkown parameters. 
 \item $c<\delta$ where $\delta$ is the thick.
-\item $c$ is increasing in $\sigma$ : The more the market is volatile the more it costs to wait.
+\item $c$ is increasing in $\sigma$ : The more the market is volatile the more it risky is to wait.
 \item $c$ is increasing in $v$ : The more the operator is averse to risk the more likeliy he is to over-rate the waiting cost. 
 \end{itemize}
 In our model we assume that $\mathbb{E}(\tau) , \sigma, v
@@ -191,8 +190,8 @@ Since $\g{s}{x}$ is the probability-generating function of $N$ , the law of $N$ 
 
 $\proba{-1}{s}{N = j}$ can be calculated using taylor expansion, and $\proba{1}{s}{N = j}$ can be deduced as discussed above.
 
-\subsection{Expectation  of stopped $S_n$ }
-$E[S_{\Min k n}]$ is calculated using Monte Carlo algorithm.
+\subsection{Expectation  of stopped $(S_k)_k$ }
+$E[S_{\Min k N}]$ is calculated using Monte Carlo algorithm.
 
 \begin{minted}{cpp}
 #include <iostream>
@@ -261,7 +260,7 @@ Here are the results for different combination of the parameters $(p, c, \alpha)
 \IMG{10}
 \end{center}
 
-It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X0 = -1$, for low values of $p$, there is a small change that the trend changes:
+It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a small change that the trend changes:
 $$ p = \mathbb P (X_1 = -1 | X_0 = -1) $$
  and therefore it is more profitable to wait.
 We can also see that in the critical case when $p = 0.4$, depending on the cost of waiting $c$, it may be 
@@ -310,6 +309,7 @@ Here is the mean cost when applying $\text{Strategy}(k)$ for $k \in \{0, ... ,9 
 
 The shape of the graph is very similar to the ones we found in the previous section corresponding to $p = 0.1$
 \begin{center}
+\IMGG{legend}
 \IMG{1}
 \IMG{12}
 \end{center}

@@ -9,7 +9,7 @@
 \usepackage{pict2e}
 \usepackage{graphicx}
 \usepackage{minted}
-
+\usepackage[final]{pdfpages} 
 
 \usepackage[top=2.25cm, bottom=2.25cm, left=2cm, right=2cm]{geometry}
 \newcommand{\g}[2]{g_{#1}^{#2}}
@@ -26,18 +26,13 @@
  }
 
 
-\title{Optimal Strategy of order placement in High Frequency  }
-\author{OUAALINE Mohamed Anas, EL KHADIR Bachir}
-\date \today
-
-\input{pagedegarde.tex}
 \begin{document}
 
-\maketitle
-
-\includegraphics[scale=0.75]{img/donnees.png}
+\includepdf{pagedegarde.pdf}
 
 \tableofcontents
+
+\newpage
 
 \section{Presentation of the problem}
 
@@ -261,7 +256,7 @@ Here are the results for different combination of the parameters $(p, c, \alpha)
 \IMG{10}
 \end{center}
 
-It is interesting to see that the behaviour changes when depending on wehter $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a big chance that the trend changes:
+It is interesting to see that the behaviour changes depending on wehter $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a big chance that the trend changes:
 $$ p = \mathbb P (X_1 = 1 | X_0 = 1) $$
  and therefore it is more profitable to buy directly at the opposite side.
 
@@ -279,13 +274,15 @@ The critical case when $p = 0.5$ is interesting since it is the case where the $
 \IMG{13} 
 \IMG{14} 
 \IMG{15} 
+\IMG{16} 
 \IMG{17} 
 \IMG{18} 
 \IMG{19} 
 \IMG{20}
 \IMG{21}
-
 \end{center}
+
+We see the exact opposite effect of $p$ on the graphs when $X_0=-1$.
 
 \newpage
 
@@ -327,8 +324,8 @@ Our model presents three main limitations which can be summarized by the followi
 \end{itemize}
 
 \newpage
-\appendix
 
+\appendix
 
 \section{  Technical proofs}
 
@@ -345,15 +342,13 @@ Thereby :$\g{s}{-1} =\frac{q}{p} \g{s}{1}+\frac{z (p^{2}-q^{2})}{p} \g{s-1}{-1}$
 Leading finally to: $\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} $.
 
 
-\subsection{Taylor expansion of $\g{-1}{s}$}
+\subsection{Taylor expansion of $(\g{-1}{s})_s$}
 
-Recall that:$\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} $
-Let us do the following denotations :
-
+Recall that:$\g{s+1}{-1} =  (\frac{1}{z p}   + z(2 - \frac{1}{p})) \g{s}{-1}  -  \g{s-1}{-1} $. Let us do the following denotations :
 \begin{numcases}
 \strut
 u = \frac{1}{2} (\frac{1}{zp} + z(2-\frac{1}{p})= a z + \frac{b}{z} \\
-a = 1-\frac{1}{2p}; b(p) = \frac{1}{2p} \\
+a = 1-\frac{1}{2p}, b = \frac{1}{2p} 
 \end{numcases}
 
 Using a generalized Newton's formula we get :
@@ -368,32 +363,30 @@ Using a generalized Newton's formula we get :
 \end{align*}
 
 On the one hand, for even $k$ :
-$$
-c_k = 0
-$$
-
+$$c_k = 0$$
 On the other hand, for odd $k$ $\geq -1$ we get :$$ c_k  =  \sum_{2(i+j)= k+1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j   $$
-$$ c_{-1}  =   \binom \undemi 0  \binom {1} 0 (-1)^0 b^{1}  (1-b)^0   = b$$
-$$ c_1  =    \sum_{ i+j= 1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j  = a - p$$
-
+In particular:
+\begin{numcases}
+\strut
+c_{-1}  =   \binom \undemi 0  \binom {1} 0 (-1)^0 b^{1}  (1-b)^0   = b \\
+c_1  =    \sum_{ i+j= 1} \binom \undemi i  \binom {1-2i} j (-1)^i b^{1-2i-j}  (1-b)^j  = a - p
+\end{numcases}
 
 Thereby 
-
 \begin{align*}
 \g{1}{0}(z) &= u - (u^2 - 1)^{\undemi} \\
 &= (a - c_1) z - (b + c_{-1}) z^{-1} -   \sum_{k > 1}  c_{k} z^{k} \\ 
-&= p z -   \sum_{k > 1}  c_{k} z^{k} \\
 &=  \sum_{k \geq 1}  d_k z^{k}
 \end{align*}
-
-Where \begin{equation*}
+Where:
+\begin{equation*}
      d_{2r+1} = 
 		\begin{cases}
         p & \text{if} \quad r = 0 \\
         - \sum_{i \leq r+1} \binom \undemi i  \binom {1-2i}{1+r-i} (-1)^i (2p)^{2i-1}  (2p-1)^{1+r-i}  & \text{else}
-     \end{cases}
+     \end{cases} 
 \end{equation*}
-
+and $$d_2r = 0 $$
 
 \section{The law of a sum of dependent random variables}
 \label{loi_S}
@@ -448,6 +441,5 @@ We use Mapple to compute the taylor expansion, we get for example for $X_0 = -1$
 
 \IMGC{loi_S}
  We can see that $\mathbb{P}(S_0 = 0) = 1$ and $\mathbb{P} (S_1 = 1) = 1 - \mathbb{P} (S_1 = -1) = 0.2 = 1$
-\section{Source Code}
 
 \end{document}

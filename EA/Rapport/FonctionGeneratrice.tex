@@ -30,31 +30,32 @@
 
 \includepdf{pagedegarde.pdf}
 
-\tableofcontents
-
-\newpage
-
-\section{Presentation of the problem}
-
-\subsection{Problematic}
-Given the state of an order book, we want to place purchase orders. Trought this document, we try to define an efficient and optimal strategy in order to reduce the cost of such orders. Since it is quite complex to define this kind of strategy, we focus on the case where we have only one purchase order to make and a time horizon before which the trade must be excuted. We have the choice between executing the order directly (market order), or placing a limit order. Since we are never sure that a limit order will be executed, we have to remove it after a certain time k and place a market order at the best offer available. Notice that the case where $k = 0$ is when a market order is executed immediately.
+\begin{abstract}
+Given the state of an order book, we want to place purchase orders. Through this document, we try to define an efficient and optimal strategy in order to reduce the cost of such orders. Since it is quite complex to define this kind of strategies, we focus on the case where we have only one purchase order to make and a time horizon before which the trade must be executed. We have the choice between executing the order directly (market order), or placing a limit order. Since we are never sure that a limit order will be executed, we have to remove it after a certain time k and place a market order instead at the best offer available. Notice that the case where $k = 0$ is when a market order is executed immediately.
 The cost related to these kind of strategies can be of two types:
 
 \begin{itemize}
 	\item Cost related to the spread when executing a market order.
 	\item Cost related to the uncertainty of future price movements that we denote $c$.
 \end{itemize}
-While the first is easily measurable, the second is dependant on many factors: volatility of the market, the risk aversion of the trader... 
+While the first is easily measurable, the second is dependent on many factors: volatility of the market, the risk aversion of the trader... 
 We will discuss this issue further in the following sections.
 The goal of this document becomes:
 \begin{quote}
-\textit{Given the state of an order book and a single purchase order we want to make, What it is the best choice of $k$ to minimize the cost of the trade  ?}
+\textit{Given the state of an order book and a single purchase order we want to make, what it is the best choice of $k$ to minimize the cost of the trade  ?}
 \end{quote}
+\end{abstract}
 
-\subsection{The model and its dynamic}
+\tableofcontents
+
+\newpage
+
+
+
+\section{The model and its dynamic}
 Let us present the basic model which our study is based on.
 
-\subsubsection{The model}
+\subsection{The model}
 The order book is represented by its best ask and bid queues. The state of the limit order book is represented by :
 \begin{itemize}
 \item the bid price $ s_{t}^{a} $ and the ask price $ s_{t}^{b} $ 
@@ -66,7 +67,7 @@ The state of the limit order book is thus described by the triplet $X_{t} = (s_{
 \begin{equation}
 \delta = 1
 \end{equation}
-We assume that orders arriving at the best bid/ask follow a poissonion process and are all of the same size $1$:
+We assume that orders arriving at the best bid/ask follow a poissonian process and are all of the same size $1$:
 \begin{itemize}
 	\item A market/cancelation order arriving at the $q_t^a$ (resp $q_t^b$) reduces its size by 1 if it is not empty
 	\item A limit order arriving at the $q_t^a$ (resp $q_t^b$) adds 1 to its size 
@@ -79,12 +80,13 @@ We denote :
 \item $(S_k)_{_{i \geq 0}}$ the cumulative moves in the price after the $n^{th}$ change, ie $S_n = \sum{1 \leq i \leq n } X_i$. \footnote{ see Annexe \ref{loi_S} for the generating function of $S_n$ }  
 \end{itemize}
 
-\subsubsection{The dynamic}
+\subsection{The dynamic}
 
 The state  of the order book is modified by order book events. When the bid (resp. ask) queue is empty, the price moves down (resp. up), and $(q_t^a, q_t^b)$ (resp.$ (q_t^b, q_t^a)$ is generated from a distribution $f(x, y) \mathrm{d}x \mathrm{d}y $ (resp. $\tilde f(x, y) \mathrm{d}x \mathrm{d}y $) independently from the rest of the historical variables.
-$f$ will be estimated from historical data:
+The next image is a graphical representation of $f$ when estimated from historical data.
 
 \IMGC{hist_f}
+
 This property give the market a markovian property: the new state of the market after a price move does only depend on the direction of this move.
 Therefore,  $(X_i)_{_{i \geq 0}}$ is markov process such as :
 \begin{itemize}
@@ -93,13 +95,13 @@ Therefore,  $(X_i)_{_{i \geq 0}}$ is markov process such as :
 \end{itemize}
 Given the symmetry of the market, we may assume that $f(x, y) = \tilde f(y, x)$. This assumption makes the process $(\tau_i)_i$ a sequence of IID random variables independent from $(X_i)_i$.
 
-\subsection{The optimization problem}
+\section{The optimization problem}
 Recall how our strategy works:
 \begin{itemize}
 	\item A limit order is placed at t=0 at the best bid.
 	\item after some time $T = \sum_{i \leq k} \tau_i$, if the order is not executed, we cancel it and make a market order at the ask side.
 \end{itemize}
-$k$ is the parameter of the strategy we seek to optimize. It stands for the maximum number of moves in price we are willing to wait for. 
+$k$ is the parameter of the strategy we seek to optimize. It stands for the maximum number of moves in price we are willing to wait for. Let's call it $\text{Strategy}(k)$ .
 Let N be the first time where the sequence $(S_{n})_{n\geq0}$  achieves $-1$. Thereby :
 $$ N= \inf \{ n\geq0 , S_{n}=-1   \} $$
 Finally, we denote $c_{wait}$ the waiting cost per unit of time.
@@ -122,18 +124,18 @@ In order to solve this problem we need to do 2 different calculations :
 \item $\mathbb{E}\,\left[ {\Min k N}\right]$ : we are going to explicitly calculate the Law N
 \item $\mathbb{E}\,\left[S_{\Min k N}\right]$ : since $S_i$ and $N$ are not independent, the law is quite hard to be explicitly calculated. Consequently, we are going to use a Monte-Carlo Algorithm.
 \end{itemize}
-\subsection{The parameter c}
+\textbf{The parameter c:}\\
 In the previous section we have denoted :
 $$
 	c = \mathbb{E}(\tau) c_{wait}
 $$
-It is an exogenous paremeter which has to manually fixed. We notice that through its definition $c$ depends on $\mathbb{E}(\tau)$ which is the average time between two moves in the price. However we can be more accurate and see that it also depends on the volatility of the market and the operator's risk aversion. We also notice that $c$ needs to be lower than the thick $\delta$ otherwise it is not interesting to wait for a move in the price.
+It is an exogenous parameter which has to manually fixed. We notice that through its definition $c$ depends on $\mathbb{E}(\tau)$ which is the average time between two moves in the price. However we can be more accurate and see that it also depends on the volatility of the market and the operator's risk aversion. We also notice that $c$ needs to be lower than the thick $\delta$ otherwise it is not interesting to wait for a move in the price.
 Thus we came up with the following remarks.
 \begin{itemize}
-\item $c = \mathbb{E}(\tau) F(\sigma,v,r)$ where $ \mathbb{E}(\tau)$ is the average time between two moves in the price, $\sigma$ is the market volatility, $v$ is the operator's risk aversion and $r$ is some unkown parameters. 
+\item $c = \mathbb{E}(\tau) F(\sigma,v,r)$ where $ \mathbb{E}(\tau)$ is the average time between two moves in the price, $\sigma$ is the market volatility, $v$ is the operator's risk aversion and $r$ is some unknown parameters. 
 \item $c<\delta$ where $\delta$ is the thick.
 \item $c$ is increasing in $\sigma$ : The more the market is volatile the more it risky is to wait.
-\item $c$ is increasing in $v$ : The more the operator is averse to risk the more likeliy he is to over-rate the waiting cost. 
+\item $c$ is increasing in $v$ : The more the operator is averse to risk the more likely he is to over-rate the waiting cost. 
 \end{itemize}
 In our model we assume that $\mathbb{E}(\tau) , \sigma, v
 $ and $r$ do not depends on $k$.
@@ -141,7 +143,7 @@ $ and $r$ do not depends on $k$.
 \newpage
 \section{Solving the minimization problem}
 \subsection{First time of reach for a sum of a Markov chain}
-In this section we adress the issue of finding the law of the variable $N$. Let us define the  probability-generating function of $N$ such as :
+In this section we address the issue of finding the law of the variable $N$. Let us define the  probability-generating function of $N$ such as :
 $$ g_{s}^{x}(z) = \mathbb{E}(z^{N} | S_0=s, X_0=x) \quad \forall \ x \in \{-1,1\} \ , \ s \in \mathbb{N} \ , \ z \in [0,1]  $$
 so that
 $$\mathbb{E}(z^{N} | S_0=s) = \alpha  g_{s}^{1}(z) + (1-\alpha) g_{s}^{-1} $$
@@ -169,17 +171,19 @@ Which is a classical linear recurrent sequence of order 2. The solution is given
 \begin{equation}
 	 \g{s}{-1} = \left( u-\sqrt{u^{2}-1}    \right)^{s+1}
 \end{equation}
-Changing $1$ to $-1$ in (~\eqref{rec_N1}) and (~\eqref{rec_N2}) we see that $\g{s}{1}$ follow the same dynamic as $\g{s}{-1}$ if we change $p$ to $1-p$, therefore we can deduce all the properties of the first from the second.
+Changing $1$ to $-1$ in ~\eqref{rec_N1} and ~\eqref{rec_N2} we see that $\g{s}{1}$ follow the same dynamic as $\g{s}{-1}$ if we change $p$ to $1-p$, therefore we can deduce all the properties of the first from the second.
 Since $\g{s}{x}$ is the probability-generating function of $N$ , the law of $N$  conditional to $S_0 = 0$ and $X_0 = x$ is given by :
 \begin{numcases}
 \strut
 		\g{s}{-1}(z) = \sum_{j = 0}^{+\infty} \proba{-1}{s}{N = j} z^j \\
 		\g{s}{1}(z) = \sum_{j = 0}^{+\infty} \proba{1}{s}{N = j} z^j 
 \end{numcases}
-$\proba{-1}{s}{N = j}$ can be calculated using taylor expansion, and $\proba{1}{s}{N = j}$ can be deduced as discussed above.
+$\proba{-1}{s}{N = j}$ can be calculated using Taylor expansion from the analytical expression of $\g{s}{-1}(z)$ we have just found, and $\proba{1}{s}{N = j}$ can be deduced as discussed above.
 
-\subsection{Expectation  of stopped $(S_k)_k$ }
-$E[S_{\Min k N}]$ is calculated using Monte Carlo algorithm.
+\newpage
+
+\subsection{Expectation of stopped $(S_k)_k$ }
+$E[S_{\Min k N}]$ is calculated using Monte Carlo algorithm. \footnote{ All the codes used in this project are available at the link: https://github.com/maroxe/SchoolProjects/tree/master/EA }
 
 \begin{minted}{cpp}
 #include <iostream>
@@ -246,9 +250,9 @@ Here are the results for different combination of the parameters $(p, c, \alpha)
 \IMG{9} 
 \IMG{10}
 \end{center}
-It is interesting to see that the behaviour changes depending on wehter $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a big chance that the trend changes:
+It is interesting to see that the behavior changes depending on wether $p < 1/2$ or not. Indeed, since $X_0 = -1$, for low values of $p$, there is a big chance that the trend changes:
 $$ p = \mathbb P (X_1 = 1 | X_0 = 1) $$ and therefore it is more profitable to buy directly at the opposite side.
-The critical case when $p = 0.5$ is interesting since it is the case where the $(X_i)_i$ are independant. The random walk $(S_{n^k})_n$ is a martingale whose expectation is constant. When $c = 0$, all strategies are equivalent, and as soon as $c > 0$, the additional cost of waiting makes it better to place a market order.
+The critical case when $p = 0.5$ is interesting since it is the case where the $(X_i)_i$ are independent. The random walk $(S_{\Min N k})_k$ is a martingale whose expectation is constant. When $c = 0$, all strategies are equivalent, and as soon as $c > 0$, the additional cost of waiting makes it better to place a market order.
 
 \newpage
 
@@ -270,14 +274,14 @@ The critical case when $p = 0.5$ is interesting since it is the case where the $
 \IMG{21}
 \end{center}
 
-We see the exact opposite effect of $p$ on the graphs when $X_0=-1$.
+We see the exact opposite effect of $p$ on the graphs when $X_0=-1$, ie it is interesting to consider placing an order limit only when $X_0$ and $X_1$ are positively correlated ($p > \frac{1}{2}$). 
 
 \newpage
 
 \subsection{Results from market data and validation}
 All experiments are done using the historical data of the Bund. Let's first try to estimate some parameters of the model.
 $$ p = \mathbb{P}(X_{i+1} = X_i)  \approx \frac{ \sum_{i \leq M} 1_{ \{X_{i+1} = X_i \} } }{M} $$
-The following progam gives $p \approx 0.1$
+The following progam gives $p \approx 0.2$
 
 \begin{minted}{python}
 r=pickle.load(input)
@@ -287,25 +291,52 @@ X = X[ abs(X) > 1e-3] # Keep only the entries where the price changes
 X = np.array(map(lambda x: 1 if x > 0 else -1, X))
 p = np.count_nonzero(X[1:] == X[:-1]) / len(X)
 \end{minted}
-A same method gives $$\mathbb{E}[ \tau ] \approx 3.75 ms$$
-Here is the mean cost when applying $\text{Strategy}(k)$ for $k \in \{0, ... ,9 \}$ periods using $c=0.3$:
+The same method gives $$\mathbb{E}[ \tau ] \approx 3.75 ms$$
 
+Here is the mean cost when applying $\text{Strategy}(k)$ for $k \in \{0, ... ,9 \}$ periods using $c=0.05$:
 \IMGC{esp_market}
 
-The shape of the graph is very similar to the ones we found in the previous section corresponding to $p = 0.1$
+The shape of the graph is very similar to the ones we found in the previous section corresponding to $p = 0.2$
 \begin{center}
 \IMGG{legend}
-\IMG{1}
-\IMG{12}
+\IMG{2}
+\IMG{13}
 \end{center}
 
+And here is the python program responsible for this calculation:
+\begin{minted}{python}
+K = 10
+c = 0.05
+# Y_1[k] Stores the mean cost when applying strategy(k) | X0 = 1
+# Y__1[k] Stores the mean cost when applying strategy(k) | X0 = -1
+Y_1, Y__1 = [], []
+for k in range(K):
+	# count[1] stores the cost of strategy(k) when X0=1
+	# the same for count[-1]
+	cout = {1: [], -1: [] } 
+	for i, X0 in enumerate(X):
+		S = 0
+		j = 1
+		try:
+			# strategy(k) continues while the number of changes < k and S has not reached -1
+			while j <= k and S >= 0:
+				S += X[i + j]
+				j += 1
+			cout[X0].append(  (min(j, k), S+1) )
+		except IndexError:
+			# End of data, the strategy is interrupted
+			continue				
+	Y_1.append(np.mean(map(lambda (N, S): N*c+S, cout[1])))
+	Y__1.append(np.mean(map(lambda (N, S): N*c+S, cout[-1])))
+	# Draw Y_1 and Y__1
+\end{minted}
 \newpage
 
 \section{Model limitations and possible improvements}
 Our model presents three main limitations which can be summarized by the following :
 \begin{itemize}
-\item  $\mathbb{E} \, \left( S_{\Min k N} \right) $ has been computed through a Monte Carlo Algorithm. While we are able to compute efficiently the law of $S_i$ \footnote{see Annexe ~\ref{loi_S}}, we were not able to find a simple analytical expression. As a matter of fact, $S_i$ and $N$ are dependent and the calculus becomes quickly hard to do.
-\item Our model is markovian in the sense that we suppose that each move in price depends only on the previous move in price. This choice has been made to reduce the complexity of the calculus in particular for the law of N. This choice is also induced by a previous hypothesis that says that the state of the order book at the best bid and best ask level is randomly and independently drawn whenever the price moves. To improve the model at this point, we could consider other levels of the bid and ask queues. A more comprehensive, and thus more complex mode, would take in consideration the effect of previous trades on the intensity of arriaval of orders. Hawkes processes can be considered for this.
+\item  $\mathbb{E} \, \left( S_{\Min k N} \right) $ has been computed through a Monte Carlo Algorithm. While we were able to compute efficiently the law of $S_i$ \footnote{see Annexe ~\ref{loi_S}}, we could not find a simple analytical expression. Indeed, $S_i$ and $N$ are dependent and the calculus becomes quickly hard to do.
+\item Our model is markovian in the sense that we suppose that each move in price depends only on the previous. This choice has been made to reduce the complexity of the calculus in particular for the law of N. This choice is also induced by a previous hypothesis that says that the state of the order book at the best bid and best ask level is randomly and independently drawn whenever the price moves. To improve the model at this point, we could consider other levels of the bid and ask queues. A more comprehensive, and thus more complex model, would take in consideration the effect of autocorrelation previous trades on the intensity of arriaval of orders. Hawkes processes can be considered for this.
 \item In our strategy, the maximum number of moves in price we are willing to wait for is bounded by 10. Whereas it could be interesting to wait more. We have made this arbitrary choice just to make a proof of concept. We could go much further with  values of k above 100. The calculus remains quickly feasible.
 \end{itemize}
 
@@ -315,7 +346,7 @@ Our model presents three main limitations which can be summarized by the followi
 
 \section{  Technical proofs}
 
-\subsection{ Reccurence equation of $(\g{-1}{s})_s$ }
+\subsection{ Recurrence equation of $(\g{-1}{s})_s$ }
 The purpose of this section if to find the equation verified by $(\g{-1}{s})_s$.
 Equations (\ref{rec_N1})-(\ref{rec_N2}) implies that:
 \begin{align*}
@@ -371,7 +402,9 @@ and $$d_2r = 0 $$
 
 \section{The law of a sum of dependent random variables}
 \label{loi_S}
-As previously, we define a Markov Chain $(X_{n})_{n\geq0}$ and its sum  $(S_{n})_{n\geq0}$ 
+We define a Markov Chain $(X_{n})_{n\geq0} \in \{-1, 1\}^\mathbb{N}$ whose transition probabilities are defined by
+$$ \mathbb{P}(X_{i+1} = 1 | X_i = 1) = \mathbb{P}(X{i+1} = -1 | X_i= -1) = p = 1-q$$
+ Its sum is denoted $(S_{n})_{n\geq0}$ .
 In order to get the law of the r.v $(S_{n})_{n\geq0}$ we define its conditional probability-generating function as :
 $$ f_{n}^{x}(z) = \mathbb{E}(z^{S_{n}} | X_{0}=x) \quad \forall \ x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in [0,1]  $$
 Let us consider $x \in \{-1,1\} \ , \ n \in \mathbb{N} \ , \ z \in ]0,1]\footnote{The case where z=0 can be obtained by continuity.} $. Thanks to the fact that $(S_n, X_n)$ is a markov chain, we can write :
@@ -409,9 +442,19 @@ $\f{n}{x}$ is the probability-generating function of $(S_n)_{n\geq0}$. We shall 
 		\mathbb{E}_{X_0=x}(S_n) = \frac{ \mathrm{d \f{n}{x} }}{ \mathrm{d} z}(z=1) \\
 		\f{n}{x}(z) =  \mathbb{E}(z^{S_n} | X_0=x) = \sum_{-\infty}^{+\infty} \mathbb{P}(S_n=k) z^k = \sum_{-n}^{+n} \mathbb{P}(S_n=k) z^k
 \end{numcases} 
-We use Mapple to compute the taylor expansion, we get for example for $X_0 = -1$ and $p = 0.2$:
+We use Maple to compute the Taylor expansion, we get for example for $X_0 = -1$ and $p = 0.2$:
 
 \IMGC{loi_S}
- We can see that $\mathbb{P}(S_0 = 0) = 1$ and $\mathbb{P} (S_1 = 1) = 1 - \mathbb{P} (S_1 = -1) = 0.2 = 1$
+ We can see that $\mathbb{P}(S_0 = 0) = 1$ and $\mathbb{P} (S_1 = 1) = 1 - \mathbb{P} (S_1 = -1) = 0.2$
+
+\newpage
+
+\section*{References}
+\begin{itemize}
+	\item Rama Cont,  Adrien de Larrard (2010), Price dynamics in a Markovian limit order market 
+	\item Rama Cont, Sasha Stoikov, Rishi Talreja, A stochastic model for order book dynamics
+	\item J. Doyne Farmer, Laszlo Gillemot, Giulia Iori, Supriya Krishnamurthy, D. Eric Smith, Marcus G. Daniels, A Random Order Placement Model of Price Formation in the Continuous Double Auction
+	\item Weibing Huang,, Charles-Albert Lehalle, and Mathieu Rosenbaum (2014), Simulating and analyzing order book data: The queue-reactive model
+\end{itemize}
 
 \end{document}

@@ -9,15 +9,16 @@ from glob import glob
 
 
 
-for data_file in glob('./data/xFGBL/*.pkl'):
+for data_file in (glob('./data/xFGBL/*.pkl')[0],):
     with open(data_file, 'rb') as input:
-        r=pickle.load(input)[:10000]
+        r=pickle.load(input)
         X = r['BidPrice']
         X = X[1:] - X[:-1]
         T = r["Time"][abs(X) > 1e-3]
         T = T[1:] - T[:-1]
         print ' T= ', np.mean(T), len(T)
         
+
 
 
 

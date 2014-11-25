@@ -6,7 +6,7 @@ data_file = 'xFGBL20130702.pkl'
 
 
 with open(data_file, 'rb') as input:
-    r=pickle.load(input)
+    r=pickle.load(input)[:1000]
     
     T = r['Time'][r['AskCan']]
     frequence  = 1./(np.mean( T[1:] - T[:-1]) )

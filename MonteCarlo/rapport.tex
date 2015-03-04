@@ -1,0 +1,138 @@
+\documentclass[12pt,french]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{babel} 
+\usepackage{amsmath}
+\usepackage{color}
+\usepackage{amsfonts}
+\usepackage[final]{pdfpages} 
+\usepackage{graphicx}
+\usepackage{mathenv}
+
+\newcommand{\IMG}[3]{
+\begin{figure}[H]
+\includegraphics[scale=#3]{#1}%
+\caption{#2}%
+\label{#1}%
+\end{figure}
+
+}
+
+
+\title{Projet MAP584 : Estimateurs biaisés inférieurement et supérieurement }
+\author{Mohamed Anas OUAALINE - Bachir EL KHADIR - X2012}
+\date \today
+
+\begin{document}
+
+\maketitle
+
+
+\newpage
+
+\tableofcontents
+
+\newpage
+
+\section{Introduction}
+L'objectif de cet écrit et de présenter une méthode d'obtention d'estimateurs biaisés inférieurement et supérieurement de la valeur : 
+$$ \mathbb{E} [f(X)] $$
+où $X$ est une variable aléatoire quelconque et $f$ une certaine fonction continue convexe. En particulier, nous étudierons de manière plus spécifiques les fonctions telles que pour un paramètre $a$ donné $$ \forall x \quad f(x) = max(x,a) $$ 
+Dans cette optique-là, et afin d'illustrer cette méthode, nous nous placerons dans le contexte des matières financières.
+
+\section{Cadre d'étude}
+En finance, une option est un contrat financier établi entre un vendeur et un acheteur. L'acheteur obtient le droit d'acheter (option call) ou de vendre (option put) un actif sous-jacent à un prix fixé à l'avance dit \textit{strike} pendant une durée donnée limitée par une échéance. \newline
+Une option américaine est une option où l'acheteur peut exercer son droit à l'achat ou la vente du sous-jacent à n'importe quel instant avant l'échéance alors qu'une option européenne ne peut être exercée à l'échéance.  \newline
+Classiquement ce type d'option est modélisé de la manière suivante :
+\begin{itemize}
+\item $S_t$ : représente le prix au niveau marché de l'actif sous-jacent sujet de l'option. Il s'agit d'une variable aléatoire.
+\item $K$ : le strike de l'option
+\item $T$ : l'échéance après laquelle l'option est obsolète
+\end{itemize}
+Pour la suite, nous considérons une option d'achat (call) américaine. Le \textit{Pay-off} de cette option à un instant $t<T$ est donné par : $$ (S_t-K)^+ = max\{S_t-K,0\}$$
+Cela correspond à ce qu'évite de payer l'acheteur lorsqu'il exerce l'option d'achat. \newline
+Mathématiquement, le prix d'une telle option à l'instant t est donné par :
+$$ P_t = max\{\mathbb{E}_{\mathbb{Q}}[(S_T-K)^+ e^{-rT}], (S_t-K)^+ e^{-rt}\}$$
+où r est le taux d'intérêt, supposé ici constant et $\mathbb{Q}$ est dite probabilité de risque neutre.
+Une manière classique de modéliser la loi de la variable aléatoire $S_t$ est le modèle Black-Scholes qui stipule que sous la probabilité de risque neutre $S_t$ est donné par :
+$$
+	S_t = S_0 e^{(r-\delta-\frac{1}{2} \sigma^2)t+\sigma W_t}
+$$
+de sorte que : 
+\begin{itemize}
+\item $\delta$ représente les dividendes
+\item $\sigma$ est la volatilité du marché
+\item $(W_t)_t\geq0$ est un mouvement brownien.
+\end{itemize}
+Par soucis de clarté, on suppose ici que $r=0$ et $\delta = 0$. Ce qui implique que :
+$$ 
+	S_t = S_0 e^{(r-\frac{1}{2} \sigma^2)t+\sigma W_t}
+$$
+
+\section{Option américaine et estimateur biaisé}
+Le lien entre la paragraphe d'introduction et le paragraphe précédent est établi par ce qui suit.
+On se place à l'instant $t=0$. On considère la variable aléatoire $X = (S_T-K)^+ = ( S_0 e^{\sigma W_T+(r-\frac{1}{2} \sigma^2)T}-K)^+$ et le paramètre constant $a = (S_0-K)^+$. Alors le prix à l'instant t=0 de l'option américaine d'achat considérée est donnée par $$P_0 = max\{\mathbb{E}_{\mathbb{Q}}[X],a\}$$ Ce qui établit le lien avec le paragraphe d'introduction. \newline
+On rappelle que $W_t$ suit une loi normale $N(0,t)$ et que donc 
+$S_T$ suit une loi log-normale de paramètre $0$ et $\sigma^2 T$.
+Par la suite nous allons définir deux estimateurs biaisés de $max(\mathbb{E}_{\mathbb{Q}}[X],a]$ par méthode Monte-Carlo. On se donne un paramètre M et on considère $ (X_i)_{i\in \{1,..,M\}} $ M copies indépendantes de la variable aléatoire X
+On note :
+\begin{align}
+\overline{X}_{1,M} = \frac{2}{M} \sum_{m=1}^{M/2} X_m \\
+\overline{X}_{2,M} = \frac{2}{M} \sum_{m=M/2+1}^{M} X_m \\
+\overline{X}_{M} = \frac{1}{M} \sum_{m=1}^{M} X_m \\
+\overline{f}_{M} = max(\overline{X}_{M},a) \\
+\underline{f}_{M} = \textbf{1}_{\overline{X}_{1,M} \geq a} \overline{X}_{2,M} +   \textbf{1}_{\overline{X}_{1,M} \leq a} a 
+ \end{align}
+
+On prouve alors que $\underline{f}_{M}$ et $\overline{f}_{M}$ convergent presque sûrement vers $P_0 = max(\mathbb{E}_{\mathbb{Q}}[X],a) $ lorsque $ M \rightarrow + \infty $. De plus \footnote{ La notation de $\mathbb{Q}$ a été omise} : 
+\begin{equation}
+\mathbb{E}[\underline{f}_{M}] \leq max(\mathbb{E}[X],a) \leq \mathbb{E}[\overline{f}_{M}]
+\end{equation}
+
+\newpage
+\section{Implémentation des estimateurs}
+Nous allons maintenant implémenté ces estimateurs en utilisant le langage Python. Le but ici est de voir visuellement à quelle point les estimateurs convergent vers la valeur cible.
+On suppose par la suite, et à titre d'exemple, que $S_0=100$, $T=0.5$, $\sigma = 0.35$ et $K=99$. 
+Les lignes suivantes présentent le code python utilisé.
+
+
+
+
+
+
+\section{Résultats, commentaires et conclusion}
+De manière exacte, $\mathbb{E}(X)$ est explicitée par la formule agréable de Black-Scholes de sorte que :
+$$
+	\mathbb{E}(X) = S_0 N(d_1) - K N(d_2)
+$$
+où $N$ est la fonction de répartition de la loi normale centrale réduite et :
+$$
+	d_1 = \frac{1}{\sigma \sqrt{T}} \left[ ln(\frac{S_0}{K})+\frac{1}{2}\sigma^2 T \right]
+$$
+ainsi que :
+$$
+	d_2 = d_1 - \sigma \sqrt{T}
+$$
+
+Pour les valeurs considérées dans l'implémentation $\left( S_0=100 \quad T=0.5 \quad \sigma = 0.35 \quad K=99 \right)$ on obtient  :
+$$
+	\mathbb{E}(X) = 10.307
+$$
+et on a :
+$$
+	a = (S_0-K)^+ = 1
+$$
+Ainsi :
+$$
+	P_0 = max(	\mathbb{E}(X),a ) = 10.307
+$$
+
+Cette valeur approximative (mais juste à 100ème près) est à comparer avec les valeurs asymptotiques des deux estimateurs proposés. Pour cela prière de vous référer au graphe suivant qui trace les valeurs des estimateurs en fonctions de des valeurs de M.
+Le code source se trouve dans le fichier $main.py$
+
+\IMG{figure.png}{Convergence des estimateurs biasés}{0.5}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

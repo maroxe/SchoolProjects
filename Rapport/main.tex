@@ -1,47 +1,17 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% LaTeX Example: Project Report
-%
-% Source: http://www.howtotex.com
-%
-% Feel free to distribute this example, but please keep the referral
-% to howtotex.com
-% Date: March 2011 
-% 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% How to use writeLaTeX: 
-%
-% You edit the source code here on the left, and the preview on the
-% right shows you the result within a few seconds.
-%
-% Bookmark this page and share the URL with your co-authors. They can
-% edit at the same time!
-%
-% You can upload figures, bibliographies, custom classes and
-% styles using the files menu.
-%
-% If you're new to LaTeX, the wikibook is a great place to start:
-% http://en.wikibooks.org/wiki/LaTeX
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Edit the title below to update the display in My Documents
-%\title{Project Report}
-%
 %%% Preamble
 \documentclass[paper=a4, fontsize=11pt]{scrartcl}
+\usepackage[utf8]{inputenc}  
 \usepackage[T1]{fontenc}
 \usepackage{fourier}
-
 \usepackage[english]{babel}															% English language/hyphenation
 \usepackage[protrusion=true,expansion=true]{microtype}	
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 \usepackage[pdftex]{graphicx}	
 \usepackage{url}
 
-
 %%% Custom sectioning
 \usepackage{sectsty}
 \allsectionsfont{\centering \normalfont\scshape}
-
 
 %%% Custom headers/footers (fancyhdr package)
 \usepackage{fancyhdr}
@@ -67,73 +37,142 @@
 \title{
 		%\vspace{-1in} 	
 		\usefont{OT1}{bch}{b}{n}
-		\normalfont \normalsize \textsc{School of random department names} \\ [25pt]
+		\normalfont \normalsize \textsc{Ecole Polytechnique} \\ [25pt]
 		\horrule{0.5pt} \\[0.4cm]
-		\huge This is the title of the template report \\
+		\huge Modèles des Taux d'interêt \\
 		\horrule{2pt} \\[0.5cm]
 }
 \author{
-		\normalfont 								\normalsize
-        Firstname Lastname\\[-3pt]		\normalsize
-        \today
+		\normalfont \normalsize
+                Bachir EL KHADIR\\[-3pt] \normalsize
+                \today	
 }
 \date{}
 
+\newtheorem{theorem}{Theorem}
 
 %%% Begin document
 \begin{document}
 \maketitle
-\section{Heading on level 1 (section)}
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus:
-\begin{align} 
-	\begin{split}
-	(x+y)^3 	&= (x+y)^2(x+y)\\
-					&=(x^2+2xy+y^2)(x+y)\\
-					&=(x^3+2x^2y+xy^2) + (x^2y+2xy^2+y^3)\\
-					&=x^3+3x^2y+3xy^2+y^3
-	\end{split}					
-\end{align}
-Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies 
 
-\subsection{Heading on level 2 (subsection)}
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. 
-\begin{align}
-	A = 
-	\begin{bmatrix}
-	A_{11} & A_{21} \\
-  	A_{21} & A_{22}
-	\end{bmatrix}
-\end{align}
-Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+\newpage
+\input{merci.tex}
+\newpage
+\input{intro.tex} 
+\newpage
 
-\subsubsection{Heading on level 3 (subsubsection)}
-Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+La notion de taux d'interêt nous est familière et fait parti de notre vie de tous les jours.
 
-\paragraph{Heading on level 4 (paragraph)}
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. 
+Zéro Coupon
+
+\section{Quelques définitions}
+\begin{theorem}
+$Z(t, T, S)$ est le montant qu'il faut investir dans un instrument risque-neutre au temps $T$ pour obtenir 1euro au temps S.
+\end{theorem}
+\begin{theorem}
+$r$ le taux d'intêret instantné est défini comme étant
+\end{theorem}
+\begin{theorem}
+La courbe de rendement ou la yield curve $L(t, T)$
+\end{theorem}
+\begin{theorem}
+Le taux d'interet cumulé
+\end{theorem}
+
+\section{Produits financier d'interêts}
+Swap:
+Un swap est un contract entre deux parties qui s'engagent à échanger des flux financier pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
+$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
+
+Caps/floor:
+Un cap/floor peut être vu comme un call/put européenne sur un swap
+$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
+
+Swaption
+$$ N (\sum D_t^{T_i} \tau_i (L(T_{i-1}) - K))^+ $$
+\section{Les différents modèles des taux d'interêts}
+
+Certains produits financiers dépendent en grande partie de la courbe de rendement. Nous avons vu précédemment que la donnée du taux instantané $r_t$ permet de caractériser complètement cette courbe.
+
+Il est donc important que la dynamque de $r_t$ soit à la fois riche pour pouvoir décrire la courbe de rendement observée dans le marché, et suffisemment simple pour que le temps nécessaire pour le calcul ne soit trop long.
+
+Nous pouvons considérer que la courbe de rendement varie dans un espace vectoriel de dimension infinie. Toute tentative de la caracteriser par un nombre fini de paramètre rééls est donc vouée à l'échec.
 
 
-\section{Lists}
+\section{Le modèle à deux facteurs}
+\subsection{Motivation}
 
-\subsection{Example for list (3*itemize)}
+
+
+Montrons dans un premier temps pourquoi un modèle à un seul facteur n'est pas suffisant pour pricer certains produits disponible sur les marchés. En effet, considérons un produit $E$ dont le payoff  dépent  du spread entre un taux d'intêret cumulé entre $0$ et $T_1$ pour le premier et $0$ et $T_2$ pour le second.
+
+La dynamique de $r_t$ dans le modèle de Vasicek est donné par
+
+$$r_t = k(\theta - r_t)  \mathrm{d}t  + \sigma \mathrm{d}W_t$$
+La formule analytique du bond zéro coupon est donc
+$$P(t, T) = A(t, T) exp(-B(t, T) r_t)$$
+En particulier le taux d'intêret cumulé est une donné par une transformation affine du taux instantané:
+$$R(t, T) = \frac{ln P(t, T)}{T-t} =: a(t, T) + b(t, T) r_t$$
+Le payoff du produit $E$ est donc fonction de la distribution jointe de $R(0, T_1)$ et $R(0, T_2)$. Sauf que:
+$$Cor(R(0, T_1), R(0, T_2) = 1$$
+On en déduit qu'un choc à $r_t$ agit de la même manière sur toutes les courbes
+On observe sur les marchés que les taux à différentes maturités ne sont pas corrélés. Si on regarde le taux 2Y et 10Y
+
+<Courbe 10Y> 
+
+<Courbe 2Y>
+
+Clairement un tel modèle ne capture pas ce comportement.
+
+Dans cette section nous considérons un modèle où le taux d'intêret instantanté est donné par une somme de deux facteurs gaussiens centrés et corrélés. Pour fitter la yield courbe, on rajoute une fonction détérministe.
+
+\begin{align*}
+  \rm{d}X &= \\
+  \rm{d}Y &= \\
+  \rm{d} r &= X + Y + \phi(t)
+\end{align*}
+
+$$P(t, T) = E[...]$$
+
+Le processus est markovien
+
+Les cap floors ademettent une formule analytiques, comme pour les options vanilles : formule de blackscholes
+Dans la pratique, les banques tradent beaucoup des produits exotiques. Ce n'est pas le cas pour ces produits => arbre de pricing
+\subsection{Approximation de la solution par un arbre binomial}
+
 \begin{itemize}
-	\item First item in a list 
-		\begin{itemize}
-		\item First item in a list 
-			\begin{itemize}
-			\item First item in a list 
-			\item Second item in a list 
-			\end{itemize}
-		\item Second item in a list 
-		\end{itemize}
-	\item Second item in a list 
+\item Discrétisation
+\item Construction de l'abre
 \end{itemize}
 
-\subsection{Example for list (enumerate)}
-\begin{enumerate}
-	\item First item in a list 
-	\item Second item in a list 
-	\item Third item in a list
-\end{enumerate}
-%%% End document
+\subsection{Formule analytique - Intégration}
+
+\subsection{Performance}
+L'arbre est long mais beaucoup plus puissant
+Imperfections de l'arbre:
+\begin{itemize}
+\item  bornee
+\item  discretisation
+\item  probabilite negative
+\end{itemize}
+Monte Carlo
+Limitation
+Closed Form
+
+Le temps d'execution:
+Arbre
+Closed form
+
+\section{Application: calibration et pricing}
+Le modèle à 2F permet de caputrer le hump de la courbe de rendement
+Le nombre de paramètre est fini (5) => pas de overfitting
+
+
+
+
 \end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

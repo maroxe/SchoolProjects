@@ -51,6 +51,11 @@
 
 \newtheorem{theorem}{Theorem}
 
+\newcommand{\IMG}[3]{
+\includegraphics[scale=#3]{#1}%
+}
+
+
 %%% Begin document
 \begin{document}
 \maketitle
@@ -79,6 +84,7 @@ La courbe de rendement ou la yield curve $L(t, T)$
 Le taux d'interet cumulé
 \end{theorem}
 
+\newpage
 \section{Produits financier d'interêts}
 Swap:
 Un swap est un contract entre deux parties qui s'engagent à échanger des flux financier pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
@@ -90,6 +96,8 @@ $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
 
 Swaption
 $$ N (\sum D_t^{T_i} \tau_i (L(T_{i-1}) - K))^+ $$
+
+\newpage
 \section{Les différents modèles des taux d'interêts}
 
 Certains produits financiers dépendent en grande partie de la courbe de rendement. Nous avons vu précédemment que la donnée du taux instantané $r_t$ permet de caractériser complètement cette courbe.
@@ -98,7 +106,12 @@ Il est donc important que la dynamque de $r_t$ soit à la fois riche pour pouvoi
 
 Nous pouvons considérer que la courbe de rendement varie dans un espace vectoriel de dimension infinie. Toute tentative de la caracteriser par un nombre fini de paramètre rééls est donc vouée à l'échec.
 
+Le modèle de Hull White a été introduit en 1990.  Un des atouts majeure de ce modèle est la possiblité de simuler la dynamique de $r_t$ par un arbre trinomiale. Ceci étant essentiel pour pricer des produits du type bermuda options
+$$ \mathrm{d}r_t =  (\theta(t) - \alpha(t) r_t) \mathrm{d}t + \sigma(t) \mathrm{d} W_t$$
+$$ r_t = e^{-\alpha t} r_0 + integral ...$$
 
+
+\newpage
 \section{Le modèle à deux facteurs}
 \subsection{Motivation}
 
@@ -138,7 +151,23 @@ Le processus est markovien
 
 Les cap floors ademettent une formule analytiques, comme pour les options vanilles : formule de blackscholes
 Dans la pratique, les banques tradent beaucoup des produits exotiques. Ce n'est pas le cas pour ces produits => arbre de pricing
+
 \subsection{Approximation de la solution par un arbre binomial}
+
+Cette méthode a été d'abord suggéré par Hull-White (1994)
+On commence par donner une approximation de la dynamique processus $x$ et $y$ :
+
+$$E(x(t+\Delta t) | F_t) = x(t) e^{-a \Delta t}$$
+$$V(x(t+\Delta t) | F_t) = \frac{\sigma^2}{2a} (1 - e^{-2a \Delta t})$$
+$$Cov\{x(t+\Delta t), y(t+\Delta t) | F_t \} = \frac{\sigma \nu \rho}{a + b} (1-e^{-(a+b)\Delta t})$$
+
+Dans l'abre, on commence par discrétiser le temps par un pas fixe $\Delta t$, ensuite à chaque pas de temps on fait l'approximation du couple aléatoire à cdf continue $(x, y)$ par un couple de variables de bernouilli qui a les même moments de premier et second ordre.
+
+Le nombre de noeuds augmente de façon exponentielle en fonction du nombre de pas de temps. En pratique ceci est problématique et conduit vite à une saturation de mémoire. Pour palier à ce problème on  réutilise les noeuds
+
+
+\IMG{img/slice.png}{Slice}{0.5}
+P
 
 \begin{itemize}
 \item Discrétisation
@@ -163,10 +192,17 @@ Le temps d'execution:
 Arbre
 Closed form
 
+\newpage
 \section{Application: calibration et pricing}
 Le modèle à 2F permet de caputrer le hump de la courbe de rendement
+
 Le nombre de paramètre est fini (5) => pas de overfitting
 
+Méthode d'optimisation
+
+
+\subsection{Calibration}
+Courbe de vol implicite
 
 
 

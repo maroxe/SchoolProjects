@@ -1,23 +1,29 @@
-\documentclass{article}
-
-\usepackage[utf8]{inputenc} 
-\usepackage[T1]{fontenc}   
+\documentclass[12pt,french]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{babel} 
 \usepackage{amsmath}
+\usepackage{color}
 \usepackage{amsfonts}
-\usepackage{geometry}
+\usepackage[final]{pdfpages} 
+\usepackage{graphicx}
+\usepackage{mathenv}
 
-\newcommand{\BigO}[1]{\ensuremath{\operatorname{O}\left(#1\right)}}
-\newcommand{\SmallO}[1]{\ensuremath{\operatorname{o}\left(#1\right)}}
-\newcommand{\BBigO}[3]{\ensuremath{\underset{#1 \to #2 }{\operatorname{O}\left(#3\right)}}}
-\newcommand{\BigF}[2]{\ensuremath{#1 \left(#2\right)}}
-\newcommand{\Wrap}[1]{\ensuremath{\left(#1\right)}}
+
+
 \newcommand{\Q}[1]{\subsubsection*{Question #1}}
 
+\newcommand{\IMG}[3]{
+\begin{figure}[H]
+\includegraphics[scale=#3]{#1}%
+\caption{#2}%
+\label{#1}%
+\end{figure}
+}
 
 \begin{document}
 
-\title{MAP}
-\author{EL KHADIR Bachir}
+\title{Time Series Analysis - Interpolating missing values in a time series}
+\author{EL KHADIR Bachir - EL RHAFFOULI Hamza}
 
 
 \maketitle
@@ -26,26 +32,25 @@
 Let's note $\epsilon \sim WN(0, \sigma^2)$ the innovation process of $X$ so that $X_t = \phi X_{t-1} + \epsilon_t = \phi^i X_{t-i} + \sum_{k=0}^i \phi^k \epsilon_{t-k}$
 
 \Q{1}
-$X_{l+i} - \phi^{i+1}X_{l-1} = \sum_{k=0}^{i+1} \phi^k \epsilon_{l+i-k} \perp span(\epsilon_s, s < l) = span(X_s, s < l)$ \\
-$var(X_{l+i} - \phi^{i+1}X_{l-1}) = var(\sum_{k=0}^{i} \phi^k \epsilon_{l+i-k}) = \sum_{k=0}^{i} \phi^{2k} \sigma^2 = \frac{1-\phi^{2(i+1)}}{1-\phi^2} \sigma^2 = (1-\phi^{2(i+1)}) var(X_t)$ \\
+$$X_{l+i} - \phi^{i+1}X_{l-1} = \sum_{k=0}^{i} \phi^k \epsilon_{l+i-k} \perp span(\epsilon_s, s < l) = span(X_s, s < l)$$ \\
+$$var(X_{l+i} - \phi^{i+1}X_{l-1}) = var(\sum_{k=0}^{i} \phi^k \epsilon_{l+i-k}) = \sum_{k=0}^{i} \phi^{2k} \sigma^2 = \frac{1-\phi^{2(i+1)}}{1-\phi^2} \sigma^2 = (1-\phi^{2(i+1)}) var(X_t)$$ \\
 if we note $Y_t = X_{-t}$, then $Y$ has the same second order properties as $X$ if we replace $\phi$ by $\frac{1}{\phi}$.
 
 \Q{2}
-From question 1 since $proj$ is linear, for every $Z \in span(X_s, s \leq l-1)$ we have $proj(Z | span(X_r, r \geq l-1) = proj(Z | X_{l-1})$.
+From question 1 since $proj$ is linear, for every $Z \in span(X_s, s \leq l-1)$ we have $$proj(Z | span(X_r, r \geq l-1) = proj(Z | X_{l-1})$$
 Therefore $W \perp proj(X_{l-1+i}, i \geq 0)$.
 
 For the second part of the question, we use the process $Y$ instead of $X$.
 
 \Q{3}
 There exist $$U, V \in span(X_p, X_{l-1}), span(X_F, X_{l+1})$$
-such that $$proj(X|span(X_p, X_{l-1}, X_{l+1}, X_F) = U + V$$
+such that $$proj(X|span(X_p, X_{l-1}, X_{l+1}, X_F)) = U + V$$
 By question 2 there exist $W_1, W_2 \perp span(X_{l-1}, X_l, X_{l+1})$ so that:
-$$U = span(U|span(W_{l-1}) + W_1$$ and
-$$V = span(V|span(W_{l+1}) + W_2$$ .
+$$U = span(U|span(X_{l-1})) + W_1$$ and
+$$V = span(V|span(X_{l+1})) + W_2$$ .
 
-but $proj(X_l|span(X_p, X_{l-1}, X_{l+1}, X_F) - proj(U|X_{l-1}) - proj(V|X_{l+1}) = W_1 + W_2 \in and \perp span(X_{l-1}, X_l, X_{l+1})$
-
-therefore this quantity is zero, and
+but $$proj(X_l|span(X_p, X_{l-1}, X_{l+1}, X_F) - proj(U|X_{l-1}) - proj(V|X_{l+1}) = W_1 + W_2$$
+belongs and in the same time orthogonal to $span(X_{l-1}, X_l, X_{l+1})$,therefore this quantity is zero, and
 
 
 \begin{align*}
@@ -54,15 +59,13 @@ therefore this quantity is zero, and
 \end{align*}
   
 \Q{4}
-$proj(X_{l+1}|X_{l-1}) = \frac{\phi^2}{1-\phi^2} = \gamma(1)$
-$span(X_{l-1}) \perp span(X_{l+1}-proj(X_{l+1}|X_{l-1}))$.
-\begin{align*}
-  proj(X_l|X_{l-1}, X_{l_1}) &= (X_l, X_{l-1}) X_{l-1} + (X_l, X_{l+1}-\gamma(1)X_{l-1})  X_{l+1} \\
-                             &= \gamma(1) (X_{l-1} + X_{l+1}) \\
-                             &= \frac{\phi}{1+\phi^2}(X_{l-1} + X_{l+1})\\
-\end{align*}
-$$var(X_l - proj(X_l|X_{l-1}, X_{l_1})) = $$
-*** WHY it's better ***
+
+$$ (X_l - \frac{\phi}{1-\phi^2} (X_{l-1}+X_{l+1}), X_{l-1}) = \gamma(1) - \frac{\phi}{1+\phi^2} (\gamma(2)+\gamma(0)) = 0$$
+$$ (X_l - \frac{\phi}{1-\phi^2} (X_{l-1}+X_{l+1}), X_{l+1}) = \gamma(1) - \frac{\phi}{1+\phi^2} (\gamma(0)+\gamma(2)) = 0$$
+d'ou
+$$ proj(X_l|X_{l-1}, X_{l_1})=\frac{\phi}{1+\phi^2} (X_{l-1}+X_{l+1})$$
+
+
 \Q{5}
 $$\epsilon_l = X_l - \phi X_{l-1}$$
 $$\epsilon_{l+1} = X_{l+1} - \phi X_l$$
@@ -75,17 +78,23 @@ $$\Phi =
   \end{array}
   \right)
 $$
-
+$$ ||\Phi X ||^2 = (X_l-\phi X_{l-1})^2 + (X_{l+1}-\phi X_l)^2 = (1+\phi^2)X_l^2 + 2 \phi (X_{l-1} + X_{l+1}) X_l + c$$
+le minimum est donc atteint pour $X_l = \frac{\phi}{1+\phi^2} (X_{l-1}+X_{l+1})$
 
 
 \Q{6}
-$||\Phi X||^2 = ||\ (Phi_B : \Phi_A) (X_B , X_A)^T + \Phi_M X_M||^2$
+$||\Phi X||^2 = ||\ (\Phi_B : \Phi_A) (X_B , X_A)^T + \Phi_M X_M||^2$
 
 At the minimum
 \begin{align*}
   0 = \delta ||\Phi_X||^2 &\Rightarrow (\Phi_B : \Phi_A) (X_B : X_A)^T + \Phi_M X_M = 0 \\
-  &\Rightarrow X_M = -\Phi_M^T \Phi_M (\Phi_B : \Phi_A) (X_B : X_A)^T
+  &\Rightarrow X_M = -(\Phi_M^T \Phi_M)^{-1} \Phi_M^T(\Phi_B : \Phi_A) (X_B : X_A)^T
 \end{align*}
+
+\Q{7}
+See code in  ``code.py''
+
+\IMG{figure.png}{Best estimator}{0.25}
 
 \end{document}
 

@@ -9,24 +9,24 @@ directions = [ (1, 1), (1, -1), (-1, 1), (-1, -1) ]
 
 class TreePricer:
 
-    def __init__(self, sigma=.02, nu=.03, draw=False):
+    def __init__(self, sigma=.02, nu=.03, rho=0.5, draw=False):
         self.sigma = sigma
         self.nu = nu
-        self.rho = .5
+        self.rho = rho
         self.a = 0.02
         self.b  = 0.01
         self.Dt = 1. / 365
-        self.sqrtDt = np.sqrt(Dt)
-        self.dx = self.sigma  * sqrtDt
-        self.dy = self.nu  * sqrtDt
+        self.sqrtDt = np.sqrt(self.Dt)
+        self.dx = self.sigma  * self.sqrtDt
+        self.dy = self.nu  * self.sqrtDt
         self.draw = draw
 
     def calc_proba(self, x, y):
-        return [ (1+j*self.rho) / 4 + i * (b*self.sigma*y + j * a*self.nu*x) * sqrtDt / (4*self.sigma*self.nu)
+        return [ (1+j*self.rho) / 4 + i * (self.b*self.sigma*y + j * self.a*self.nu*x) * self.sqrtDt / (4*self.sigma*self.nu)
                     for (i, j) in [ (-1, 1), (1, -1), (-1, -1), (1, 1) ]]
 
     def calc_node(self, x, y):
-        return [ ((x+i)*dx, (y+j)*dy) for (i, j) in directions ]
+        return [ ((x+i)*self.dx, (y+j)*self.dy) for (i, j) in directions ]
 
 
     def discount(self, payoff, proba_table, t):
@@ -34,18 +34,18 @@ class TreePricer:
         n = len(payoff)
         for i in range(t+1, n-t-1):
             for j in range(t+1, n-t-1):
-                neighbours = calc_node(i, j)
-                for (c, (dir_x, dir_y)) in eself.numerate(directions):
+                neighbours = self.calc_node(i, j)
+                for (c, (dir_x, dir_y)) in enumerate(directions):
                     p = proba_table[i-dir_x][j-dir_y][c]
-                    disc_factor =  np.exp(-sum(neighbours[c])*Dt)
+                    disc_factor =  np.exp(-sum(neighbours[c])*self.Dt)
                     disc_payoff[i][j] += p * disc_factor * payoff[i-dir_x][j-dir_y]
         return disc_payoff
 
     def price(self, t0, payoff):
         n = len(payoff)
-        proba_table = np.array([[calc_proba(i*dx, j*dy) for j in range(-n/2, n/2)] for i in range(-n/2, n/2)])
+        proba_table = np.array([[self.calc_proba(i*self.dx, j*self.dy) for j in range(-n/2, n/2)] for i in range(-n/2, n/2)])
         for t in range(n/2-t0):
-            payoff = discount(payoff, proba_table, t)
+            payoff = self.discount(payoff, proba_table, t)
             if self.draw:
                 draw_payoff(payoff)
 
@@ -76,8 +76,7 @@ class TreePricer:
         X, Y = np.meshgrid(X, Y)
         R = X + Y
         payoff = np.maximum(R - K, 0) * (T - t)
-        print '(R - %.2f) * %d' % (K, T-t)
-        return price(t, payoff)
+        return self.price(t, payoff)
 
 
     def caplet(self, T, sigma):
@@ -85,14 +84,38 @@ class TreePricer:
         K = 0.04
         return bs.BlackScholes("C", 0.1, K, r, self.sigma, T)
 
-
 def draw_payoff(payoff):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     mesh = ax.pcolormesh(payoff); 
     fig.colorbar(mesh); 
 
-def price_caplet(t, T, K, sigma, nu):
-    pricer = TreePricer(sigma, nu)
+def price_caplet(t, T, K, sigma, nu, rho):
+    pricer = TreePricer(sigma, nu, rho)
     return pricer.tree_caplet(t, T, K)[T-t:T+t+1, T-t:T+t+1]
     
+def draw_surface(H):
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    X,Y = np.mgrid[:len(H), :len(H[0])]
+    ax.plot_surface(X, Y, H, rstride=1, cstride=1, cmap=plt.cm.coolwarm,
+        linewidth=0, antialiased=False)
+    ax.scatter(X.ravel(), Y.ravel(), H.ravel(), c=H.ravel())
+    plt.show()
+
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.set_xlabel('sigma')
+ax.set_ylabel('nu')
+ax.set_zlabel('Cap(0, 5)')
+ax.set_title('Price surface')
+
+for k in np.arange(0, 0.5, 0.1):
+    H = np.array([[ price_caplet(0, 5, k, 0.01*i, 0.02*j, rho=-0.5)[0,0] for j in range(1, 10) ] for i in range(1, 10) ])
+    X,Y = np.mgrid[:len(H), :len(H[0])]
+    ax.plot_surface(X, Y, H, rstride=1, cstride=1, cmap=plt.cm.coolwarm,
+        linewidth=0, antialiased=False)
+    ax.scatter(X.ravel(), Y.ravel(), H.ravel(), c=H.ravel())
+
+
+plt.show()

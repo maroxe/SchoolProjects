@@ -170,7 +170,12 @@ Le nombre de noeuds augmente de façon exponentielle en fonction du nombre de pa
 
 
 \IMG{img/slice.png}{Slice}{0.5}
-P
+
+Cependant, on ne peut ajouter un drift au noeud avec cette methode.
+
+Paragraphe sur la taille des slice, ellipsoid
+<example de Slice>
+
 
 \begin{itemize}
 \item Discrétisation
@@ -178,6 +183,19 @@ P
 \end{itemize}
 
 \subsection{Formule analytique - Intégration}
+Closed form des zero coupons
+
+en pratique, gain en temps \\
+< cachegrind results > \\
+
+gain en precision \\
+<Comparaison de slice entre cf et bf>
+
+
+Amerlioration:
+\begin{itemize}
+\item Time dependant parameters
+\end{itemize}
 
 \subsection{Performance}
 L'arbre est long mais beaucoup plus puissant
@@ -198,16 +216,40 @@ Closed form
 \newpage
 \section{Application: calibration et pricing}
 Le modèle à 2F permet de caputrer le hump de la courbe de rendement
-
 Le nombre de paramètre est fini (5) => pas de overfitting
-
-Méthode d'optimisation
 
 
 \subsection{Calibration}
-Courbe de vol implicite
+Dans cette section on verra a quel point le modele peut fitter la realite.
+
+\begin{itemize}
+\item $h(t)$ pour reconstruire la yield curve $\sigma \rho \nu$ pour
+\item  matcher la surface
+\end{itemize}
+
+\subsubsection{Calibration du drift}
+
+$\Pi_j$ state price (arrow debrew) (paye 1 si le noeud $(t_n, j)$ est atteint.
+
+$$D_j(h_n) := \frac{1}{1 + r(t_n)(t_{n+1} - t_n)} $$ Le discount factor
+$$ \Pi_j(t_{n+1}) = \sum_j \Pi_j(t_n) p_{j, j'}(t_n) D_{j'}(h_n)$$
+$$ \sum \Pi_j D_j(h_n) = P(0, t_{n+1}) $$
+
+Developement de taylor => trouver $h_n$
 
 
+\subsubsection{Methode de calibration de la surface - Méthode d'optimisation}
+
+On calibre les caplets
+
+Les caplets ne sont pas directement disponilbe sur les marche
+On calibre les swaptions
+
+Le probleme de calbration est un probleme d'optimisation
+Courbe de vol implicite :
+minimisation de l'erreur L2
+
+\IMG{img/capsurf.png}{Cap surface}{0.5}
 
 \end{document}
 

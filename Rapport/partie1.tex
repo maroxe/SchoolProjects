@@ -1,0 +1,38 @@
+
+
+\section{Quelques définitions}
+\begin{theorem}
+$Z(t, T, S)$ est le montant qu'il faut investir dans un instrument risque-neutre au temps $T$ pour obtenir 1euro au temps S.
+\end{theorem}
+\begin{theorem}
+$r$ le taux d'intêret instantné est défini comme étant
+\end{theorem}
+\begin{theorem}
+La courbe de rendement ou la yield curve $L(t, T)$
+\end{theorem}
+\begin{theorem}
+Le taux d'interet cumulé
+\end{theorem}
+
+\newpage
+\section{Produits financier d'interêts}
+\begin{theorem}Swap:
+Un swap est un contract entre deux parties qui s'engagent à échanger des flux financier pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
+$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
+\end{theorem}
+
+Caps/floor:
+Un cap/floor peut être vu comme un call/put européenne sur un swap
+$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
+nominal $N = 1$
+$$ CPL(t, t_{i-1}, t_i, \tau_i, X) = (1+X \tau_i) ZBP(t, t_{i-1}, t_i, \frac{1}{1+X \tau_i})$$
+$$ZBP = \mathbb{E}^{Q_T}(  (P(t_{i-1}, t_i) - X)^+ )$$
+Si $P(t, T)$admet une loi log normal par rapport a la mesure forward neutre $Q_T$, on peut appliquer black scholes. Dans la pratique, les trader sont habitue a raisonner en terme de vol bs plutot qu'en terme de prix. Nous verrons plus loin que la dynamique $P(t, T)$ est plus complique, mais cette methode permet neamoins d'avoir une correspondance entre prix et vol.
+
+Swaption
+$$ N (\sum D_t^{T_i} \tau_i (L(T_{i-1}) - K))^+ $$
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

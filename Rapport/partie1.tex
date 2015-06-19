@@ -1,36 +1,86 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
 
 
 \section{Quelques définitions}
-\begin{theorem}
-$Z(t, T, S)$ est le montant qu'il faut investir dans un instrument risque-neutre au temps $T$ pour obtenir 1euro au temps S.
-\end{theorem}
-\begin{theorem}
-$r$ le taux d'intêret instantné est défini comme étant
-\end{theorem}
-\begin{theorem}
+
+
+\begin{defn}
+On dénote le prix de zéro coupon forwardé $Z(T, S)$ le montant qu'il faut investir à dans un instrument risque-neutre au temps $T$ pour obtenir une unité de monnaie au temps $S$.
+\end{defn}
+
+\begin{defn}
+On définit $f(t, T)$ le taux d'intêret instantané forwad à la date $t$ pour une maturité $T$ la quantité $$f(t, T) := - \frac{ \delta}{\delta T}  log Z(T, S)$$
+\end{defn}
+\begin{defn}
 La courbe de rendement ou la yield curve $L(t, T)$
-\end{theorem}
-\begin{theorem}
+\end{defn}
+\begin{defn}
 Le taux d'interet cumulé
-\end{theorem}
+\end{defn}
+
+\subsection{Choix de mesure}
+
+Une hypothèse souvent utilisée dans le cadre de la finance de marché est l'abscence d'abitrage. Une opportunité d'arbitrage est la possiblité d'investir à aujourd'hui, et recevoir, avec probabilité non nulle, un montant positive dans le future. En d'autres termes, deux portfolio qui ont le même payoff auront la même valeur aujourd'hui. Ceci nous permettra de valoriser des produits complexes en répliquant leur payoff par une combinaison linéaire de produits simple dont le prix est connue.
+
+Une deuxième hypothèse que nous admettrons dans la suite est la complétude du marché: Tout les produits utilisés seront consiédérés disponible à tout moment et en quantité abandante (liquide). Nous ne traiterons pas le cas des produits illiquide. Ceci est justifié, le marché des taux étant l'un des plus gros en volume dans le monde.
+
+Nous nous plaçons dans le cadre d'une économie 0 temps continue,
+espace de probabilité
+filtration continue à droite
+
+
+Nous pouvons montrer(*) que ces hypothèse sont équivalent à l'existence d'une mesure de probabilité risque neutre $Q$ unique sous laquelle le prix actualisé de tous les produits tradables sont des martingales. ie si un on note $H_t$ le prix à l'instant $t$ d'un produit financier, alors
+$$H_t =\espr{ e^{-\int_t^s r} H_s | F_t } $$
+
+En particuler, le prix d'un zéro coupon qui paye 1 à l'instant $T$ est donné par
+$$ P(t, T) := \espr{  e^{-\int_t^T r} } $$
+
+\begin{defn} Changement de numéraire \end{defn}
+\begin{defn} Mesure de probabilité équivalente \end{defn}
+
+En fonction du produit que nous voulons pricer, certaines mesures peuvent être plus pratique que d'autres.
+
+Example: Mesure forward neutre
+
+Le bond zéron coupon dont la maturité concide avec la date du payment d'un produit financier peut servir de numéraire. Nous appellerons la mesure de probabilité associé $Q_T$.
+
+Dans ce cas $P(T, T) = 1$, et par conséquent il suffit de calculer l'espérance du payoff (divisé par 1) sous $Q_T$.
+Si nous notons le payoff de ce produit $H$, alors son prix à l'instant $0$ est donné par $$P(t, T) \, \espr{ H | F_t } $$
+Pour que celà nous soit utile, il faut que la dynamique de $H$ soit connue sous $Q_T$. Ceci est vérifié pour les contrats payant un taux d'interêt sur un nominal fixe. En effet $(F(t; S, T))_t$ est une martingale 
+$$ \espr{ F(t; S, T) | F_u } = F(u; S, T)$$
+proof
+
+
 
 \newpage
-\section{Produits financier d'interêts}
-\begin{theorem}Swap:
-Un swap est un contract entre deux parties qui s'engagent à échanger des flux financier pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
-$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
-\end{theorem}
 
-Caps/floor:
-Un cap/floor peut être vu comme un call/put européenne sur un swap
+\section{Produits financier d'interêts}
+\begin{defn}
+  Swap:
+Un swap est un contract entre deux parties qui s'engagent à échanger des flux financiers pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
+$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
+\end{defn}
+
+
+\begin{defn}
+  Caplets/floor:
+Un caplet/floorlet peut être vu comme un call/put européenne sur un swap
 $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
+\end{defn}
+
 nominal $N = 1$
 $$ CPL(t, t_{i-1}, t_i, \tau_i, X) = (1+X \tau_i) ZBP(t, t_{i-1}, t_i, \frac{1}{1+X \tau_i})$$
 $$ZBP = \mathbb{E}^{Q_T}(  (P(t_{i-1}, t_i) - X)^+ )$$
-Si $P(t, T)$admet une loi log normal par rapport a la mesure forward neutre $Q_T$, on peut appliquer black scholes. Dans la pratique, les trader sont habitue a raisonner en terme de vol bs plutot qu'en terme de prix. Nous verrons plus loin que la dynamique $P(t, T)$ est plus complique, mais cette methode permet neamoins d'avoir une correspondance entre prix et vol.
+Si $P(t, T)$ admet une loi log normal par rapport a la mesure forward neutre $Q_T$, on peut appliquer black scholes. Dans la pratique, les trader sont habitués a raisonner en terme de vol bs plutot qu'en terme de prix. Nous verrons plus loin que la dynamique $P(t, T)$ est plus complique, mais cette methode permet néamoins d'avoir une correspondance entre prix et vol.
 
+
+\begin{defn}
 Swaption
 $$ N (\sum D_t^{T_i} \tau_i (L(T_{i-1}) - K))^+ $$
+\end{defn}
 
 %%% Local Variables:
 %%% mode: latex

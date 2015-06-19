@@ -28,7 +28,6 @@ class TreePricer:
     def calc_node(self, x, y):
         return [ ((x+i)*self.dx, (y+j)*self.dy) for (i, j) in directions ]
 
-
     def discount(self, payoff, proba_table, t):
         disc_payoff = np.zeros_like(payoff)
         n = len(payoff)

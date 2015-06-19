@@ -8,6 +8,7 @@
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
 \usepackage[pdftex]{graphicx}	
 \usepackage{url}
+\usepackage{tikz}
 
 %%% Custom sectioning
 \usepackage{sectsty}
@@ -33,6 +34,10 @@
 
 %%% Maketitle metadata
 \newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
+\newcommand{\espr}[1]{
+  \mathrm{E}^Q \left[ #1 \right]
+}
+
 
 \title{
 		%\vspace{-1in} 	
@@ -49,10 +54,14 @@
 }
 \date{}
 
+\theoremstyle{definition}
 \newtheorem{theorem}{Theorem}
+\newtheorem{defn}{Definition}
 
 \newcommand{\IMG}[3]{
-\includegraphics[scale=#3]{#1}%
+  \begin{center}
+    \includegraphics[scale=#3]{#1}%
+    \end{center}
 }
 
 
@@ -68,42 +77,18 @@
 \newpage
 \input{intro.tex} 
 \newpage
-
-La notion de taux d'interêt nous est familière et fait parti de notre vie de tous les jours.
-
-Zéro Coupon
-
-\section{Quelques définitions}
-\begin{theorem}
-$Z(t, T, S)$ est le montant qu'il faut investir dans un instrument risque-neutre au temps $T$ pour obtenir 1euro au temps S.
-\end{theorem}
-\begin{theorem}
-$r$ le taux d'intêret instantné est défini comme étant
-\end{theorem}
-\begin{theorem}
-La courbe de rendement ou la yield curve $L(t, T)$
-\end{theorem}
-\begin{theorem}
-Le taux d'interet cumulé
-\end{theorem}
-
-\newpage
-\section{Produits financier d'interêts}
-Swap:
-Un swap est un contract entre deux parties qui s'engagent à échanger des flux financier pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
-$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
-
-Caps/floor:
-Un cap/floor peut être vu comme un call/put européenne sur un swap
-$$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
-
-Swaption
-$$ N (\sum D_t^{T_i} \tau_i (L(T_{i-1}) - K))^+ $$
-
+\input{partie1.tex} 
 \newpage
 \section{Les différents modèles des taux d'interêts}
 
-Certains produits financiers dépendent en grande partie de la courbe de rendement. Nous avons vu précédemment que la donnée du taux instantané $r_t$ permet de caractériser complètement cette courbe.
+Nous avons vu dans la partie précédente que pour calculer l'espérance, il faut donner la dynamique du produit sous-jacent.
+Plusieurs choix sont disponilbes:
+\begin{itemize}
+\item Long term interest rate
+\item Short term
+\end{itemize}
+
+Certains produits financiers dépendent directement la courbe de rendement. Nous avons vu précédemment que la donnée du taux instantané $r_t$ permet de caractériser complètement cette courbe. 
 
 Il est donc important que la dynamque de $r_t$ soit à la fois riche pour pouvoir décrire la courbe de rendement observée dans le marché, et suffisemment simple pour que le temps nécessaire pour le calcul ne soit trop long.
 
@@ -119,11 +104,12 @@ $$ r_t = e^{-\alpha t} r_0 + integral ...$$
 \subsection{Motivation}
 
 
+Considérons un produit $E$ dont le payoff  dépent  du spread entre un taux d'intêret cumulé entre $0$ et $T_1$ pour le premier et $0$ et $T_2$ pour le second. $E$ dépend donc de la distribution jointe des deux taux.
 
-Montrons dans un premier temps pourquoi un modèle à un seul facteur n'est pas suffisant pour pricer certains produits disponible sur les marchés. En effet, considérons un produit $E$ dont le payoff  dépent  du spread entre un taux d'intêret cumulé entre $0$ et $T_1$ pour le premier et $0$ et $T_2$ pour le second.
+\subsubsection*{Limite des modèle à un seul facteur}
+Montrons dans un premier temps pourquoi un modèle à un seul facteur n'est pas suffisant pour pricer ces produits qui dépendent non seulement de la distribution de chaque courbe de taux, mais aussi de leur corrélation. 
 
 La dynamique de $r_t$ dans le modèle de Vasicek est donné par
-
 $$r_t = k(\theta - r_t)  \mathrm{d}t  + \sigma \mathrm{d}W_t$$
 La formule analytique du bond zéro coupon est donc
 $$P(t, T) = A(t, T) exp(-B(t, T) r_t)$$
@@ -131,22 +117,24 @@ En particulier le taux d'intêret cumulé est une donné par une transformation 
 $$R(t, T) = \frac{ln P(t, T)}{T-t} =: a(t, T) + b(t, T) r_t$$
 Le payoff du produit $E$ est donc fonction de la distribution jointe de $R(0, T_1)$ et $R(0, T_2)$. Sauf que:
 $$Cor(R(0, T_1), R(0, T_2) = 1$$
-On en déduit qu'un choc à $r_t$ agit de la même manière sur toutes les courbes
-On observe sur les marchés que les taux à différentes maturités ne sont pas corrélés. Si on regarde le taux 2Y et 10Y
 
-<Courbe 10Y> 
+On en déduit qu'un choc à $r_t$ agit de la même manière sur toutes les courbes.
 
-<Courbe 2Y>
+Dans la réalité, on observe sur les marchés que les taux à différentes maturités ne sont pas corrélés. Si on regarde le taux 2Y et 10Y
 
-Clairement un tel modèle ne capture pas ce comportement.
+\IMG{img/libor.png}{Libor}{1}
 
-Dans cette section nous considérons un modèle où le taux d'intêret instantanté est donné par une somme de deux facteurs gaussiens centrés et corrélés. Pour fitter la yield courbe, on rajoute une fonction détérministe.
+Un modèle à un seul facteur ne capture pas ce comportement. Essayons de pallier à ce problème en rajoutons un facteur à ce modèle.
 
+Dans cette section nous considérons un modèle où le taux d'intêret instantanté est donné par une somme de deux facteurs gaussiens centrés et corrélés. 
 \begin{align*}
   \rm{d}X &= \\
   \rm{d}Y &= \\
   \rm{d} r &= X + Y + \phi(t)
 \end{align*}
+
+Pour fitter la courbe on rajoute une fonction détérministe.
+
 
 $$P(t, T) = E[...]$$
 
@@ -155,18 +143,53 @@ Le processus est markovien
 Les cap floors ademettent une formule analytiques, comme pour les options vanilles : formule de blackscholes
 Dans la pratique, les banques tradent beaucoup des produits exotiques. Ce n'est pas le cas pour ces produits => arbre de pricing
 
+\newpage
 \subsection{Approximation de la solution par un arbre binomial}
 
 Cette méthode a été d'abord suggéré par Hull-White (1994)
-On commence par donner une approximation de la dynamique processus $x$ et $y$ :
+On commence par donner une approximation de la dynamique processus $x$ et $y$, par une suite de variable de discretisé $((\widetilde{x}_i, \widetilde{y}_i) \approx (x(i \Delta i), (y(i \Delta t))_i $. Pour celà nous calculerons les deux premier moment de $(x, y)$
 
 $$E(x(t+\Delta t) | F_t) = x(t) e^{-a \Delta t}$$
 $$V(x(t+\Delta t) | F_t) = \frac{\sigma^2}{2a} (1 - e^{-2a \Delta t})$$
 $$Cov\{x(t+\Delta t), y(t+\Delta t) | F_t \} = \frac{\sigma \nu \rho}{a + b} (1-e^{-(a+b)\Delta t})$$
 
-Dans l'abre, on commence par discrétiser le temps par un pas fixe $\Delta t$, ensuite à chaque pas de temps on fait l'approximation du couple aléatoire à cdf continue $(x, y)$ par un couple de variables de bernouilli qui a les même moments de premier et second ordre.
+Pour que le $((\widetilde{x}_i, \widetilde{y}_i)$ et $(x(i \Delta i), (y(i \Delta t))_i $ aient les même moment, la loi de  $((\widetilde{x}_i, \widetilde{y}_i)$  est donnée par:
+$$\mathrm{P} \left( \widetilde{x}_{i+1} = \widetilde{x}_i + a \, \mathrm{d}x, \widetilde{y}_{i+1} = \widetilde{y}_i + b \, \mathrm{d}y |  \widetilde{x}_i, \widetilde{y}_i \right) = p^{a, b}( \widetilde{x}_i, \widetilde{y}_i)$$
+où 
+\begin{itemize}
+\item $a, b \in \{-1, +1\}$
+\item $p$ est donnée par
+\end{itemize}
 
-Le nombre de noeuds augmente de façon exponentielle en fonction du nombre de pas de temps. En pratique ceci est problématique et conduit vite à une saturation de mémoire. Pour palier à ce problème on  réutilise les noeuds
+Le pricing se fait en deux temps:
+\begin{itemize}
+\item On diffuse le processus $(\widetilde{x}, \widetilde{y})$ dans l'arbre en prenant soin de calculer la probabilité de transition d'un état à un autre
+\item On ``drawback'' dans l'arbre en partant de la date à laquelle on fait le payoff, et on discount
+  \end{itemize}
+
+
+Si nous implémentons l'abre de façon naîve, le nombre de noeuds augmente de façon exponentielle en fonction du nombre de pas de temps. En pratique ceci est problématique et conduit vite à une saturation de mémoire. Dans l'exemple simplifié ci-dessus nous traçons l'arbre de diffusion du premier facteur ($x(t)$). A chaque pas de temps le nombre de noeuds double, ie pour $n$ pas de temps, nous nous retrouvons avec $2^n$ noeuds pour un facteur, ou $4^n$ pour deux. 
+
+Remarquer que $(x, y)_i$tilde est un processus markovien homogène à valeurs discrètes nous permet d'optimiser la simulation de l'arbre. En effet, il nous suffit de calculer la table de transition une fois au début du programme et de la réutiliser pour avancer/reculer dans le temps. 
+
+\input{graph.tex}
+
+
+Une autre améliroation possible est de trouver une formule analytique pour certain produits. En effet, si nous reprenons l'exemple d'un cancellable spread option 2Y10Y dont la maturité est dans 5 ans, nous devrions normalement construite l'arbre jusqu'en 2030 pour avoir le taux 10Y en 2020. Nous pouvons éviter celà en fournissant directement une formule exacte pour les zéro coupons.
+
+$$ \int r \sim Normal$$
+$$P(t, T) = \espr{ e^{\int r}} = exp  \left( \espr{ \int r} + \frac{ Var [ \int r ]  }{2} \right) $$
+
+\subsubsection{ Paramètres constants}
+<Calcul >
+\subsubsection{ Paramètres dépendant du temps}
+<Calcul>
+
+
+On vérifie expérimentalement que le gain est significatif
+<Cache grind > 
+
+\subsubsection{Code python}
 
 
 \IMG{img/slice.png}{Slice}{0.5}
@@ -183,6 +206,7 @@ Paragraphe sur la taille des slice, ellipsoid
 \end{itemize}
 
 \subsection{Formule analytique - Intégration}
+
 Closed form des zero coupons
 
 en pratique, gain en temps \\
@@ -243,12 +267,13 @@ Developement de taylor => trouver $h_n$
 On calibre les caplets
 
 Les caplets ne sont pas directement disponilbe sur les marche
-On calibre les swaptions
+On calibre les swaptions/caps
 
-Le probleme de calbration est un probleme d'optimisation
-Courbe de vol implicite :
-minimisation de l'erreur L2
-
+\begin{itemize}
+\item Le probleme de calbration est un probleme d'optimisation Courbe
+  de vol implicite :
+\item minimisation de l'erreur L2
+\end{itemize}
 \IMG{img/capsurf.png}{Cap surface}{0.5}
 
 \end{document}

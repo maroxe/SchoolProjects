@@ -104,13 +104,13 @@ def draw_surface(H):
 
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.set_xlabel('sigma')
-ax.set_ylabel('nu')
-ax.set_zlabel('Cap(0, 5)')
+ax.set_xlabel('t')
+ax.set_ylabel('T')
+ax.set_zlabel('Caplet')
 ax.set_title('Price surface')
 
-for k in np.arange(0, 0.5, 0.1):
-    H = np.array([[ price_caplet(0, 5, k, 0.01*i, 0.02*j, rho=-0.5)[0,0] for j in range(1, 10) ] for i in range(1, 10) ])
+for k in np.arange(-0.2, 0.2, 0.1):
+    H = np.array([[ price_caplet(t=i, T=i+j, K=k, sigma=0.01, nu=0.02, rho=-0.5)[0,0] for j in range(1, 10) ] for i in range(1, 10) ])
     X,Y = np.mgrid[:len(H), :len(H[0])]
     ax.plot_surface(X, Y, H, rstride=1, cstride=1, cmap=plt.cm.coolwarm,
         linewidth=0, antialiased=False)

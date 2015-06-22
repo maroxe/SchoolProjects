@@ -118,6 +118,14 @@ $$ r_t = e^{-\alpha t} r_0 + integral ...$$
 
 Considérons un produit $E$ dont le payoff  dépent  du spread entre un taux d'intêret cumulé entre $0$ et $T_1$ pour le premier et $0$ et $T_2$ pour le second. $E$ dépend donc de la distribution jointe des deux taux.
 
+La figure suivante, tiré du PDF *bla bla bla* reproduit une matrice de corrélation par terme de variations quotidiennes de taux zéro-coupon. Il apparait très clairement que des taux de maturités proches, comme le taux de maturité 3 ans et celui de maturité 4 ans, sont très corrélés, tandis que des taux de maturité éloignées (par exemple le taux 1 mois et le taux 10 ans) le sont très peu:
+
+\IMG{img/tabcorr.png}{Tableau de correlation}{0.3}
+
+Dans la réalité, on observe sur les marchés que les taux à différentes maturités ne sont pas corrélés. Si on regarde le taux 2Y et 10Y
+
+\IMG{img/libor.png}{Libor}{1}
+
 \subsubsection*{Limite des modèle à un seul facteur}
 Montrons dans un premier temps pourquoi un modèle à un seul facteur n'est pas suffisant pour pricer ces produits qui dépendent non seulement de la distribution de chaque courbe de taux, mais aussi de leur corrélation. 
 
@@ -132,9 +140,6 @@ $$Cor(R(0, T_1), R(0, T_2) = 1$$
 
 On en déduit qu'un choc à $r_t$ agit de la même manière sur toutes les courbes.
 
-Dans la réalité, on observe sur les marchés que les taux à différentes maturités ne sont pas corrélés. Si on regarde le taux 2Y et 10Y
-
-\IMG{img/libor.png}{Libor}{1}
 
 Un modèle à un seul facteur ne capture pas ce comportement. Essayons de pallier à ce problème en rajoutons un facteur à ce modèle.
 
@@ -156,8 +161,11 @@ $$x(t) = x(s) e^{-\alpha (t-s)} +  \sigma \int_s^t e^{- \alpha (t-u)} \rm{d} W^1
 $$y(t) = x(s) e^{-\beta (t-s)} +  \nu \int_s^t e^{- \beta (t-u)} \rm{d} W^2_u $$
 
 \subsubsection{Construction}
+
 Cette méthode a été d'abord suggéré par Hull-White (1994)
-On commence par donner une approximation de la dynamique processus $x$ et $y$, par une suite de variable de discretisé $((\widetilde{x}_i, \widetilde{y}_i) \approx (x(i \Delta i), (y(i \Delta t))_i $. Pour celà nous calculerons les deux premier moment de $(x, y)$
+
+On discrétise l’intervalle $[0, T]$ avec les temps $T_i = i \Delta t$, où $\Delta t = \frac{T}{N}$.
+Nous donnons une approximation de la dynamique processus $x$ et $y$, par une suite de variable de discretisé $((\widetilde{x}_i, \widetilde{y}_i) \approx (x(i \Delta i), (y(i \Delta t))_i $. Pour celà nous calculerons les deux premier moment de $(x, y)$
 
 $$E(x(t+\Delta t) | F_t) = x(t) e^{-a \Delta t}$$
 $$V(x(t+\Delta t) | F_t) = \frac{\sigma^2}{2a} (1 - e^{-2a \Delta t})$$
@@ -215,10 +223,13 @@ $$P(t, T) = exp  \left( \espr{ -\int_t^T r_u \rm{d}u} + \frac{1}{2} Var \left( {
 Nous utiliserons cette formule directement dans le pricer, ce qui nous évitera de construire l'arbre jusqu'à la date de maturité du dernier zéro coupon.
 
 \subsubsection{Ajout d'un shift déterministe}
-Le modèle, tel que développé jusqu'a présent, présente un inconvénient majeur: à tout instant, $r_t$ est symétriquement distribué autour de $0$. Ceci ne correspond pas à la réalité, puisque les taux négatifs ne sont observé dans les marchés que dans de très rares circonstance ( en Europe après crise inter-bancaire de 2009, Au Japon après des années de déflation ). Pour pallier à ce problème, nous rajoutons une fonction $\phi$ au taux $r_t$. La fonction déterministe $\phi(t)$ permet de fitter exactement la courbe de taux observée. Dans la partie ``Calibraion nous'' nous verrons comment calculer cette fonction à partir des prix de bonds zéro coupon.
+Le modèle, tel que développé jusqu'a présent, présente un inconvénient majeur: à tout instant, $r_t$ est symétriquement distribué autour de $0$. Ceci ne correspond pas à la réalité, puisque les taux négatifs ne sont observé dans les marchés que dans de très rares circonstance ( en Europe après crise inter-bancaire de 2009, Au Japon après des années de déflation ). Une autre raison est que le modèle ne permet pas de retrouver les prix des bonds zéro coupon.
+
+Pour pallier à ce problème, nous rajoutons une fonction $\phi$ au taux $r_t$. La fonction déterministe $\phi(t)$ permet de fitter exactement la courbe de taux observée. Dans la partie ``Calibraion nous'' nous verrons comment calculer cette fonction à partir des prix de bonds zéro coupon.
 
 En prenant en compte ce changement, le prix du bond zéro coupon devient:
-$$P(t, T) = \espr{}$$
+
+$$P(t, T) = \espr{ e^{-r_t + \phi(t)}}$$
 
 Nous prendrons soin de modifier l'étape de ``draw back'' dans l'abre en changeant le facteur d'actualisation.
 
@@ -295,7 +306,20 @@ Le nombre de paramètre est fini (5) => pas de overfitting
 \end{itemize}
 
 \subsection{Calibration du drift}
+Le modèle gaussien à deux facteurs est calibré sur la
+courbe P M (0, T ), T > 0 de prix d’obligations zéro-coupon observés sur le
+marché si et seulement si $\phi$ est définie par :
+$$\Phi = ...$$
 
+Cependant, l’arbre ainsi simulé ne redonnera par exactement les prix des
+obligations zéro-coupon P (0, T i ). En effet, dans un arbre le taux simulé est
+considéré constant sur la période $[T_i, T_{i+1}$, donc tout se passe comme
+si l’arbre simulait en fait un taux zéro-coupon R. En d’autres termes, le prix
+d’une obligation zéro-coupon de maturité $T_1$ vaut
+$P(0, T_1 ) = e^{-R(0, T_1) \Delta t}$
+mais ce prix calculé directement sur l’arbre s’écrira $e^{-r_0\Delta t}$ .
+On propose donc ici de calibrer récursivement les $\phi_i$ afin de
+retrouver les prix des obligations zéro-coupon directement sur l’arbre. 
 $\Pi_j$ state price (arrow debrew) (paye 1 si le noeud $(t_n, j)$ est atteint.
 
 $$D_j(h_n) := \frac{1}{1 + r(t_n)(t_{n+1} - t_n)} $$ Le discount factor
@@ -303,12 +327,49 @@ $$ \Pi_j(t_{n+1}) = \sum_j \Pi_j(t_n) p_{j, j'}(t_n) D_{j'}(h_n)$$
 $$ \sum \Pi_j D_j(h_n) = P(0, t_{n+1}) $$
 
 Developement de taylor => trouver $h_n$
-\subsection{ Calibration de la vol}
-Stripping des caplets à partir des caps
+
+\subsection{Méthode de calibration de la surface - Méthode d'optimisation}
+
+Les traders préfère aiment bien avoir un controle fin sur le modèle qui reflète leur sensation sur le marché. Pour celà, le modèle doit êtres paramètrble, les paramètres doivent avoir un sens/être compris par les traders.
+
+Au lieu d'avoir un paramète par maturité, G2++ il y a 5 paramètres
 
 
-\subsection{Methode de calibration de la surface - Méthode d'optimisation}
+\begin{itemize}
+\item On s'autorise un intervalle pour les paramètres
+\item On utilise une grille (définie par le pas) pour définir les valeurs
+  autorisées pour chaque paramètre. (Tradeoff entre pas petite grande
+  précision et temps de calculs)
+\item On calcule le prix des caplets associés
+\item On choisit les paramètre qui reflètent le mieux les prix du
+  marché.
+\end{itemize}
 
+Maintenant que nous connaissons la dynamique de $P(t, T)$, nous pouvons fournir une formule explicite pour le prix des caplets.
+
+En effet, sous la mesure forward neutre $Q_T$, l'equation vérifiér  par $(x, y)$ est:
+
+\begin{align*}
+  \rm{d}x &= -\alpha x(t) \rm{d}t - Drift_x + \sigma \rm{d}W^1_t \\
+  \rm{d}y &= -\beta y(t) \rm{d}t - Drift_y + \nu \rm{d}W^2_t \\
+\end{align*}
+
+qui a donc pour solution:
+\begin{align*}
+  x(t) &= -\alpha x(t) \rm{d}t - Drift_x + \sigma \rm{d}W^1_t \\
+  y(t) &= -\beta y(t) \rm{d}t - Drift_y + \nu \rm{d}W^2_t \\
+\end{align*}
+
+Nous rappeleons l'expression du caplet sour la mesure $Q_T$
+$$ZBP = \Qespr{Q_T}{ ... } $$
+
+$P(t, T)$ admet une distribution normale sous $Q_T$ conditionnellement à $F_t$, 
+Le prix théorique:
+
+$$ZBC = P(t, T) N( d_1 ) - P(t, T) K N(d_2)$$
+$$d_{1/2} = \frac{ln \frac{P(t, S)}{KP(t, T)}}{V_p} +- \frac{1}{2} V_P $$
+
+On a 5 paramètres à optimiser
 On calibre les caplets
 
 Les caplets ne sont pas directement disponilbe sur les marche
@@ -320,6 +381,10 @@ On calibre les swaptions/caps
 \item minimisation de l'erreur L2
 \end{itemize}
 \IMG{img/capsurf.png}{Cap surface}{0.5}
+
+\subsubsection{Un mot sur le multi threading - gpu?}
+Le modèle permet de 
+multi process
 
 %\input{annexe.tex}
 

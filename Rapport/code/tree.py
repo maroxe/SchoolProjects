@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from multiprocessing import Pool
 import multiprocessing 
-import bs
+import scipy.stats as ss
 
 directions = [ (1, 1), (1, -1), (-1, 1), (-1, -1) ] 
 
@@ -64,9 +64,8 @@ class TreePricer:
         V3 = 2*(self.sigma  *self.nu) / (a*b) * (T-t + (np.exp(-a*(T-t))-1)/a + (np.exp(-b*(T-t))-1)/b - (np.exp(-(a+b)*(T-t))-1)/(a+b) )
         return V1 + V2 + V3
 
-
     def P(self, t, T, x, y): 
-        return np.exp( -Mx(t, T) * x- My(t, T) * y + 0.5 * V(t, T))
+        return np.exp( -self.Mx(t, T) * x- self.My(t, T) * y + 0.5 * self.V(t, T))
 
     def tree_caplet(self, t, T, K):
         nsteps = T
@@ -78,10 +77,25 @@ class TreePricer:
         return self.price(t, payoff)
 
 
-    def caplet(self, T, sigma):
-        r = -np.log(P(0, T, 0, 0)) / T
-        K = 0.04
-        return bs.BlackScholes("C", 0.1, K, r, self.sigma, T)
+    def caplet_sigma(self, t, S, T):
+        Mx = self.Mx(T, S)
+        My = self.My(T, S)
+        a = self.a
+        b = self.b
+        
+        Sigma = self.sigma **2 * Mx * Mx * (1-np.exp(-2*a*(T-t))) / (2*a) \
+                + self.nu **2 * My * My * (1-np.exp(-2*b*(T-t))) / (2*b) \
+                + 2 * self.rho * self.sigma * self.nu * Mx * My * (1-np.exp(-(a+b)*(T-t))) / (a+b)
+        return Sigma
+
+    def cf_caplet(self, t, T, S, x, y, K):
+        bondT = self.P(t, T, x, y)
+        bondS = self.P(t, S, x, y)
+        Sigma = self.caplet_sigma(t, T, S)
+        d1 = np.log( (K * bondT) / bondS) / Sigma - 0.5 * Sigma
+        d2 = d1 + Sigma
+        phi = ss.norm.cdf
+        return -bondS * phi(d1) + K*bondT*phi(d2)
 
 def draw_payoff(payoff):
     fig = plt.figure()
@@ -92,6 +106,10 @@ def draw_payoff(payoff):
 def price_caplet(t, T, K, sigma, nu, rho):
     pricer = TreePricer(sigma, nu, rho)
     return pricer.tree_caplet(t, T, K)[T-t:T+t+1, T-t:T+t+1]
+
+def price_caplet_cf(t, T, S, K, sigma, nu, rho):
+    pricer = TreePricer(sigma, nu, rho)
+    return pricer.cf_caplet(t, T, S, 0, 0, K)
     
 def draw_surface(H):
     fig = plt.figure()
@@ -102,19 +120,23 @@ def draw_surface(H):
     ax.scatter(X.ravel(), Y.ravel(), H.ravel(), c=H.ravel())
     plt.show()
 
-fig = plt.figure()
-ax = fig.add_subplot(111, projection='3d')
-ax.set_xlabel('t')
-ax.set_ylabel('T')
-ax.set_zlabel('Caplet')
-ax.set_title('Price surface')
+def draw_surface():
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.set_xlabel('T')
+    ax.set_ylabel('K')
+    ax.set_zlabel('Caplet')
+    ax.set_title('Price surface')
 
-for k in np.arange(-0.2, 0.2, 0.1):
-    H = np.array([[ price_caplet(t=i, T=i+j, K=k, sigma=0.01, nu=0.02, rho=-0.5)[0,0] for j in range(1, 10) ] for i in range(1, 10) ])
+    H = np.array([[ price_caplet_cf(t=0, T=10, S=10+i, K=0.1*j, sigma=0.01, nu=0.02, rho=-0.5) for j in range(1, 10) ] for i in range(1, 10) ])
     X,Y = np.mgrid[:len(H), :len(H[0])]
     ax.plot_surface(X, Y, H, rstride=1, cstride=1, cmap=plt.cm.coolwarm,
-        linewidth=0, antialiased=False)
+                    linewidth=0, antialiased=False)
     ax.scatter(X.ravel(), Y.ravel(), H.ravel(), c=H.ravel())
 
 
-plt.show()
+    plt.show()
+
+!
+
+draw_surface()

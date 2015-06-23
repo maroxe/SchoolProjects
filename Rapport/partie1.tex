@@ -4,9 +4,9 @@
 %%% End:
 
 
-\section{Quelques définitions}
+\chapter{Préliminaires sur les taux d'interêts}
 
-
+\section{Définiton}
 \begin{defn}
 On dénote le prix de zéro coupon forwardé $Z(T, S)$ le montant qu'il faut investir à dans un instrument risque-neutre au temps $T$ pour obtenir une unité de monnaie au temps $S$.
 \end{defn}
@@ -15,7 +15,8 @@ On dénote le prix de zéro coupon forwardé $Z(T, S)$ le montant qu'il faut inv
 On définit $f(t, T)$ le taux d'intêret instantané forwad à la date $t$ pour une maturité $T$ la quantité $$f(t, T) := - \frac{ \delta}{\delta T}  log Z(T, S)$$
 \end{defn}
 \begin{defn}
-La courbe de rendement ou la yield curve $L(t, T)$
+  La courbe de rendement ou la yield curve $L(t, T)$
+  On appelle courbe des taux ou structure par terme des taux la fonction associant à une maturité T un taux R, L ou Y . De telles courbes sont construites à partir des prix d’obligations observés sur les marchés étudiés.
 \end{defn}
 
 \begin{defn} Le taux instantanné
@@ -27,7 +28,7 @@ Le taux d'interet cumulé
 \end{defn}
 le taux $r_t$ n’est pas un produit échangé sur le marché que l’on peut mettre en portefeuille. On ne peut donc pas construire de couverture d’un produit donné de la même manière que dans un modèle d’action, et ce malgré la similitude des modèles mathématiques.
 
-\subsection{Choix de mesure}
+\section{Mesures équivalentes}
 
 Nous nous plaçons dans le cadre d'une économie à temps continu, qui admet une espace de probabilité $(\Omega, \cal{F}, \mathbb{P})$, avec $K+1$ actifs tradables, que nous appelerons actifs de base, dont le prix est donné par $(S_t = (S^0_t, ...S^k_t)_t$. Dans toute la suite nous confondons l'actif et son prix.
 $S^0$ étant l'actif sans risque, qui évolue donc au temps sans risque $$\mathrm{d}S^0_t = r_t S^0_t \mathrm{d}t$$
@@ -67,8 +68,16 @@ En effet le changement de numéraire préserve la propriété d'autofinancement 
 
 \begin{defn} Un numéraire est tout actif financier ne payant pas de dividendes \end{defn}
 
-\begin{defn} Mesure de probabilité équivalente
+\begin{defn} Mesure de probabilité équivalente.
+  
+Supposons qu’il existe un numéraire $(M_t )_{t \geq 0}$ et une mesure martingale équivalente $Q^M$ telle que le prix de chaque actif actualisé par le processus M soit une$Q_M$-martingale. 
+$$ \frac{S^i_t}{M_t} = \Qespr{Q^M}{ \frac{S^i_T}{M_T} | F_t}$$
+Soit $(N_t )_{t \geq 0}$ un numéraire. \\
+Alors il existe une mesure de probabilité $Q_N$ telle que le prix de chaque actif actualisé par le processus $N$ soit une $Q_N$-martingale, i.e.
+$$ \frac{S^i_t}{N_t} = \Qespr{Q^N}{ \frac{S^i_T}{N_T} | F_t}$$
 
+où $Q^N$ est définie par:
+$$\Qespr{Q^N}{ H } = \Qespr{Q^M}{ \frac{ M_T/N_T}{M_0/N_0} H}$$
 
 \end{defn}
 
@@ -82,18 +91,19 @@ Pour que celà nous soit utile, il faut que la dynamique de $H$ soit connue sous
 $$ \espr{ F(t; S, T) | F_u } = F(u; S, T)$$
 proof
 
-
-
 \newpage
 
 \section{Produits financier d'interêts}
 
 Le dévelopement de la section précédente nous sera utile pour pricer les dériver des taux.
-Considérons le cas particlier d'un call eurpéen à maturité $T$, strike $K$, dont le sous-jacent est bond zéro coupon. Le payoff d'un tel contrat est connu: $ (P(T, S) - K)^+)$. Son prix à un instant antérieur $t$ est
-$$ZBC(t, T, S, K) := \espr{ \frac{(P(T, S) - K)^+}{S^0_T} }$$
-Il est plus pratique de considérer la forward mesure. 
-$$ZBC(t, T, S, K) = \Qespr{Q_T}{(P(T, S) - K)^+}$$
-Cette écriture nous rappelle la 
+Considérons le cas particlier d'un call eurpéen à maturité $T$, strike $K$, dont le sous-jacent est bond zéro coupon qui expire à l'instant $S$. Le payoff d'un tel contrat est connu: $ (P(T, S) - K)^+)$. Son prix à un instant antérieur $t$ est
+$$ZBC(t, T, S, K) := \espr{ e^{-\int_t^T r_s \rm{d}s} \, (P(T, S) - K)^+ | F_t }$$
+Il est plus pratique de considérer la forward mesure, sous laquelle le prix du call s'écrit
+$$ZBC(t, T, S, K) = P(t, T) \, \Qespr{Q_T}{(P(T, S) - K)^+ | F_t}$$
+De même, pour un put
+$$ZBP(t, T, S, K) = P(t, T) \, \Qespr{Q_T}{(K - P(T, S))^+ | F_t}$$
+
+Cette écriture nous rappelle la formule de blackscholes pour les options sur les actions.
 
 \begin{defn}
   Swap:
@@ -103,13 +113,31 @@ $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
 
 
 \begin{defn}
-  Caplets/floor:
-Un caplet/floorlet peut être vu comme un call/put européenne sur un swap
+  Caplet/floorlet:
+  Un caplet/floorlet peut être vu comme un call/put européenne sur un
+  Son payoff est le suivant
+$$ \tau (L(T, S) - K)^+ $$
+\end{defn}
+
+\begin{align}
+  Cpl(t, T, S, \tau, X)
+  &= \espr{ e^{-\int_t^S r_s \rm{d}s} \tau (L(T, S) - K)^+ | F_t} \\ 
+  &= \espr{ e^{-\int_T^S r_s \rm{d}s} P(t, T)  \tau (L(T, S) - K)^+ | F_t} \\
+  &= \espr{ e^{-\int_T^S r_s \rm{d}s} (1 - (1 + X \tau)P(t, T))^+ | F_t} \\
+  &= (1 + X \tau) \espr{ e^{-\int_T^S r_s \rm{d}s} (\frac{1}{1 + X \tau} - P(t, T))^+ | F_t} \\
+  &= (1+X \tau) ZBP(t, T, S, \frac{1}{1+X \tau})
+\end{align}
+
+\begin{defn}
+  Cap/floor:
+Un cap/floorlet peut être vu comme une somme de caplets
 $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
 \end{defn}
 
+La forme des payoff indique que le cap permet de protéger son détenteur d’une hausse des taux Libor, et symétriquement que le floor protège d’une éventuelle baisse de ces taux.
+
 nominal $N = 1$
-$$ CPL(t, t_{i-1}, t_i, \tau_i, X) = (1+X \tau_i) ZBP(t, t_{i-1}, t_i, \frac{1}{1+X \tau_i})$$
+
 $$ZBP = \mathbb{E}^{Q_T}(  (P(t_{i-1}, t_i) - X)^+ )$$
 Si $P(t, T)$ admet une loi log normal par rapport a la mesure forward neutre $Q_T$, on peut appliquer black scholes. Dans la pratique, les trader sont habitués a raisonner en terme de vol bs plutot qu'en terme de prix. Nous verrons plus loin que la dynamique $P(t, T)$ est plus complique, mais cette methode permet néamoins d'avoir une correspondance entre prix et vol.
 

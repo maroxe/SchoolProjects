@@ -1,0 +1,221 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
+
+\chapter{Les différents modèles des taux d'interêts}
+
+Nous avons vu dans la partie précédente que pour trouver un prix aux dérivés de taux, il faut donner la dynamique qui régit le sous-jacent, dans notre cas  *BLA BLA BLA*
+Plusieurs approches sont possibles. Nous pouvons modéliser directement le forward:
+
+$$\mathrm{d} L = \sigma L^\beta \mathrm{d}W_t$$
+
+L'aproche historique, décrit la dynamique du taux d'interêt instantané comme étant ``drivé'' par un driver à une seule dimension. C'est l'approche que nous adopterons ici.
+Ceci est pratique dans le seul où les prix de zéro coupon et le taux sont directement disponible dans le modèle.
+De plus, certains produits financiers dépendent directement la courbe de rendement.
+Nous avons vu précédemment que la donnée du taux instantané $r_t$ permet de caractériser complètement cette courbe. 
+
+Il est donc important que la dynamique de $r_t$ soit à la fois riche pour pouvoir décrire la courbe de rendement observée dans le marché, et suffisemment simple pour que le temps nécessaire pour le calcul ne soit trop long.
+
+Nous pouvons considérer que la courbe de rendement varie dans un espace vectoriel de dimension infinie. Toute tentative de la caracteriser par un nombre fini de paramètre rééls est donc vouée à l'échec.
+
+Le modèle de Hull White a été introduit en 1990.  Un des atouts majeure de ce modèle est la possiblité de simuler la dynamique de $r_t$ par un arbre trinomiale. Ceci étant essentiel pour pricer des produits du type bermuda options
+$$ \mathrm{d}r_t =  (\theta(t) - \alpha(t) r_t) \mathrm{d}t + \sigma(t) \mathrm{d} W_t$$
+$$ r_t = e^{-\alpha t} r_0 + integral ...$$
+
+
+\newpage
+\subsection{Le modèle à deux facteurs}
+\subsubsection{Motivation}
+
+
+Considérons un produit $E$ dont le payoff  dépent  du spread entre un taux d'intêret cumulé entre $0$ et $T_1$ pour le premier et $0$ et $T_2$ pour le second. $E$ dépend donc de la distribution jointe des deux taux.
+
+La figure suivante, tiré du PDF *bla bla bla* reproduit une matrice de corrélation par terme de variations quotidiennes de taux zéro-coupon. Il apparait très clairement que des taux de maturités proches, comme le taux de maturité 3 ans et celui de maturité 4 ans, sont très corrélés, tandis que des taux de maturité éloignées (par exemple le taux 1 mois et le taux 10 ans) le sont très peu:
+
+\IMG{img/tabcorr.png}{Tableau de correlation}{0.3}
+
+Dans la réalité, on observe sur les marchés que les taux à différentes maturités ne sont pas corrélés. Si on regarde le taux 2Y et 10Y
+
+\IMG{img/libor.png}{Libor}{1}
+
+\subsubsection{Limite des modèle à un seul facteur}
+Montrons dans un premier temps pourquoi un modèle à un seul facteur n'est pas suffisant pour pricer ces produits qui dépendent non seulement de la distribution de chaque courbe de taux, mais aussi de leur corrélation. 
+
+La dynamique de $r_t$ dans le modèle de Vasicek est donné par
+$$r_t = k(\theta - r_t)  \mathrm{d}t  + \sigma \mathrm{d}W_t$$
+La formule analytique du bond zéro coupon est donc
+$$P(t, T) = A(t, T) exp(-B(t, T) r_t)$$
+En particulier le taux d'intêret cumulé est une donné par une transformation affine du taux instantané:
+$$R(t, T) = \frac{ln P(t, T)}{T-t} =: a(t, T) + b(t, T) r_t$$
+Le payoff du produit $E$ est donc fonction de la distribution jointe de $R(0, T_1)$ et $R(0, T_2)$. Sauf que:
+$$Cor(R(0, T_1), R(0, T_2) = 1$$
+
+On en déduit qu'un choc à $r_t$ agit de la même manière sur toutes les courbes.
+
+
+Un modèle à un seul facteur ne capture pas ce comportement. Essayons de pallier à ce problème en rajoutons un facteur à ce modèle.
+
+Dans cette section nous considérons un modèle où le taux d'intêret instantanté est donné par une somme de deux facteurs gaussiens centrés et corrélés. Dans ce modèle doit sa popularité au fait que le prix des bond zéron coupon admet une formule exact, ainsi que le prix des caps et des floors.
+
+
+\begin{align*}
+  \rm{d}x &= -\alpha x(t) \rm{d}t + \sigma \rm{d}W^1_t \\
+  \rm{d}y &= -\beta y(t) \rm{d}t + \nu \rm{d}W^2_t \\
+  \rm{d}r &= x + y 
+\end{align*}
+
+\newpage
+\subsection{Approximation de la solution par un arbre binomial}
+
+
+L'équation (*) s'intègre simplement en:
+$$x(t) = x(s) e^{-\alpha (t-s)} +  \sigma \int_s^t e^{- \alpha (t-u)} \rm{d} W^1_u $$
+$$y(t) = x(s) e^{-\beta (t-s)} +  \nu \int_s^t e^{- \beta (t-u)} \rm{d} W^2_u $$
+
+\subsubsection{Construction}
+
+Cette méthode a été d'abord suggéré par Hull-White (1994)
+
+On discrétise l’intervalle $[0, T]$ avec les temps $T_i = i \Delta t$, où $\Delta t = \frac{T}{N}$.
+Nous donnons une approximation de la dynamique processus $x$ et $y$, par une suite de variable de discretisé $((\widetilde{x}_i, \widetilde{y}_i) \approx (x(i \Delta i), (y(i \Delta t))_i $. Pour celà nous calculerons les deux premier moment de $(x, y)$
+
+$$E(x(t+\Delta t) | F_t) = x(t) e^{-a \Delta t}$$
+$$V(x(t+\Delta t) | F_t) = \frac{\sigma^2}{2a} (1 - e^{-2a \Delta t})$$
+$$Cov\{x(t+\Delta t), y(t+\Delta t) | F_t \} = \frac{\sigma \nu \rho}{a + b} (1-e^{-(a+b)\Delta t})$$
+
+Pour que le $((\widetilde{x}_i, \widetilde{y}_i)$ et $(x(i \Delta i), (y(i \Delta t))_i $ aient les même moment, la loi de  $((\widetilde{x}_i, \widetilde{y}_i)$  est donnée par:
+$$\mathrm{P} \left( \widetilde{x}_{i+1} = \widetilde{x}_i + a \, \mathrm{d}x, \widetilde{y}_{i+1} = \widetilde{y}_i + b \, \mathrm{d}y |  \widetilde{x}_i, \widetilde{y}_i \right) = p^{a, b}( \widetilde{x}_i, \widetilde{y}_i)$$
+où 
+\begin{itemize}
+\item $a, b \in \{-1, +1\}$
+\item $p$ est donnée par:
+$$ p^{a, b}(x, y) = \frac{1 + a \rho}{4} - b \frac{\beta \sigma y + a \sigma \nu  x}{4 \sigma \nu} \sqrt{\Delta t} $$
+\end{itemize}
+
+Le schéma suivant résume les transitions du processus {$(\widetilde{x}, \widetilde{y})$};
+\input{noeud}
+
+
+Nous appelons slice l'ensemble des noeuds qui sont équi distant de la racine. Une slice représente la distribution du processus $( \widetilde{x}_i, \widetilde{y}_i)$ à un instant donné.
+
+Le pricing se fait en deux temps:
+\begin{itemize}
+\item On diffuse le processus $(\widetilde{x}, \widetilde{y})$ dans l'arbre en prenant soin de calculer la probabilité de transition d'un état à un autre
+\item On ``drawback'' dans l'arbre en partant de la date à laquelle on fait le payoff, en ***discountant***
+\end{itemize}
+
+  \subsubsection*{Petite discussion sur la courbe d'actualisation vs la courbe de diffusion}
+  Avant la crise de 2008, il était d'usage courant que les banques considèrent le taux Libor comme reflétant la réalité du marché de crédit inter-bancaire. Le taux est publié quotidiennement par
+taux réél auquel les banques sont prête à se prétter de l'argent est appelé taux OIS (Overnight Index Swap).  
+Pendant la crise, le spread entre LIBOR et OIS était si grand qu'il devenait impossible à ignorer. Depuis tous les modèles de taux intégrent deux courbe, une pour la diffusion (LIBOR par exemple) et une autre pour l'actualisation (OIS).
+Dans le développement de cet article, nous ignorons cette différence.
+  
+\subsection{Améliorations}
+Si nous implémentons l'abre de façon naîve, le nombre de noeuds augmente de façon exponentielle en fonction du nombre de pas de temps. En pratique ceci est problématique et conduit vite à une saturation de mémoire. Dans l'exemple simplifié ci-dessus nous traçons l'arbre de diffusion du premier facteur ($x(t)$). A chaque pas de temps le nombre de noeuds double, ie pour $n$ pas de temps, nous nous retrouvons avec $2^n$ noeuds pour un facteur, ou $4^n$ pour deux. 
+
+\input{graph.tex}
+
+Remarquer que $(x, y)_i$tilde est un processus markovien homogène à valeurs discrètes nous permet d'optimiser la simulation de l'arbre. En effet, il nous suffit de calculer la table de transition une fois au début du programme et de la réutiliser pour avancer/reculer dans le temps. 
+
+\input{newgraph.tex}
+
+Voir l'annexe pour l'implémentation en python. Ci-dessous une visualisation graphique d'une slice.
+
+\IMG{img/slice2d.png}{Slice}{0.5}
+\IMG{img/pending.jpg}{Cache grind avant}{0.2}
+\IMG{img/pending.jpg}{Cache grind avant}{0.2}
+
+Une autre améliroation possible est de trouver une formule analytique pour certain produits. En effet, si nous reprenons l'exemple d'un cancellable spread option 2Y10Y dont la maturité est dans 5 ans, nous devrions normalement construite l'arbre jusqu'en 2030 pour avoir le taux 10Y en 2020. Nous pouvons éviter celà en fournissant directement une formule exacte pour les zéro coupons.
+
+\subsubsection{Formule exacte}
+Cette partie est fortement insipiré de *BLA BLA BLA*
+
+On rappelle l'expression du prix du bond zéron coupon sous la mesure risque neutre $Q$
+$$P(t, T) = \espr{ e^{-\int_t^T r_u \rm{d}u}} $$
+
+Notons $I(t, T) := \int_t^T x(u) + y(u) \rm{d}u$, et montrons que conditionnellement à l'information accumulé jusqu'au temps $t$, c'est une variable normale d'esperance $M(t, T)$ et de variance $V(t, T)$ où:
+\begin{align}
+  M(\alpha, t, T) &:= \frac{1 - e^{-\alpha (T-t) }}{\alpha} \\
+  V(\alpha, \sigma, \beta, \nu, t, T) &:= \frac{\sigma \nu}{\alpha \beta} \left[ T - t + \frac{e^{-\alpha (T-t) } - 1}{\alpha} + \frac{e^{-\beta (T-t) } - 1}{\beta} - \frac{e^{-(\alpha + \beta) (T-t) } - 1}{\alpha + \beta} \right] \\
+  V(t, T) &:= V(\alpha, \sigma, \alpha, \sigma, t, T)
+            + V(\beta, \nu, \beta, \nu, t, T)
+            + 2 \rho V(\alpha, \sigma, \beta, \nu, t, T)
+\end{align}
+
+\begin{proof}
+  Par simple calcul:
+  $$  \int_t^T x(u) \rm{d}u = \frac{1 - e^{-\alpha (T-t)}}{\alpha} + \frac{\sigma}{\alpha} \int_t^T \left[1 - e^{-\alpha (T-t)}\right] \rm{d} W^1_u$$
+  $$  \espr{\int_t^T x(u) \rm{d}u} = M(\alpha, t, T) x(t)$$
+  $$ Var(\int_t^T x(u) \rm{d}u) =   \left(\frac{\sigma}{\alpha}\right)^2 \espr{ \int_t^T \left[1 - e^{-\alpha (T-t)}\right]^2 \rm{d}u } = V(\alpha, \sigma, \alpha, \sigma, t, T)$$ (isométrie d'itto)
+\end{proof}
+
+Nous avons donc
+\begin{align}
+  P(t, T) &= exp  \left(  -\int_t^T r_u \rm{d}u + \frac{1}{2} Var \left( {-\int_t^T r_u \rm{d}u} \right)  \right) \\
+          &= exp  \left( - M(\alpha, t, T) x(t) - M(\beta, t, T) y(t) + \frac{1}{2} V(t, T) \right)
+  \end{align}
+
+Nous utiliserons cette formule directement dans le pricer, ce qui nous évitera de construire l'arbre jusqu'à la date de maturité du dernier zéro coupon.
+
+\subsubsection{Ajout d'un shift déterministe}
+Le modèle, tel que développé jusqu'a présent, présente un inconvénient majeur: à tout instant, $r_t$ est symétriquement distribué autour de $0$. Ceci ne correspond pas à la réalité, puisque les taux négatifs ne sont observé dans les marchés que dans de très rares circonstance ( en Europe après crise inter-bancaire de 2009, Au Japon après des années de déflation ). Une autre raison est que le modèle ne permet pas de retrouver les prix des bonds zéro coupon.
+
+Pour pallier à ce problème, nous rajoutons une fonction $\phi$ au taux $r_t$. La fonction déterministe $\phi(t)$ permet de fitter exactement la courbe de taux observée. Dans la partie ``Calibraion nous'' nous verrons comment calculer cette fonction à partir des prix de bonds zéro coupon.
+
+En prenant en compte ce changement, le prix du bond zéro coupon devient:
+
+$$P(t, T) = \espr{ e^{-r_t + \phi(t)}}$$
+
+Nous prendrons soin de modifier l'étape de ``draw back'' dans l'abre en changeant le facteur d'actualisation.
+
+Le processus est markovien
+
+\subsubsection{Optimiser la taille des slices }
+
+La slice que nous avons construite est rectangulaire.
+La plage que nous autorisons à $(x, y)$ doit logiquement dépendre de leur corrélation.
+
+$$ \rm{d} W_t := (\rm{d} W^1_t, \rm{d} W^2_t)^T = A(t)  \rm{d}Z_t$$
+où
+$$
+A(t) := 
+\left(
+  \begin{array}{cc}
+            \sigma & 0  \\
+            \rho \nu & \sqrt{1-\rho^2} \nu \  \\
+  \end{array}
+\right)
+$$
+$Z$ un mouvement brownien 2D à compostantes indépendantes.
+
+A l'instant $t_n$,
+$$x(t_{n+1}) := x_i(t_n) (1 - \alpha \Delta) + ... Z_1$$
+$$y(t_{n+1}) := y_i(t_n) (1 - \beta \Delta) + ... Z_1 + ...Z_2$$
+Les limites de l'abre sont définie comme étant les bords de l'ellipsoid décrit par l'équation:
+
+$$Z_1^2 + Z_2^2 = n_{\sigma}^2$$
+
+Où $n_{\sigma}$ dénote le dégré de déviation qu'on autorise.
+
+Comment connecter les slices entre elles
+
+
+\subsubsection{ Paramètres dépendant du temps}
+
+Dans la partie précédente, les paramètres $\sigma \nu \alpha \beta$ étaient constantes. Considérer des variables qui dépendent  du temps permet au modèle plus de flexibilité pour fitter les données de marché. Voir la partie calibration.
+
+Deux problèmes cependant:
+
+\begin{itemize}
+\item Le calcul est beaucoup plus long,
+\item possibilité de sur fitter les données historique du marché, ce qui affecte négativement le pouvoir prédicitive du modèle
+\end{itemize}
+
+<Calcul>
+
+On vérifie expérimentalement que le gain est significatif
+
+\IMG{img/pending.jpg}{Cache grind avant}{0.2}
+\IMG{img/pending.jpg}{Cache grind apres}{0.2}
+

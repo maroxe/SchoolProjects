@@ -4,44 +4,35 @@
 %%% TeX-master: t
 %%% End:
 
-%%% Preamble
-\documentclass[paper=a4, fontsize=11pt]{report}
+\documentclass[paper=a4, fontsize=12pt]{report}
 \usepackage[utf8]{inputenc}  
 \usepackage[T1]{fontenc}
 \usepackage{fourier}
-\usepackage[english]{babel}															% English language/hyphenation
-\usepackage[protrusion=true,expansion=true]{microtype}	
+\usepackage[francais]{babel}								\usepackage[protrusion=true,expansion=true]{microtype}	
 \usepackage{amsmath,amsfonts,amsthm} % Math packages
-\usepackage[pdftex]{graphicx}	
+\usepackage[pdftex]{graphicx}
 \usepackage{url}
 \usepackage{tikz}
 \usepackage{pdftexcmds}
 \usepackage{minted}
+\usepackage[top=3cm, bottom=3cm, left=3cm, right=3cm]{geometry}
 
 %%% Custom sectioning
 \usepackage{sectsty}
 \allsectionsfont{\centering \normalfont\scshape}
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{defn}{Definition}
 
-%%% Custom headers/footers (fancyhdr package)
-\usepackage{fancyhdr}
-\pagestyle{fancyplain}
-\fancyhead{}											% No page header
-\fancyfoot[L]{}											% Empty 
-\fancyfoot[C]{}											% Empty
-\fancyfoot[R]{\thepage}									% Pagenumbering
-\renewcommand{\headrulewidth}{0pt}			% Remove header underlines
-\renewcommand{\footrulewidth}{0pt}				% Remove footer underlines
-\setlength{\headheight}{13.6pt}
+\newcommand{\IMG}[3]{
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=#3]{#1}%
+    \caption{#2}
+    \label{#1}
+  \end{figure}
+}
 
-
-%%% Equation and float numbering
-\numberwithin{equation}{section}		% Equationnumbering: section.eq#
-\numberwithin{figure}{section}			% Figurenumbering: section.fig#
-\numberwithin{table}{section}				% Tablenumbering: section.tab#
-
-
-%%% Maketitle metadata
-\newcommand{\horrule}[1]{\rule{\linewidth}{#1}} 	% Horizontal rule
 \newcommand{\espr}[1]{
   \mathrm{E}^Q \left[ #1 \right]
 }
@@ -50,173 +41,27 @@
   \mathrm{E}^{#1} \left[ #2 \right]
 }
 
-
-\title{
-		%\vspace{-1in} 	
-		\usefont{OT1}{bch}{b}{n}
-		\normalfont \normalsize \textsc{Ecole Polytechnique} \\ [25pt]
-		\horrule{0.5pt} \\[0.4cm]
-		\huge Modèles des Taux d'interêt \\
-		\horrule{2pt} \\[0.5cm]
-}
-\author{
-		\normalfont \normalsize
-                Bachir EL KHADIR\\[-3pt] \normalsize
-                \today	
-}
-\date{}
-
-\theoremstyle{definition}
-\newtheorem{theorem}{Theorem}
-\newtheorem{defn}{Definition}
-
-\newcommand{\IMG}[3]{
-  \begin{center}
-    \includegraphics[scale=#3]{#1}%
-    \end{center}
-}
+\title{Titre}
 
 
 %%% Begin document
 \begin{document}
-\maketitle
+\input{pagedegardex.tex}
 
-\newpage
 \tableofcontents
+\listoffigures
 
 
 \input{merci.tex}
-
 \input{intro.tex} 
-
 \input{partie1.tex}
-\input{partie2.tex} 
-
-
-\chapter{Résultats}
-
-Une fois toutes ces modifications prises en compte, nous pouvons 
-
-\IMG{img/pending.jpg}{Slice 3D}{0.2}
-
-
-\subsection{Performance}
-L'arbre ainsi construit est puissant dans le sens où il permet de pricer quasiement tous les instruments dont on a besoin en pratique. Cependant ce modèle souffre de quelques défaut observé en pratique.
-
-\begin{itemize}
-\item  De par sa construction, l'arbre est bornée. Ce dernier ignore donc le comportement des driver loin de leurs moyenne. Si ceci n'est pas un problème dans le cadre de variable normale (poids centré), ceci peut engendrer des erreurs non négligeables quand les variables ont des distribution à queues épaisses.
-\item  Discrétisation des processus
-\item  probabilités négatives
-\end{itemize}
-
-Dans le cas des obligations zéro coupon, nous disposons d'une formule exacte pour calculer les prix et les comprarer à celles produites par l'arbre. 
-Le schéma suivant montre la slice produite par l'arbre (brute force) et celle produite par la formule exacte (closed form) 
-\IMG{img/slice.png}{Erreur bf vs cf Slice 3D}{0.7}
-
-\chapter{Application: calibration et pricing}
-Notre modèle possède à un certains nombres de paramètres libre que nous devons fixer. Pour celà, nous choisissons un certain nombre d'actifs tradables dans le marché, dont le prix est donc connus, que nous appelerons benchmark. Nous essayerons ensuite de trouver les paramètres qui reproduisent le mieux ces prix là. Cette procédure est appelé calibration.
-Une question naturelle qui se pose est de savoir quels actifs choisir pour la calibration. Il existe plusieurs réponses possibles, en pratique on essaye de trouver un produit à la fois simple et liquide.
-
-Dans notre cas il est indispensable que le modèle puissent retrouver les prix des bond zéro coupons.
-Idéalement notre benchmarks est une ensemble de caplets. Les caplets ne sont pas tradés en tant que tel sur le marché, nous n'avons accès qu'à des caps. => Stripping
-
-Le modèle à 2F permet de caputrer le hump de la courbe de rendement
-Le nombre de paramètre est fini (5) => pas de overfitting
-
-
-\begin{itemize}
-\item $h(t)$ pour reconstruire la yield curve $\sigma \rho \nu$ pour
-\item  matcher la surface
-\end{itemize}
-
-\subsection{Calibration du drift}
-Le modèle gaussien à deux facteurs est calibré sur la
-courbe $P^M (0, T ), T > 0$ de prix d’obligations zéro-coupon observés sur le
-marché si et seulement si $\phi$ est définie par :
-$$P^M(0, T) := e^{ \int_0^T \phi(s) \rm{d}s + M x(T) +M y(T) + \frac{1}{2} V}$$
-Ce qui est équivalent à 
-$$ \int_t^T \phi(s) \rm{d}s := \frac{P^M(0, T)}{P^M(0, t)} e^{-\frac{1}{2}(V(0, T) - V(0, t))}$$
-
-Cependant, l’arbre ainsi simulé ne redonnera par exactement les prix des
-obligations zéro-coupon $P^M(0, T_i)$. En effet, dans un arbre le taux simulé est
-considéré constant sur la période $[T_i, T_{i+1}$, donc tout se passe comme
-si l’arbre simulait en fait un taux zéro-coupon R. En d’autres termes, le prix
-d’une obligation zéro-coupon de maturité $T_1$ vaut
-$P(0, T_1 ) = e^{-R(0, T_1) \Delta t}$
-mais ce prix calculé directement sur l’arbre s’écrira $e^{-r_0\Delta t}$ .
-La figure ci-dessus illustre la différence entre les prix théorique et les prix calculés l'arbre:
-\IMG{img/pending.jpg}{Diff Slice}{0.2}
-
-On propose donc ici de calibrer récursivement les $\phi_i$ afin de
-retrouver les prix des obligations zéro-coupon directement sur l’arbre. 
-$\Pi_j$ state price (arrow debrew) (paye 1 si le noeud $(t_n, j)$ est atteint.
-
-$$D_j(h_n) := \frac{1}{1 + r(t_n)(t_{n+1} - t_n)} $$ Le discount factor
-$$ \Pi_j(t_{n+1}) = \sum_j \Pi_j(t_n) p_{j, j'}(t_n) D_{j'}(h_n)$$
-$$ \sum \Pi_j D_j(h_n) = P(0, t_{n+1}) $$
-
-Developement de taylor => trouver $h_n$
-
-\subsection{Méthode de calibration de la surface - Méthode d'optimisation}
-
-Les traders préfère aiment bien avoir un controle fin sur le modèle qui reflète leur sensation sur le marché. Pour celà, le modèle doit êtres paramètrble, les paramètres doivent avoir un sens/être compris par les traders.
-
-Au lieu d'avoir un paramète par maturité, G2++ il y a 5 paramètres
-
-
-\begin{itemize}
-\item On s'autorise un intervalle pour les paramètres
-\item On utilise une grille (définie par le pas) pour définir les valeurs
-  autorisées pour chaque paramètre. (Tradeoff entre pas petite grande
-  précision et temps de calculs)
-\item On calcule le prix des caplets associés
-\item On choisit les paramètre qui reflètent le mieux les prix du
-  marché.
-\end{itemize}
-
-Maintenant que nous connaissons la dynamique de $P(t, T)$, nous pouvons fournir une formule explicite pour le prix des caplets.
-
-En effet, sous la mesure forward neutre $Q_T$, l'equation vérifiér  par $(x, y)$ est:
-
-\begin{align*}
-  \rm{d}x &= -\alpha x(t) \rm{d}t - Drift_x + \sigma \rm{d}W^1_t \\
-  \rm{d}y &= -\beta y(t) \rm{d}t - Drift_y + \nu \rm{d}W^2_t \\
-\end{align*}
-
-qui a donc pour solution:
-\begin{align*}
-  x(t) &= -\alpha x(t) \rm{d}t - Drift_x + \sigma \rm{d}W^1_t \\
-  y(t) &= -\beta y(t) \rm{d}t - Drift_y + \nu \rm{d}W^2_t \\
-\end{align*}
-
-Nous rappeleons l'expression du caplet sour la mesure $Q_T$
-$$ZBC = \Qespr{Q_T}{ ( } $$
-
-$P(t, T)$ admet une distribution normale sous $Q_T$ conditionnellement à $F_t$, 
-Le prix théorique:
-
-$$ZBC(t, T, S, K) = -P(t, T) N( d_1 ) + P(t, T) K N(d_2)$$
-$$d_{-+} := \frac{ln \frac{KP(t, T)}{P(t, S)}}{\Sigma} +- \frac{1}{2}\Sigma $$
-$$\Sigma^2 := \Sigma^{x,x} + \Sigma^{y,y} + 2 \rho \Sigma^{x,y}$$
-$$\Sigma^{x,y} := \sigma \nu M^x(t, T) M^y(t, T) \frac{1 - e^{(\alpha+\beta) (T-t)}}{\alpha+\beta} $$
-
-On a 5 paramètres à optimiser
-On calibre les caplets
-
-Les caplets ne sont pas directement disponilbe sur les marche
-On calibre les swaptions/caps
-
-\begin{itemize}
-\item Le probleme de calbration est un probleme d'optimisation Courbe
-  de vol implicite :
-\item minimisation de l'erreur L2
-\end{itemize}
-\IMG{img/capsurf.png}{Cap surface}{0.5}
-
-\subsubsection{Un mot sur le multi threading - gpu?}
-La méthode de calibration proposée ci-dessus à l'avantage d'être faciement paralélisable. Les calculs aux différents points de la grille sont indépendant.
-
+\input{partie2.tex}
+\input{partie3.tex}
+\input{conclusion.tex}
 \input{annexe.tex}
+
+\bibliographystyle{plain}
+\bibliography{biblio}
 
 \end{document}
 

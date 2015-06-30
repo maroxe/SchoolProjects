@@ -1,0 +1,29 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+% Define styles for bags and leafs
+\tikzstyle{bag} = [text width=2em, text centered]
+\tikzstyle{end} = []
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[sloped]
+  \node (a) at ( 0,0) [bag] {$0$};
+  \node (b) at ( 4,-1.5) [bag] {$- \sigma \Delta t$};
+  \node (c) at ( 4,1.5) [bag] {$+ \sigma \Delta t$};
+  \node (d) at ( 8,-3) [bag] {$-2 \sigma \Delta t$};
+  \node (e) at ( 8,0) [bag] {$+ 0 \sigma \Delta t$};
+  \node (f) at ( 8,3) [bag] {$+ 2 \sigma \Delta t$};
+  \draw [->] (a) to node [below] {$p^-$} (b);
+  \draw [->] (a) to node [above] {$p^+$} (c);
+  \draw [->] (c) to node [below] {$p^+$} (f);
+  \draw [->] (c) to node [above] {$p^-$} (e);
+  \draw [->] (b) to node [below] {$p^+$} (e);
+  \draw [->] (b) to node [above] {$p^-$} (d);
+\end{tikzpicture}
+\label{newtree}
+\caption{Arbre optimisé}
+\end{figure}
+
+

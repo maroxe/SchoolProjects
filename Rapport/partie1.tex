@@ -8,35 +8,43 @@
 
 \section{Définiton}
 \begin{defn}
-On dénote le prix de zéro coupon forwardé $Z(T, S)$ le montant qu'il faut investir à dans un instrument risque-neutre au temps $T$ pour obtenir une unité de monnaie au temps $S$.
+On dénote le prix de zéro coupon forwardé $P(T, S)$ le montant qu'il faut investir à dans un instrument risque-neutre au temps $T$ pour obtenir une unité de monnaie au temps $S$.
 \end{defn}
 
 \begin{defn}
-On définit $f(t, T)$ le taux d'intêret instantané forwad à la date $t$ pour une maturité $T$ la quantité $$f(t, T) := - \frac{ \delta}{\delta T}  log Z(T, S)$$
-\end{defn}
-\begin{defn}
-  La courbe de rendement ou la yield curve $L(t, T)$
-  On appelle courbe des taux ou structure par terme des taux la fonction associant à une maturité T un taux R, L ou Y . De telles courbes sont construites à partir des prix d’obligations observés sur les marchés étudiés.
+On définit $f(t, T)$ le taux d'intêret instantané forwad à la date $t$ pour une maturité $T$ la quantité $$f(t, T) := - \frac{ \delta}{\delta T}  log P(T, S)$$
 \end{defn}
 
-\begin{defn} Le taux instantanné
-$r_t = lim_{T 0}f(t, T) $ 
+\begin{defn} Le taux instantanné est défini par
+  $r_t = \underset{T \to t}{lim}f(t, T) $ \\
+  Le taux d'actualisation (stochastique) est: $D_t^T := e^{-\int_t^Tr_s \rm{d}s}$
 \end{defn}
 
+\iffalse
 \begin{defn}
-Le taux d'interet cumulé
+  Le taux d'interet cumulé entre deux période $t$ et $T$ est la quantité $R(t, T)$ que $r_t$ doit égaler spour avoir le même rendement
 \end{defn}
+\fi
+
+\begin{defn}
+  Le taux d'interet forward $F(t; T, S)$ est la prévision  à l'instant $t$ du taux entre deux période $T$ et $S$.
+  Ce taux est la quantité $L$ connu à l'instant qui annule la valeur de ce contrat à l'instant $t$:
+  \begin{itemize}
+  \item Recevoir l'interêt  $L$ sur un 1 euro entre $T$ et $S$
+  \item Payer le taux variable  $F(T, S)$ sur un 1 euro entre $T$ et $S$
+  \end{itemize}
+\end{defn}
+
+
 le taux $r_t$ n’est pas un produit échangé sur le marché que l’on peut mettre en portefeuille. On ne peut donc pas construire de couverture d’un produit donné de la même manière que dans un modèle d’action, et ce malgré la similitude des modèles mathématiques.
 
 \section{Mesures équivalentes}
 
-Nous nous plaçons dans le cadre d'une économie à temps continu, qui admet une espace de probabilité $(\Omega, \cal{F}, \mathbb{P})$, avec $K+1$ actifs tradables, que nous appelerons actifs de base, dont le prix est donné par $(S_t = (S^0_t, ...S^k_t)_t$. Dans toute la suite nous confondons l'actif et son prix.
+Nous nous plaçons dans le cadre d'une économie à temps continu, qui admet une espace de probabilité $(\Omega, \cal{F}, \mathbb{P})$, avec $K+1$ actifs tradables, que nous appelerons actifs de base, dont le prix est donné par $(S_t = (S^0_t, ...S^k_t))_{t \geq 0}$. Dans toute la suite nous confondons l'actif et son prix.
 $S^0$ étant l'actif sans risque, qui évolue donc au temps sans risque $$\mathrm{d}S^0_t = r_t S^0_t \mathrm{d}t$$
 ie $$S^0_t = e^{-\int_0^t r_s \mathrm{d}s}$$
 
 Par définition, nous connaissons le prix des actifs $K+1$, dans la prochaine section nous détaillerons la procédure de pricing de produits plus compliqués.
-
-
 
 \subsubsection{Principe de pricing}
 A travers les $K+1$ actifs de base, nous construisons des produits plus complexes. 
@@ -49,7 +57,6 @@ Commençons d'abord par définir ce qu'est une stratégie auto financé.
   \item La valeur associé à cette stratégie est donné par $V_t(\Phi) = <\Phi_t, S_t>$.
   \item Une stratégie est auto financée sir $\mathrm{d}V_t = \Phi_t \mathrm{d}S_t$
   \end{itemize}
-
 \end{defn}
 
 Une hypothèse souvent utilisée dans le cadre de la finance de marché est l'abscence d'abitrage. Une opportunité d'arbitrage est la possiblité d'investir 0 aujourd'hui, et recevoir, avec probabilité non nulle, un montant positive dans le future. En d'autres termes, l'abscence d'arbitrage signifie que si $\Phi$ est une stratégie auto financée telle que $V_0(\Phi) = 0$, alors $\mathbb{P} ( V_t(\Phi) > 0 ) = 0$. Ceci nous permettra de valoriser des produits complexes en répliquant leur payoff par une combinaison linéaire de produits simple dont le prix est connue.
@@ -86,10 +93,15 @@ Example: Mesure forward neutre
 Le bond zéron coupon dont la maturité concide avec la date du payment d'un produit financier peut servir de numéraire. Nous appellerons la mesure de probabilité associé $Q_T$.
 
 Dans ce cas $P(T, T) = 1$, et par conséquent il suffit de calculer l'espérance du payoff (divisé par 1) sous $Q_T$.
-Si nous notons le payoff de ce produit $H$, alors son prix à l'instant $0$ est donné par $$P(t, T) \, \espr{ H | F_t } $$
+Si nous notons le payoff de ce produit $H$, alors son prix à l'instant $0$ est donné par $$P(t, T) \, \Qespr{Q_T}{ H | F_t } $$
 Pour que celà nous soit utile, il faut que la dynamique de $H$ soit connue sous $Q_T$. Ceci est vérifié pour les contrats payant un taux d'interêt sur un nominal fixe. En effet $(F(t; S, T))_t$ est une martingale 
-$$ \espr{ F(t; S, T) | F_u } = F(u; S, T)$$
-proof
+$$ \Qespr{Q_T}{ F(t; S, T) | F_u } = F(u; S, T)$$
+
+\textbf{Preuve:}
+Si nous disposons de  $\frac{P(t, S)}{(1+(T-S)F(t; S, T))}$ au temps $t$, nous pouvons acheter $\frac{1}{(1+(T-S)F(t; S, T))}$ unités de l'obiligation $P(t, S)$, nous obtenons $\frac{1}{(1+(T-S)F(t; S, T))}$ au temps $S$, cette somme là est, par définition de $F$, équivalente à l'obtention de 1 à l'instant $T$, qui exactement le payoff de l'obligation $P(t, T)$.
+Par principe de \textbf{non arbitrage}, ces deux investissement doivent avoir le même coût, ie:
+$ \frac{1}{T-S} \left( \frac{P(t, S)}{P(t, T)} - 1  \right) $
+La preuve en découle.
 
 \newpage
 
@@ -107,7 +119,7 @@ Cette écriture nous rappelle la formule de blackscholes pour les options sur le
 
 \begin{defn}
   Swap:
-Un swap est un contract entre deux parties qui s'engagent à échanger des flux financiers pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret sur un notionnel K. 
+Un swap est un contract entre deux parties qui s'engagent à échanger des flux financiers pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret à un taux fixe $K$ contre un taux variable (LIBOR ${L(T_i)}_i$ par examplesur un notionnel $N$. 
 $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
 \end{defn}
 
@@ -136,16 +148,6 @@ $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
 
 La forme des payoff indique que le cap permet de protéger son détenteur d’une hausse des taux Libor, et symétriquement que le floor protège d’une éventuelle baisse de ces taux.
 
-nominal $N = 1$
-
-$$ZBP = \mathbb{E}^{Q_T}(  (P(t_{i-1}, t_i) - X)^+ )$$
-Si $P(t, T)$ admet une loi log normal par rapport a la mesure forward neutre $Q_T$, on peut appliquer black scholes. Dans la pratique, les trader sont habitués a raisonner en terme de vol bs plutot qu'en terme de prix. Nous verrons plus loin que la dynamique $P(t, T)$ est plus complique, mais cette methode permet néamoins d'avoir une correspondance entre prix et vol.
-
-
-\begin{defn}
-Swaption
-$$ N (\sum D_t^{T_i} \tau_i (L(T_{i-1}) - K))^+ $$
-\end{defn}
 
 %%% Local Variables:
 %%% mode: latex

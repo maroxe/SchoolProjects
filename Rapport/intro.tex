@@ -4,27 +4,46 @@
 %%% TeX-master: "main"
 %%% End:
 
+\newpage
+
+\subsection*{Résumé}
+  
+  Ce rapport présente quelques outils utilisés lors du pricing de dérivés de taux. 
+  Il est particulièrement centré sur le modèle de Hull White qui est conduit par deux facteurs (appelé aussi G2++).  J'adopterai le plan suivant dans la rédaction de ce rapport:
+  \begin{itemize}
+  \item 
+    La première partie introduit le marché de taux par un certain nombre de définitions qui lui sont propores, ainsi que les produits financiers principaux utilisés pour la calibration des modèles.
+  \item 
+    Dans la deuxième partie je présenterai quelques modèles existant, et je discuterai de leurs limites et de leurs implémentation pratique.
+  
+  \item
+    La troisième partie présente les résultats concrets que j'ai obtenus dans le cas du modèle gaussien à deux facteurs, ainsi que la partie calibratoin de modèle.
+  \end{itemize}
+  
+\subsection*{Abstract} 
+This report presents some tools used in the pricing for intereset rates derivatives. It's focused on two factors Hull-White model (called G2++).  
+  \begin{itemize}
+  \item
+    The first part introduces some definitions relative to the interest rates market, as well as some derivative used later for the calibration process.
+  \item
+    In the second part I will present some existing models, their limitations and possible implementation.
+
+  \item
+    The last part presents the results I obtained using the G2++ model and the calibration process.
+  \end{itemize}
+
+
+
+
+\newpage
 \chapter*{Introduction}
 
-J'ai fait mon stage a JP Morgan equipe exotic rates.
-La plus grosse partie du travail: trouver le bon modele pour pricer un produit et le calibrer au marche
+J'ai fait mon stage a JP Morgan equipe exotic rates. La plus grosse partie du travail consitait à trouver le bon modèle mathématique pour pricer un produit et le calibrer au marche.
 
 L'interêt que porte les banques aux produits exotiques a considérablement augmenté aucours des dernières années. Plusieurs modèles ont été dévelopé pour refeléter au mieux le comportement des marchés financiers.
-Le département au sein duquel j'ai effectué mon stage s'occupait des produits basé sur les taux d'intêret. Dans ce domaine, une propriété appréciable est le fait qu'ils possèdent un nombre de paramètres suffisant pour être calibrés parfaitement au prix observable dans la réalité, sans pour autant ``overfitter'' l'échantillon disponible. En effet, depuis la crise, le marché des taux a connu des changement radicaux, la possiblité d'observer des taux négatifs en est un example. 
 
-Un produit en particulier n'a cessé de  gagner en notoriété: les cancelables spread options. Ma mission de stage était de comprendre les modèles existant et leurs implémentations, comprendre leurs limites, et essayer de trouver des améliorations.
+Le département au sein duquel j'ai effectué mon stage s'occupait des produits basé sur les taux d'intêret. Dans ce domaine, une propriété appréciable dans un modèle est le fait qu'il possèd un nombre de paramètres suffisant pour être calibré parfaitement aux prix observable dans la réalité, sans pour autant ``overfitter'' l'échantillon disponible. En effet, dérnièrement, surtout depuis la crise, le marché des taux a connu des changement radicaux, la possiblité d'observer des taux négatifs en est un example. 
 
+Un produit en particulier n'a cessé de  gagner en notoriété: les cancelables spread options. Ma mission de stage était de comprendre les modèles existant et leurs implémentations qui permettent de pricer (entre autres) ce type de produits, comprendre leurs limites, et essayer de trouver des améliorations.
 
-
-Dans la littérature, il existe differents modoèes Hull white modele 1F et 2F 
-Motivation
-C'est la premiere implementation de de WH a 2F avec des parametres variant avec le temps
-\begin{itemize}
-\item 
-  Dans une première partie je presenterai quelques définition essentielles à l'études des taux d'interêts, ainsi que les produits financiers principaux utilisé pour la calibration des modèles.
-\item 
-Dans la deuxième partie modèle existant dans la littérature, pk 2F?
-Implémentation, calibration
-Conclusion
-
-\end{itemize}
+Ce stage est à forte composante informatique, une attention particulière a été accordée aux détails d'implémentation et optimisation du code.

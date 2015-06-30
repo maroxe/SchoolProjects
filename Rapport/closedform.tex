@@ -1,0 +1,201 @@
+\chapter{Formule exacte des obligations zéro coupon pour des paramètres dépendant du temps}
+
+Dans cette partie nous détaillerons le calcul de prix d'obligation zéro coupon dans le modèle de Hull-White à deux facteurs dans le cas où les paramètre sont dépendents du temps, ou plus précisément, constants par morceaux.
+
+Le modèle est toujours markovien, c'est à dire que nous pouvons toujours écrire $P(t, T)$ comme une fonction détérministe de $(x(t), y(t)$:
+
+$$P(t, T) := e^{\int_t^T \phi_s \rm{d}s - M_x(t, T) x(t) - M_y(t, T) y(t) + \frac{1}{2} V(t, T)}$$
+
+Nous calculerons ici $M_x$, $M_y$ et $V$  
+
+\subsection*{Rappel du modèle}
+$$\rm{d}x_t = -\beta_x x_t \rm{d}t +  \sigma_x \rm{d} W^1_t $$
+$$\rm{d}y_t = -\beta_y y_t \rm{d}t +  \sigma_y \rm{d} W^2_t $$
+$$r_t =  \phi(t) + x_t  + y_t $$
+$$\rho_t = <\rm{d} W^1_t, \rm{d} W^2_t>$$
+
+\subsection*{Cas particulier: modèle à un seul facteur}
+Nous commencerons par le cas particulier où $y(t) = 0$, l'équation différentielle vérifiée par $x(t)$ s'intègre facilement en:
+$$x(t) = \sum_{t_i < t} \sigma_i  \int_{t_i}^{t \wedge t_{i+1}}  e^{- a (t \wedge t_{i+1}-s)}   \rm{d} W_1(s) $$
+
+Nous devons maintenant intégrer la fonction $x$ entre $t_0$ et $t_f$ en la décomposant en somme d'intégrales entre les instant $t_i$ et $t_{i+1}$ où tous les paramètres sont constants et l'intégrale se calcule facilement.
+
+\begin{align*}
+\int_{t_0}^{t_f} x(t) dt &= \sum_i \int_{t_i}^{t_{i+1}} x(t) dt \\
+&= \sum_i \frac{1 - e^{-\beta_i (t_{i+1} - t_i) }}{ \beta_i} x(t_i)
++ \frac{\sigma_i}{\beta_i} \int_{t_i}^{t_{i+1}} (1 - e^{-\beta_i (t_{i+1} - u)}) dW_u \\
+&= \sum_i \frac{1 - e^{-\beta_i (t_{i+1} - t_i) }}{ \beta_i} e^{-\int_{t_0}^{t_i} \beta} x(t_0) \\
+&+  \sum_i \frac{1 - e^{-\beta_i (t_{i+1} - t_i) }}{ \beta_i} \int_{t_0}^{t_i} \sigma_u e^{-\int_u^{t_i} \beta} dW_u
++ \frac{\sigma_i}{\beta_i} \int_{t_i}^{t_{i+1}} (1 - e^{-\beta_i (t_{i+1} - u)}) dW_u \\
+&=: M(t_0, t_f) x(t_0) + v(t_0, t_f) \sim \mathcal{N}( M(t_0, t_f), V(t_0, t_f))
+\end{align*}
+où nous avons noté: $V(t_0, t_f) := Var( \int_{t_0}^{t_f} x ) = Var( v(t_0, t_f))$
+
+d'où
+\begin{align*}
+P(t, T) &= E\left[ exp \left\{  -\int_t^T h(u) + E(-\int_t^T x) - \frac{1}{2} Var(-\int_t^T x) \!  \right\} \right]
+\end{align*}
+
+Simplifions l'écriture de $V(t_0, t_f)$
+\begin{align*}
+v(t_0,t_f) &:=
+\sum_{i, t_0 \leq t_i \leq t_{i+1} \leq t_f }
+\frac{1 - e^{-\beta_i (t_{i+1} - t_i) }}{ \beta_i} \int_{t_0}^{t_i} \sigma_u e^{-\int_u^{t_i} \beta} dW_u
++ \frac{\sigma_i}{\beta_i} \int_{t_i}^{t_{i+1}} (1 - e^{-\beta_i (t_{i+1} - u)}) dW_u \\
+&=
+\sum_{i}
+\frac{1-e^{- \int_{t_i}^{t_{i+1}} \beta}}{\beta_i}
+\int_{t}^{t_{i}} \sigma_u e^{-\int_u^{t_i} \beta} dW_u
++
+\frac{\sigma_i}{\beta_i} \int_{t_i}^{t_{i+1}} 1-e^{-\int_u^{t_{i+1}} \beta} dWu  \\
+&=
+\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u
++
+\sum_{i }
+\int_{t}^{t_{i}} \frac{\sigma_u}{\beta_i} e^{-\int_u^{t_i} \beta} dW_u
+- \int_{t}^{t_{i}} \frac{\sigma_u}{\beta_i} e^{-\int_u^{t_{i+1}} \beta} dW_u
+- \frac{\sigma_i}{\beta_i} \int_{t_i}^{t_{i+1}} e^{-\int_u^{t_{i+1}} \beta} du
+\\
+&=
+\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u
++
+\sum_{i }
+ \frac{ \int_{t}^{t_{i}}\sigma_u e^{-\int_u^{t_i} \beta} dW_u }{\beta_i}
+- \frac{ \int_{t}^{t_{i+1}}\sigma_u e^{-\int_u^{t_{i+1}} \beta} dW_u}{\beta_i}
+\\
+&=
+\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u
++
+\sum_{i}
+\frac{K_i - K_{i+1}}{\beta_i}
+& \text{with $K_i = \int_{t_0}^{t_{i}}\sigma_u e^{-\int_u^{t_i} \beta} dW_u $}
+\\
+&=
+\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u
++
+\sum_{i}
+(\frac{1}{\beta_i} - \frac{1}{\beta_{i+1}}) K_i\\
+&=
+\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u
++
+\sum_{i=1..n}c_i K_i
+&\text{avec  $c_i = \frac{1}{\beta_i} - \frac{1}{\beta_{i-1}}$ and $\beta_{n} = \infty$}
+\end{align*}
+
+Nous sommes intéressés par la variance de cette quantité là:
+
+\begin{align*}
+Var(t_0, t_f) &:= var( v(t_0,t_f)| F_{t_0}  ) \\
+&= <\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u, \int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u>
++ 2 \sum_i c_i  < K_i , \int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u>
++  \sum_{i, j} c_i c_j <  K_i,   K_j> \\
+&= \omega
++ 2 \sum_i c_i  \alpha_i
++  \sum_{i, j}c_i c_j \gamma_{ij} \\
+&= \omega + 2 \sum_i c_i  \alpha_i
++  2 \sum_{i < j} c_i c_j e^{-\int_{t_i}^{t_j} \beta} \gamma_{i}
++ \sum_{i } c_i^2  \gamma_{i}
+\\
+&= \omega + 2 \sum_i c_i  \alpha_i
++ 2 \sum_{i=1..n} \gamma_{i} \frac{c_i}{I_i} \left( \sum_{j = i+1...n} I_j c_j \right)
++ \sum_{i } c_i^2  \gamma_{i}\\
+&= \omega + 2 \sum_i c_i  \alpha_i
++ 2 \sum_{i=1..n} \gamma_{i} \frac{c_i}{I_i} \left( S_n - S_i \right)
++ \sum_{i } c_i^2  \gamma_{i}
+\end{align*}
+
+Où
+\begin{align*}
+  I_i &:= e^{-\int^{t_i}_0 \beta} \\
+  S_i &:= \sum_{j = 0...i} I_j c_j \\
+  \omega &:= \sum_i  (\frac{\sigma_i}{\beta_i})^2 (t_{i+1} - t_i)
+\end{align*}
+
+Et les suite $\alpha_i$ et $\gamma_i$ sont définies par réccurence:
+  \begin{align*}
+    \alpha_{i+1} &:= e^{-\beta_i (t_{i+1} - t_i)} \alpha_i + (\frac{\sigma_i}{\beta_i})^2 (1 - e^{-\beta_i(t_{i+1} - t_i)}) \\
+    \gamma_{i+1} &:= e^{-2 \beta_i (t_{i+1} - t_i)} \gamma_i + \frac{\sigma_i^2}{2 \beta_i} (1 - e^{-2 \beta_i(t_{i+1} - t_i)})\\
+\end{align*}
+    
+Dans la section suivante on détaille le calcul de $\alpha$, $\gamma$ et $\omega$
+
+Cette formule permet de calculer $V$ en temps linéaire (ie $O(t_f - t_0)$)
+\subsection*{Calculations}
+
+Pour $i < j$
+\begin{align*}
+\gamma_{i, j} &:= <K_i, K_j>  \\
+&= < \int_{t}^{t_i}\sigma_u e^{-\int_u^{t_i} \beta} dW_u,
+\int_{t}^{t_j}\sigma_u e^{-\int_u^{t_j} \beta} dW_u > \\
+&= e^{-\int_{t_i}^{t_j} \beta} \int_t^{t_i} (\sigma_u e^{-\int_u^{t_i} \beta})^2 du \\
+&= e^{-\int_{t_i}^{t_j} \beta} \int_t^{t_i} \sigma_u^2 e^{-2 \int_u^{t_i} \beta} du \\
+&= e^{-\int_{t_i}^{t_j} \beta} \gamma_{i, i}
+\end{align*}
+
+\begin{align*}
+\gamma_{i+1} &:= \gamma_{i+1, i+1} \\
+&= \int_t^{t_{i+1}} \sigma_u^2 e^{-2 \int_u^{t_{i+1}} \beta} du \\
+&= e^{-2 \beta_i (t_{i+1} - t_i)} \gamma_i + \int_{t_i}^{t_{i+1}} \sigma_i^2 e^{-2 \beta_i(t_{i+1} - u)} du \\
+&= e^{-2 \beta_i (t_{i+1} - t_i)} \gamma_i + \frac{\sigma_i^2}{2 \beta_i} (1 - e^{-2 \beta_i(t_{i+1} - t_i)})
+\end{align*}
+
+\begin{align*}
+\alpha_i &:=
+<K_i, \int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u> \\
+&=
+< \int_{t}^{t_i}\sigma_u e^{-\int_u^{t_i} \beta} dW_u,
+\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u > \\
+&=   \int_t^{t_i} \frac{\sigma_u^2}{\beta_u} e^{-\int_u^{t_i} \beta} du \\
+\end{align*}
+
+\begin{align*}
+\alpha_{i+1}
+&= e^{-\beta_i (t_{i+1} - t_i)} \alpha_i + \int_{t_i}^{t_{i+1}} \frac{\sigma_u^2}{\beta_u} e^{-\beta_i(t_{i+1} - u)} du\\
+&= e^{-\beta_i (t_{i+1} - t_i)} \alpha_i + (\frac{\sigma_i}{\beta_i})^2 (1 - e^{-\beta_i(t_{i+1} - t_i)})
+\end{align*}
+
+
+\begin{align*}
+\omega &:=
+<\int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u, \int_{t_0}^{t_f} \frac{\sigma_u}{\beta_u} dW_u>\\
+&= \int_{t_0}^{t_f} (\frac{\sigma_u}{\beta_u})^2 du \\
+&= \sum_i  (\frac{\sigma_i}{\beta_i})^2 (t_{i+1} - t_i)
+\end{align*}
+
+
+\newpage
+
+\subsection*{Le modèle à deux facteurs}
+Nous revenons au modèle original à deux facteurs. Les paramètre relatifs au facteur $x$ (resp. $y$) seront dénoté par un x (resp. y) en exposant.
+
+L'espérance étant linéaire, et la variance quadratique, 
+$M(t_0, t_f)$ est remplacée par $M^x x + M^y y$, et $V(t_0, t_f)$ par $V^{xx} + V^{yy} + 2 V^{xy}$, de sorte que:
+
+$$P(t_0, T_f) = exp(-\int_{t_0}^{t_f} \Phi - M^x(t_0, t_f) x(t_0) - M^y(t_0, t_f) y(t_0) + \frac{V(t_0, t_f)}{2})$$
+
+\begin{align*} V^{xy} &:= <
+\int_{t_0}^{t_f} \frac{\sigma^x_u}{\beta_u^x} dW_u^x+\sum_{i=1..n}c_i^x K_i^x,
+\int_{t_0}^{t_f} \frac{\sigma^y_u}{\beta_u^y} dW_u^y+\sum_{i=1..n}c_i^y K_i^y> \\
+&= \int_{t_0}^{t_f} \frac{\sigma_u^x \sigma_u^y}{\beta_u^x \beta_u^y} \rho_u du
++ \sum_{ij} c_i^x c_j^y <K_i^x, K_i^y>
++ \sum_i c_i^x <K_i^x \int_{t_0}^{t_f} \frac{\sigma^y_u}{\beta_u^y} dW_u^y> + c_i^y <K_i^y \int_{t_0}^{t_f} \frac{\sigma^x_u}{\beta_u^x} dW_u^x>\\
+&= \omega^{x,y} + \sum_{ij} c_i^x c_j^y \gamma_{ij}^{xy}
++ \sum_i c_i^x \alpha_i^x + c_i^y \alpha_i^y
+\end{align*}
+
+avec comme pour le cas à un seul facteur:
+$$\alpha^x_{i+1} = e^{-\beta^x_i(t_{i+1} - t_i)} \alpha^x_i + \rho_i \frac{\sigma^x_i \sigma^y_i}{\beta^x_i \beta^y_i} (1 - e^{-\beta^x_i(t_{i+1} - t_i)})$$
+$$\gamma_{i+1} = e^{- (\beta^x_i+\beta^y_i) (t_{i+1} - t_i)} \gamma_i + \rho_i \frac{\sigma_i^x \sigma_i^y}{\beta_i^x + \beta_i^y} (1 - e^{- (\beta^x_i+\beta^y_i)(t_{i+1} - t_i)})$$
+$$\omega := \sum_i \rho_i  \frac{\sigma_i^x \sigma_i^y}{\beta_i^x \beta_i^y} (t_{i+1} - t_i)$$
+
+\iffalse
+With $i \leq j$:
+\begin{align*}
+ \gamma_{ij}^{xy} &:= <K_i^x, K_i^y> \\
+  &= <\int_t^{t_i} \sigma_u^x e^{-\int_t^{t_i} \beta^x} dW^x, \int_t^{t_j} \sigma_u^y e^{-\int_t^{t_j} \beta^y} dW^y> \\
+  &= e^{-\int_{t_i}^{t_j} \beta_y} \int_t^{t_i} \sigma_u^x \sigma_u^y e^{-\int_t^{t_i} \beta^x + \beta_y} \rho_u du \\
+&= e^{-\int_{t_i}^{t_j} \beta_y} \gamma_{ii}
+\end{align*}
+\fi
+
+

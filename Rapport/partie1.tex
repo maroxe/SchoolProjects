@@ -4,33 +4,33 @@
 %%% End:
 
 
-\chapter{Préliminaires sur les taux d'interêts}
+\chapter{Préliminaires sur les taux d'intérêt}
 
-\section{Définiton}
+\section{Définition}
 \begin{defn}
-On dénote le prix de zéro coupon forwardé $P(T, S)$ le montant qu'il faut investir à dans un instrument risque-neutre au temps $T$ pour obtenir une unité de monnaie au temps $S$.
+On dénote le prix de zéro d'une obligation zéro-coupon $P(T, S)$ le montant qu'il faut investir à dans un instrument risque-neutre au temps $T$ pour obtenir une unité de monnaie au temps $S$.
 \end{defn}
 
 \begin{defn}
-On définit $f(t, T)$ le taux d'intêret instantané forwad à la date $t$ pour une maturité $T$ la quantité $$f(t, T) := - \frac{ \delta}{\delta T}  log P(T, S)$$
+On définit $f(t, T)$ le taux d'intérêt instantané forwad à la date $t$ pour une maturité $T$ la quantité $$f(t, T) := - \frac{ \delta}{\delta T}  log P(T, S)$$
 \end{defn}
 
-\begin{defn} Le taux instantanné est défini par
+\begin{defn} Le taux instantané est défini par
   $r_t = \underset{T \to t}{lim}f(t, T) $ \\
   Le taux d'actualisation (stochastique) est: $D_t^T := e^{-\int_t^Tr_s \rm{d}s}$
 \end{defn}
 
 \iffalse
 \begin{defn}
-  Le taux d'interet cumulé entre deux période $t$ et $T$ est la quantité $R(t, T)$ que $r_t$ doit égaler spour avoir le même rendement
+  Le taux d'intérêt cumulé entre deux période $t$ et $T$ est la quantité $R(t, T)$ que $r_t$ doit égaler pour avoir le même rendement
 \end{defn}
 \fi
 
 \begin{defn}
-  Le taux d'interet forward $F(t; T, S)$ est la prévision  à l'instant $t$ du taux entre deux période $T$ et $S$.
-  Ce taux est la quantité $L$ connu à l'instant qui annule la valeur de ce contrat à l'instant $t$:
+  Le taux d'intérêt forward $F(t; T, S)$ est la prévision  à l'instant $t$ du taux entre deux période $T$ et $S$.
+  Ce taux est la quantité $L$ connu à l'instant $t$ qui annule la valeur du contrat suivant à l'instant $t$:
   \begin{itemize}
-  \item Recevoir l'interêt  $L$ sur un 1 euro entre $T$ et $S$
+  \item Recevoir l'intérêt  $L$ sur un 1 euro entre $T$ et $S$
   \item Payer le taux variable  $F(T, S)$ sur un 1 euro entre $T$ et $S$
   \end{itemize}
 \end{defn}
@@ -40,75 +40,74 @@ le taux $r_t$ n’est pas un produit échangé sur le marché que l’on peut me
 
 \section{Mesures équivalentes}
 
-Nous nous plaçons dans le cadre d'une économie à temps continu, qui admet une espace de probabilité $(\Omega, \cal{F}, \mathbb{P})$, avec $K+1$ actifs tradables, que nous appelerons actifs de base, dont le prix est donné par $(S_t = (S^0_t, ...S^k_t))_{t \geq 0}$. Dans toute la suite nous confondons l'actif et son prix.
+Nous nous plaçons dans le cadre d'une économie à temps continu, qui admet un espace de probabilité $(\Omega, \cal{F}, \mathbb{P})$, avec $K+1$ actifs tradables, que nous appellerons actifs de base, dont le prix est donné par $(S_t = (S^0_t, ...S^k_t))_{t \geq 0}$. Dans toute la suite nous confondons l'actif et son prix.
 $S^0$ étant l'actif sans risque, qui évolue donc au temps sans risque $$\mathrm{d}S^0_t = r_t S^0_t \mathrm{d}t$$
-ie $$S^0_t = e^{-\int_0^t r_s \mathrm{d}s}$$
+ie $$S^0_t = e^{\int_0^t r_s \mathrm{d}s}$$
 
 Par définition, nous connaissons le prix des actifs $K+1$, dans la prochaine section nous détaillerons la procédure de pricing de produits plus compliqués.
 
 \subsubsection{Principe de pricing}
 A travers les $K+1$ actifs de base, nous construisons des produits plus complexes. 
-Le prix de ce dernier est donc intimement lié à la possibilité de trouver une stratégie auto-financée qui le réplique.
+Le prix d'un tel produit est donc intimement lié à la possibilité de trouver une stratégie autofinancée qui le réplique.
 Commençons d'abord par définir ce qu'est une stratégie auto financé.
 
 \begin{defn}
   \begin{itemize}
-  \item Une stratégie est une processus $(\Phi_t = (\Phi^0_t, ... \Phi^K_t))_t$ localement borné et adapté à la filtration $\cal{F}$.
+  \item Une stratégie est un processus $(\Phi_t = (\Phi^0_t, ... \Phi^K_t))_t$ localement borné et adapté à la filtration $\cal{F}$.
   \item La valeur associé à cette stratégie est donné par $V_t(\Phi) = <\Phi_t, S_t>$.
   \item Une stratégie est auto financée sir $\mathrm{d}V_t = \Phi_t \mathrm{d}S_t$
   \end{itemize}
 \end{defn}
 
-Une hypothèse souvent utilisée dans le cadre de la finance de marché est l'abscence d'abitrage. Une opportunité d'arbitrage est la possiblité d'investir 0 aujourd'hui, et recevoir, avec probabilité non nulle, un montant positive dans le future. En d'autres termes, l'abscence d'arbitrage signifie que si $\Phi$ est une stratégie auto financée telle que $V_0(\Phi) = 0$, alors $\mathbb{P} ( V_t(\Phi) > 0 ) = 0$. Ceci nous permettra de valoriser des produits complexes en répliquant leur payoff par une combinaison linéaire de produits simple dont le prix est connue.
+Une hypothèse souvent utilisée dans le cadre de la finance de marché est l'absence d'arbitrage. Une opportunité d'arbitrage est la possibilité d'investir 0 aujourd'hui, et recevoir, avec probabilité non nulle, un montant positive dans le future. En d'autres termes, l'absence d'arbitrage signifie que si $\Phi$ est une stratégie auto financée telle que $V_0(\Phi) = 0$, alors $\mathbb{P} ( V_t(\Phi) > 0 ) = 0$. Ceci nous permettra de valoriser des produits complexes en répliquant leur payoff par une combinaison linéaire de produits simples dont le prix est connue.
 
-Une deuxième hypothèse que nous admettrons dans la suite est la complétude du marché: Tout les produits utilisés seront consiédérés disponible à tout moment et en quantité abandante (liquide), ie à chaque instant $t$, pour tout payoff $H$, il existe une stratégie autofinancée associée $\Phi$ qui vérifie $V_t( \Phi ) = H$. Nous ne traiterons pas le cas des produits illiquide. Ceci est justifié, le marché des taux étant l'un des plus gros en volume dans le monde.
+Une deuxième hypothèse que nous admettrons dans la suite est la complétude du marché: Tout les produits utilisés seront considérés disponibles à tout moment et en quantité abondante (liquide), ie à chaque instant $t$, pour tout payoff $H$, il existe une stratégie autofinancée associée $\Phi$ qui vérifie $V_t( \Phi ) = H$. Nous ne traiterons pas le cas des produits illiquides. Ceci est justifié, le marché des taux étant l'un des plus gros en volume dans le monde.
 
-Nous pouvons montrer(*) que ces hypothèse sont équivalent à l'existence d'une mesure de probabilité risque neutre $Q$ unique sous laquelle le prix actualisé de tous les produits tradables sont des martingales. ie si un on note $H_t$ le prix à l'instant $t$ d'un produit financier, alors
+Nous pouvons montrer( \cite{Brugo}) que ces hypothèse sont équivalentes à l'existence d'une mesure de probabilité risque neutre $Q$ unique sous laquelle le prix actualisé de tous les produits tradables sont des martingales. ie si un on note $H_t$ le prix à l'instant $t$ d'un produit financier, alors
 $$H_t =\espr{ \frac{H_s}{S^0_t} | F_t } = V_t(\Phi)$$
 
-En particuler, le prix d'un zéro coupon qui paye 1 à l'instant $T$ est donné par
+En particulier, le prix d'un zéro coupon qui paye 1 à l'instant $T$ est donné par
 $$ P(t, T) := \espr{  e^{-\int_t^T r} } $$
 
 
-Nous pouvons interpréter le ratio $\frac{H_s}{ S^0_s}$ comme étant le nombre  de $H$ par unité de discount factor stochastique $S^0$. Le discount factor est appelé dans ce cas numéraire. Nous verrons maintenant que nous pouvons choisir un autre numéraire plus adapté au produit que nous voulons pricer.
-En effet le changement de numéraire préserve la propriété d'autofinancement d'un portefeuille.
+Nous pouvons interpréter le ratio $\frac{H_s}{ S^0_s}$ comme étant le nombre  de $H$ par unité de facteur d'actualisation stochastique $S^0$. Le facteur d'actualisation est appelé dans ce cas numéraire. Nous verrons maintenant que nous pouvons choisir un autre numéraire plus adapté au produit que nous voulons pricer, puisque le changement de numéraire préserve la propriété d'autofinancement d'un portefeuille. \cite{Hull}
 
 \begin{defn} Un numéraire est tout actif financier ne payant pas de dividendes \end{defn}
 
 \begin{defn} Mesure de probabilité équivalente.
   
 Supposons qu’il existe un numéraire $(M_t )_{t \geq 0}$ et une mesure martingale équivalente $Q^M$ telle que le prix de chaque actif actualisé par le processus M soit une$Q_M$-martingale. 
-$$ \frac{S^i_t}{M_t} = \Qespr{Q^M}{ \frac{S^i_T}{M_T} | F_t}$$
+$$  (\forall i) \frac{S^i_t}{M_t} = \Qespr{Q^M}{ \frac{S^i_T}{M_T} | F_t}$$
 Soit $(N_t )_{t \geq 0}$ un numéraire. \\
-Alors il existe une mesure de probabilité $Q_N$ telle que le prix de chaque actif actualisé par le processus $N$ soit une $Q_N$-martingale, i.e.
-$$ \frac{S^i_t}{N_t} = \Qespr{Q^N}{ \frac{S^i_T}{N_T} | F_t}$$
+Alors il existe une mesure de probabilité $Q_N$ telle que le prix de chaque actif actualisé par le processus $N$ soit une $Q_N$-martingale, ie.
+$$ (\forall i) \frac{S^i_t}{N_t} = (\forall i) \Qespr{Q^N}{ \frac{S^i_T}{N_T} | F_t}$$
 
 où $Q^N$ est définie par:
 $$\Qespr{Q^N}{ H } = \Qespr{Q^M}{ \frac{ M_T/N_T}{M_0/N_0} H}$$
 
 \end{defn}
 
-Example: Mesure forward neutre
+\textbf{Exemple:} Mesure forward neutre
 
-Le bond zéron coupon dont la maturité concide avec la date du payment d'un produit financier peut servir de numéraire. Nous appellerons la mesure de probabilité associé $Q_T$.
+Le bond zéro coupon dont la maturité coïncide avec la date du payement d'un produit financier peut servir de numéraire. Nous appellerons la mesure de probabilité associé $Q_T$.
 
 Dans ce cas $P(T, T) = 1$, et par conséquent il suffit de calculer l'espérance du payoff (divisé par 1) sous $Q_T$.
 Si nous notons le payoff de ce produit $H$, alors son prix à l'instant $0$ est donné par $$P(t, T) \, \Qespr{Q_T}{ H | F_t } $$
-Pour que celà nous soit utile, il faut que la dynamique de $H$ soit connue sous $Q_T$. Ceci est vérifié pour les contrats payant un taux d'interêt sur un nominal fixe. En effet $(F(t; S, T))_t$ est une martingale 
+Pour que cela nous soit utile, il faut que la dynamique de $H$ soit connue sous $Q_T$. Ceci est vérifié pour les contrats payant un taux d'intérêts sur un nominal fixe. En effet $(F(t; S, T))_t$ est une martingale 
 $$ \Qespr{Q_T}{ F(t; S, T) | F_u } = F(u; S, T)$$
 
 \textbf{Preuve:}
-Si nous disposons de  $\frac{P(t, S)}{(1+(T-S)F(t; S, T))}$ au temps $t$, nous pouvons acheter $\frac{1}{(1+(T-S)F(t; S, T))}$ unités de l'obiligation $P(t, S)$, nous obtenons $\frac{1}{(1+(T-S)F(t; S, T))}$ au temps $S$, cette somme là est, par définition de $F$, équivalente à l'obtention de 1 à l'instant $T$, qui exactement le payoff de l'obligation $P(t, T)$.
-Par principe de \textbf{non arbitrage}, ces deux investissement doivent avoir le même coût, ie:
-$ \frac{1}{T-S} \left( \frac{P(t, S)}{P(t, T)} - 1  \right) $
+Si nous disposons de  $\frac{P(t, S)}{1+(T-S)F(t; S, T)}$ au temps $t$, nous pouvons acheter $\frac{1}{1+(T-S)F(t; S, T)}$ unités de l'obligation $P(t, S)$, nous obtenons $\frac{1}{1+(T-S)F(t; S, T)}$ au temps $S$, cette somme là est, par définition de $F$, équivalente à l'obtention de 1 à l'instant $T$, qui exactement le payoff de l'obligation $P(t, T)$.
+Par principe de \textbf{non arbitrage}, ces deux investissement doivent avoir le même coût, ie: $$\frac{P(t, S)}{1+(T-S)F(t;S,T)} = P(t, T)$$, ou encore
+$$ \frac{1}{T-S} \left( \frac{P(t, S)}{P(t, T)} - 1  \right) $$
 La preuve en découle.
 
 \newpage
 
-\section{Produits financier d'interêts}
+\section{Produits financier d'intérêt}
 
-Le dévelopement de la section précédente nous sera utile pour pricer les dériver des taux.
-Considérons le cas particlier d'un call eurpéen à maturité $T$, strike $K$, dont le sous-jacent est bond zéro coupon qui expire à l'instant $S$. Le payoff d'un tel contrat est connu: $ (P(T, S) - K)^+)$. Son prix à un instant antérieur $t$ est
+Le développement de la section précédente nous sera utile pour pricer les dériver des taux.
+Considérons le cas particulier d'un call européen à maturité $T$, strike $K$, dont le sous-jacent est bond zéro coupon qui expire à l'instant $S$. Le payoff d'un tel contrat est connu: $ (P(T, S) - K)^+)$. Son prix à un instant antérieur $t$ est
 $$ZBC(t, T, S, K) := \espr{ e^{-\int_t^T r_s \rm{d}s} \, (P(T, S) - K)^+ | F_t }$$
 Il est plus pratique de considérer la forward mesure, sous laquelle le prix du call s'écrit
 $$ZBC(t, T, S, K) = P(t, T) \, \Qespr{Q_T}{(P(T, S) - K)^+ | F_t}$$
@@ -119,14 +118,14 @@ Cette écriture nous rappelle la formule de blackscholes pour les options sur le
 
 \begin{defn}
   Swap:
-Un swap est un contract entre deux parties qui s'engagent à échanger des flux financiers pendant une durée et à une fréquence détérminées. la plupart du temps, ces flux sont détérminé comme étant l'intêret à un taux fixe $K$ contre un taux variable (LIBOR ${L(T_i)}_i$ par examplesur un notionnel $N$. 
+Un swap est un contrat entre deux parties qui s'engagent à échanger des flux financiers pendant une durée et à une fréquence déterminées. La plupart du temps, ces flux sont déterminé comme étant l'intérêt à un taux fixe $K$ contre un taux variable (taux Libor ${L(T_i)}_i$ par exemple) sur un notionnel $N$. 
 $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K) $$
 \end{defn}
 
 
 \begin{defn}
-  Caplet/floorlet:
-  Un caplet/floorlet peut être vu comme un call/put européenne sur un
+  Caplet:
+  Un caplet peut être vu comme un call/put européenne sur un
   Son payoff est le suivant
 $$ \tau (L(T, S) - K)^+ $$
 \end{defn}
@@ -141,13 +140,25 @@ $$ \tau (L(T, S) - K)^+ $$
 \end{align}
 
 \begin{defn}
-  Cap/floor:
-Un cap/floorlet peut être vu comme une somme de caplets
+  Cap:
+Un cap peut être vu comme une somme de caplets
 $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
 \end{defn}
 
 La forme des payoff indique que le cap permet de protéger son détenteur d’une hausse des taux Libor, et symétriquement que le floor protège d’une éventuelle baisse de ces taux.
 
+\begin{defn}
+  Swaption:
+
+ Une swaption payeuse européenne est une option permettant d’entrer, à une date $T$ appelé maturité, dans un swap payeur pour la période $(\alpha, \beta)$ de nominal $N$ et de strike $K$. 
+ Les pâment s'effectuent aux instants $T_{\alpha} \leq T_i \leq T_{\beta}$. A la date $T_\alpha$, la valeur du swap payeur sous-jacent s'écrit:
+$$ N \sum_{i} P(T_{\alpha}, T_i) (T_{i+1} - T_i) \left(L(T_{\alpha}, T_i) - K \right)$$
+La valeur de la swaption s'écrit alors:
+$$ N \left[ \sum_{i} P(T_{\alpha}, T_i) (T_{i+1} - T_i) \left(L(T_{\alpha}, T_i) - K \right) \right]^+$$
+  
+\end{defn}
+
+Il est intéressant de noter que l'expression d'un swaption en fonction des taux sous-jacents n'est plus linéaire comme dans le cas des caps. 
 
 %%% Local Variables:
 %%% mode: latex

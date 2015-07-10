@@ -1,0 +1,386 @@
+\documentclass{beamer}
+
+\usepackage{changepage}
+\usepackage[utf8x]{inputenc}
+\usepackage{tikz}
+
+\mode<presentation> {
+
+\usetheme{Copenhagen}
+\usecolortheme{dolphin}
+
+}
+\usepackage{graphicx} 
+\usepackage{booktabs}
+
+\newcommand{\espr}[1]{
+  \mathrm{E}^Q \left[ #1 \right]
+}
+
+\newcommand{\Qespr}[2]{
+  \mathrm{E}^{#1} \left[ #2 \right]
+}
+
+\newcommand{\IMG}[3]{
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=#3]{#1}%
+    \caption{#2}
+    \label{#1}
+  \end{figure}
+}
+
+
+\title[Calibration des modèles de taux d'interêt]{Calibration des modèles des taux d'interêt} 
+
+\author{Bachir El Khadir} 
+\institute[Ecole Polytechnique]
+{
+Ecole Polytechnique \\
+\medskip
+\textit{bachir.el-khadir@polytechnique.edu}
+}
+\date{\today}
+\titlegraphic{\includegraphics[height=1cm]{img/logox.png}}
+\begin{document}
+
+\begin{frame}
+\titlepage % Print the title page as the first slide
+\end{frame}
+
+
+
+\section{Présentation du stage}
+\begin{frame}
+\frametitle{Stage à JP Morgan}
+\begin{itemize}
+\item Équipe: exotic rates
+\item Marché des taux: important en volume, liquide.
+\item Particularités: Infinité de produits, impossibilité de trader $r_t$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Plan de la présentation} 
+\tableofcontents 
+\end{frame}
+
+\section{Le cadre de travail}
+\subsection{Hypothèses}
+\begin{frame}
+\frametitle{Hypothèses de travail}
+\begin{itemize}
+\item Marché complet
+\item absence d'arbitrage
+\item $\rightarrow$ existence de stratégie de réplication pour  tous les payoff
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Idée de la preuve}
+  \only<1>{\input{binomial.tex}}
+  \only<2> {
+    
+    Stratégie:
+    \begin{itemize}
+    \item Payoff: $x$ dans la réalisation $\omega_x$, $y$ dans la réalisation $\omega_y$ 
+    \item coût: $\Pi$
+    \item allocation: $\alpha$ actifs sans risque, $1-\alpha$ actifs risqués
+    \end{itemize}
+  }
+  \only<3> {
+    Le système:
+  \begin{align*}
+  x &= \alpha \Pi \, (1+R) +(1-\alpha) \Pi \, u \\
+  y &= \alpha \Pi \, (1+R) + (1-\alpha) \Pi \, d
+  \end{align*}
+  a une  unique ssi $d < 1+R < u$
+  $$ \alpha  = \frac{x-y}{u-d}$$
+  $$\Pi = p^Q \frac{u}{1+R} + (1-p^Q) \frac{d}{1+R}$$
+}
+\end{frame}
+
+\subsection{Formulation mathématique}
+\begin{frame}
+  \frametitle{Prix d'un actif financier}
+  En général:
+$$ \Pi_t = \espr{ e^{-\int_t^T r_s \rm{d}s} \, \Pi_T | F_t} $$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Changement de mesure}
+  Changer l'unité dans laquelle les prix sont exprimés
+  $$\Qespr{Q^N}{ H } = \Qespr{Q^M}{ \frac{ M_T/N_T}{M_0/N_0} H}$$
+  Exemple:
+  \begin{itemize}
+  \item Mesure forward neutre,$P(t, T)$ comme numéraire. $\Pi_t = P(t, T) \, \Qespr{Q_T}{ H | F_t } $
+  \item Mesure annuité, $A(t) := \sum\limits_{\text{Période} T_i} c_i P(t, T_i)$ comme numéraire. 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Prix d'un call sur zéro coupon}
+  $$ZBC(t, T, S, K) := \espr{ e^{-\int_t^T r_s \rm{d}s} \, (P(T, S) - K)^+ | F_t }$$
+  Sous mesure forward neutre:
+  $$ZBC(t, T, S, K) = P(t, T) \, \Qespr{Q_T}{(P(T, S) - K)^+ | F_t}$$
+  Similarités avec le modèle de Black \& Scholes.
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Produits financiers}
+  \begin{itemize}
+  \item Caps: Somme de caplets $$ N \sum D_t^{T_i} \tau_i (L(T_{i-1}) - K)^+ $$
+  \item Swaptions: $$ N \left[ \sum_{i} D_{T_{\alpha}}^{T_i} (T_{i+1} - T_i) \left(L(T_{\alpha}, T_i) - K \right) \right]^+$$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Pricing}
+  \begin{align*}
+    CPL(t, T, S, \tau, X)
+    &= \espr{ e^{-\int_t^S r_s \rm{d}s} \tau (L(T, S) - X)^+ | F_t} \\ 
+    &= \espr{ e^{-\int_T^S r_s \rm{d}s} P(t, T)  \tau (L(T, S) - X)^+ | F_t} \\
+    &= \espr{ e^{-\int_T^S r_s \rm{d}s} (1 - (1 + X \tau)P(t, T))^+ | F_t} \\
+    &= (1 + X \tau) \espr{ e^{-\int_T^S r_s \rm{d}s} (\frac{1}{1 + X \tau} - P(t, T))^+ | F_t} \\
+    &= (1+X \tau) ZBP(t, T, S, \frac{1}{1+X \tau})
+\end{align*}
+\end{frame}
+
+\subsection{Le modèle G2++}
+\begin{frame}
+  \frametitle{Pourquoi une simple interpolation ne marche pas}
+  \begin{itemize}
+  \item Estimation de risque impossible
+  \item Impossibilité de faire du hedging
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Le modèle de Hull White à un facteur}
+  Décrire la dynamique de 
+$$r_t = \beta (\theta - r_t)  \mathrm{d}t  + \sigma \mathrm{d}W_t$$
+$$P(t, T) = A(t, T) exp(-B(t, T) r_t)$$
+\only<2> {$$R(t, T) = \frac{ln P(t, T)}{T-t} =: a(t, T) + b(t, T) r_t$$
+$$Cor(R(0, T_1), R(0, T_2)) = 1$$}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Intérêt du modèle à deux facteurs}
+\IMG{img/tabcorr.png}{Matrice de corrélation de taux à différentes maturités}{0.3}
+\end{frame}
+
+\begin{frame}
+\frametitle{ODE}
+\begin{align*}
+  \mathrm{d}x &= -\beta^y x(t) \rm{d}t + \sigma^x \rm{d}W^x_t \\
+  \mathrm{d}y &= -\beta^y y(t) \rm{d}t + \sigma^y \rm{d}W^y_t \\
+  r(t) &= h(t) + x(t) + y(t)
+\end{align*}
+$$\rho \, \rm{d}t = < \rm{d} W^x, \rm{d} W^y >$$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Simulation par un arbre}
+  \input{noeud}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Table de transitions}
+  $$a, b \in \{-1, 1\}$$
+  $$\mathrm{P} \left( \widetilde{x}_{i+1} = \widetilde{x}_i + a \, \mathrm{d}x, \widetilde{y}_{i+1} = \widetilde{y}_i + b \, \mathrm{d}y |  \widetilde{x}_i, \widetilde{y}_i \right) = p^{a, b}( \widetilde{x}_i, \widetilde{y}_i)$$
+  
+$$ p^{a, b}(x, y) = \frac{1 + a \rho}{4} - b \frac{\beta^y \sigma^x y + a \sigma^x \sigma^y  x}{4 \sigma^x \sigma^y} \sqrt{\Delta t} $$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Lattice de simulation}
+  \includegraphics<1>[scale=0.3]{img/slices2d/sl_1.png}
+  \includegraphics<2>[scale=0.3]{img/slices2d/sl_10.png}
+  \includegraphics<3>[scale=0.3]{img/slices2d/sl_19.png}
+  \includegraphics<4>[scale=0.3]{img/slices2d/sl_46.png}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Limites de l'arbre}
+  $$||W^x_t + W^y_t||^2 \leq n_{\sigma}t$$
+  \IMG{img/slicetree.png}{Slice 3D}{0.4}
+\end{frame}
+
+\section{Calibration}
+\begin{frame}
+  \frametitle{Dynamique des zéro coupons}
+  $$P(t, T) = \espr{ e^{-\int_t^T r_u \rm{d}u} | F_t} $$
+  $$ \int_t^T x(t) + y(t) \rm{d}u | F_t \sim \mathcal{N}(M(t, T), V(t, T)) $$
+  où:
+  $$ M = M^x(t, T) x(t) + M^y(t, T) y(t) $$
+  $$P(t, T) = e^{-\int_t^T h -M + \frac{1}{2}V} $$
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Calibration sur la courbe des zéro coupons}
+  \begin{align}
+    \Pi_j(t_{n+1}) &= \sum_{j' \text{noeud}} \Pi_{j'}(t_n) p_{j', j}(t_n) D_{j'}(h_n) \\
+    \sum_{ j \text{noeud} } \Pi_j D_j(h_n) &= P^M(0, t_{n+1})
+  \end{align}
+\end{frame}
+
+
+\begin{frame}
+ \frametitle{Prix de caplets}
+ \begin{align*}
+   ZBC(t, T, \tau, K) &= \Qespr{Q_T}{ (P(t, S)-K)^+ | F_t} \\
+                      &= -P(t, T) N( d_1 ) + P(t, T) K N(d_2)
+\end{align*}
+où
+$$d_{1/2} := \frac{ln \frac{KP(t, T)}{P(t, S)}}{\Sigma} +/- \frac{1}{2}\Sigma $$
+$$\Sigma^2 := \Sigma^{x,x} + \Sigma^{y,y} + 2 \rho \Sigma^{x,y}$$
+$$\Sigma^{x,y} := \sigma \nu M^x(t, T) M^y(t, T) \frac{1 - e^{(\alpha+\beta) (T-t)}}{\alpha+\beta} $$
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Prix de swaption}
+  \begin{adjustwidth}{-2em}{-2em}
+    On définit le taux swap :
+    $$\sum\limits_{\text{Période} T_i} \tau_i P(t, T_i) S_{\alpha, \beta} (t) = P(t, T_\alpha) - P(t, T_\beta)$$
+    $S_{\alpha, \beta}(t)  A(t)$ est donc une martingale.
+    \only<2> {
+      \begin{align*}
+        Swaption(t; \alpha,\beta)
+        &= \espr{ \left( \sum_{i} D_t^{T_i} \tau_i \left(L(T_{\alpha}, T_i) - K \right) \right)^+ | F_t } \\
+        &= A(0) \Qespr{Q_a}{ (S_{\alpha, \beta}(t) - K)^+ | F_t}
+      \end{align*}
+    }
+  \end{adjustwidth}
+\end{frame}
+
+\begin{frame}
+  Benchmark
+  \input{datacaps.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Calibration - Caps}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \IMG{img/calibrationcap.png}{Calibration des caps}{0.2}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      \begin{tabular}{ l |c| c }
+        paramètre & x & y  \\
+        \hline \hline
+        $\beta$ & 0.62 & 0.025 \\
+        $\sigma$ & 0.69\% & 0.81\% \\
+        $\rho$ & 96\% & - \\
+      \end{tabular}
+      \only<2>{$$ \text{erreur} = 0.98\%$$}
+    \end{column}
+​  \end{columns}
+\end{frame}
+
+\begin{frame}
+\input{dataswap.tex}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Calibration - Swaption}
+    \begin{columns}
+      \begin{column}{0.4\textwidth}
+        \IMG{img/swapcalib.png}{Prix de marché en bleu, prix du modèle en rouge }{0.2}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \centering
+      $$ \rho = -71\%$$
+      \only<2>{$$ \text{erreur} = 1.12\%$$}
+    \end{column}
+​  \end{columns}
+
+\end{frame}
+
+
+\section{Méthodes d'optimisation avancées}
+\begin{frame}
+  \frametitle{Paramètres dépendant du temps}
+  Espace de grande dimension:
+  $$ \sigma = (\sigma_{t_1}, ..., \sigma_{t_n}) $$
+  $$ \beta = (\beta_{t_1}, ..., \beta_{t_n}) $$
+  $$ \rho = (\rho_{t_1}, ..., \rho_{t_n}) $$
+
+  Calibration = résoudre
+  $$F(\sigma, \beta, \rho) = \sum_{\text{produit} \, i} ||P_i(\sigma, \beta, \rho) - P_i^{\text{Market}} ||^2$$
+  Ou encore:
+  $$G(x) = 0$$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Hypothèses}
+  Quelques remarques sur $G$:
+  \begin{itemize}
+  \item $G$ définie sur un compact convexe $\Omega$, a dérivée continue
+  \item Les appels à $G$ sont coûteux (construction de l'arbre, calcul de probabilités ...)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Descente du gradient}
+  \begin{itemize}
+  \item Calcul de $\nabla G(x_k)$
+  \item Résoudre le problème de minimisation à une seule dimension
+    $\alpha_k = \text{argmin} ||G\left(x_k - \alpha_k \nabla G (x_k) \right)||$
+  \item $ x_{k+1} = x_k - \alpha_k \nabla G(X_k)$
+  \end{itemize}
+Condition d'\textbf{arrêt}: $||\nabla G(x_k)|| <  \epsilon$
+\end{frame}
+
+\begin{frame}
+  \frametitle{Algorithmes génétiques}
+  \begin{columns}
+    \begin{column}{0.4\textwidth}
+      \begin{itemize}
+      \item Individus: $\theta = ( \sigma^x_t, \sigma^y_t, \beta^x_t, \beta^y_t, \rho_t)_{t = T_\alpha \dots T_\beta}$
+      \item Crossover
+      \item Mutation
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \IMG{img/gaalgo.png}{Algorithme génétique}{0.3}
+    \end{column}
+    \end{columns}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Résultats empiriques}
+  \only<1>{
+  One max problem
+  \begin{displaymath}
+    f: \left.
+  \begin{array}{rcl}
+    \{0, 1\}^n & \longrightarrow &\mathbf{N} \\
+    x & \longmapsto & \sum\limits_{i=1 \dots n} x_i \\
+  \end{array}
+\right.
+\end{displaymath}
+}
+\only<2>{\IMG{img/onemax.png}{Résultats empiriques}{0.4}}
+\end{frame}
+
+\section*{Conclusion}
+\begin{frame}
+  
+  \begin{itemize}
+  \item Conclusion
+  \item<2>{Questions}
+  \end{itemize}
+\end{frame}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

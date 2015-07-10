@@ -1,0 +1,24 @@
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+
+% Define styles for bags and leafs
+\tikzstyle{bag} = [text width=4em, text centered]
+\tikzstyle{end} = []
+\begin{figure}[H]
+  \centering
+\begin{tikzpicture}[sloped]
+  \node (a) at ( 2,2) [bag] {$1$};
+  \node (b) at ( 6,1) [bag] {$u$};
+  \node (c) at ( 6,3) [bag] {$d$};
+  \node (d) at ( 2,4) [bag] {$1$};
+  \node (e) at ( 6,4) [bag] {$1+R $};
+  \draw [->] (a) to node [below] {$p^Q$} (b);
+  \draw [->] (a) to node [above] {$1-p^Q$} (c);
+  \draw [->] (d) to node [above] {$$} (e);
+\end{tikzpicture}
+\caption{Marché binomial}
+\label{oldtree}
+\end{figure}
+

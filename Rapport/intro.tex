@@ -12,19 +12,19 @@
   Il est particulièrement centré sur le modèle de Hull White qui est conduit par deux facteurs (appelé aussi G2++).  J'adopterai le plan suivant dans la rédaction de ce rapport:
   \begin{itemize}
   \item 
-    La première partie introduit le marché de taux par un certain nombre de définitions qui lui sont propores, ainsi que les produits financiers principaux utilisés pour la calibration des modèles.
+    La première partie introduit le marché de taux par un certain nombre de définitions qui lui sont propres, ainsi que les produits financiers principaux utilisés pour la calibration des modèles.
   \item 
-    Dans la deuxième partie je présenterai quelques modèles existant, et je discuterai de leurs limites et de leurs implémentation pratique.
+    Dans la deuxième partie je présenterai quelques modèles existant, et je discuterai de leurs limites et de leurs implémentions pratique.
   
   \item
-    La troisième partie présente les résultats concrets que j'ai obtenus dans le cas du modèle gaussien à deux facteurs, ainsi que la partie calibratoin de modèle.
+    La troisième partie présente les résultats concrets que j'ai obtenus dans le cas du modèle gaussien à deux facteurs, ainsi que la partie calibration de modèle.
   \end{itemize}
   
 \subsection*{Abstract} 
-This report presents some tools used in the pricing for intereset rates derivatives. It's focused on two factors Hull-White model (called G2++).  
+This report presents some tools used in the pricing of intereset rates derivatives. It's focused on two factors Hull-White model (called G2++).  
   \begin{itemize}
   \item
-    The first part introduces some definitions relative to the interest rates market, as well as some derivative used later for the calibration process.
+    The first part introduces some definitions relative to the interest rates market, as well as some derivative used later in the calibration.
   \item
     In the second part I will present some existing models, their limitations and possible implementation.
 
@@ -38,11 +38,11 @@ This report presents some tools used in the pricing for intereset rates derivati
 \newpage
 \chapter*{Introduction}
 
-J'ai fait mon stage a JP Morgan equipe exotic rates. La plus grosse partie du travail consitait à trouver le bon modèle mathématique pour pricer un produit et le calibrer au marche.
+J'ai fait mon stage a JP Morgan équipe exotic rates. La plus grosse partie du travail consistait à trouver le bon modèle mathématique pour pricer un produit et le calibrer au marché.
 
-L'interêt que porte les banques aux produits exotiques a considérablement augmenté aucours des dernières années. Plusieurs modèles ont été dévelopé pour refeléter au mieux le comportement des marchés financiers.
+L'intérêt que porte les banques aux produits exotiques a considérablement augmenté au cours des dernières années. Plusieurs modèles ont été développé pour refléter au mieux le comportement des marchés financiers.
 
-Le département au sein duquel j'ai effectué mon stage s'occupait des produits basé sur les taux d'intêret. Dans ce domaine, une propriété appréciable dans un modèle est le fait qu'il possèd un nombre de paramètres suffisant pour être calibré parfaitement aux prix observable dans la réalité, sans pour autant ``overfitter'' l'échantillon disponible. En effet, dérnièrement, surtout depuis la crise, le marché des taux a connu des changement radicaux, la possiblité d'observer des taux négatifs en est un example. 
+Le département au sein duquel j'ai effectué mon stage s'occupait des produits basé sur les taux d'intérêt. Dans ce domaine, une propriété appréciable dans un modèle est le fait qu'il possède un nombre de paramètres suffisant pour être calibré parfaitement aux prix observables dans la réalité, sans pour autant ``overfitter'' l'échantillon disponible, surtout que dernièrement, depuis la crise des subprimes, le marché des taux a connu des changement radicaux que les modèles traditionnels n'arrive pas décrire. La possibilité d'observer des taux négatifs en est un exemple. 
 
 Un produit en particulier n'a cessé de  gagner en notoriété: les cancelables spread options. Ma mission de stage était de comprendre les modèles existant et leurs implémentations qui permettent de pricer (entre autres) ce type de produits, comprendre leurs limites, et essayer de trouver des améliorations.
 

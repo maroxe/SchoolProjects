@@ -6,85 +6,81 @@
 
 \chapter{Résultats}
 
-Une fois toutes ces modifications prises en compte, une slice genérée par l'arbre ressemble au schéma ci-dessous. $(i, j)$ 
+Une fois toutes ces modifications prises en compte, une slice générée par l'arbre ressemble
+au schéma ci-dessous. $(i, j)$ sont définir par:
+\begin{align*}
+\widetilde x(t) &= i * \sigma^x a(\beta^x, t)\\
+\widetilde y(t) &= i * \sigma^y a(\beta^y, t) + j * \sigma^y a(\beta^y, t)
+\end{align*}
 
 \IMG{img/slicetree.png}{Slice 3D}{0.7}
 
 
 \section*{Performance}
-L'arbre ainsi construit est puissant dans le sens où il permet de pricer quasiement tous les instruments dont on a besoin. Cependant ce modèle souffre de quelques défaut observé en pratique.
+L'arbre ainsi construit est puissant dans le sens où il permet de pricer quasiment tous les instruments dont on a besoin. Cependant ce modèle souffre de quelques défauts observés en pratique.
 
 \begin{itemize}
-\item  De par sa construction, l'arbre est bornée. Ce dernier ignore donc le comportement des driver loin de leurs moyenne. Si ceci n'est pas un problème dans le cadre de variable normale (poids centré), ceci peut engendrer des erreurs non négligeables quand les variables ont des distribution à queues épaisses.
-\item  Discrétisation des processus
-\item  probabilités négatives
+\item  De par sa construction, l'arbre est borné. Ce dernier ignore donc le comportement des facteurs loin de leurs moyennes. Si ceci n'est pas un problème dans le cadre de variable normale (poids centré), ceci peut engendrer des erreurs non négligeables quand les variables ont des distribution à queues épaisses.
+\item La discrétisation des processus par l'arbre entraîne aussi quelques erreurs numériques.
 \end{itemize}
 
-Dans le cas des obligations zéro coupon, nous disposons d'une formule exacte pour calculer les prix et les comprarer à celles produites par l'arbre. 
+Dans le cas des obligations zéro coupon, nous disposons d'une formule exacte pour calculer les prix et les comparer à celles produites par l'arbre. 
 La figure ci-dessus illustre la différence entre les prix théorique et les prix calculés l'arbre:
-\IMG{img/slicevs.png}{Erreur bf vs cf Slice 3D}{0.7}
+\IMG{img/slicevs.png}{Différence entre la slice générée par brute force(arbre), et closed form (formule exacte)}{0.7}
 
 
 \chapter{Application: calibration et pricing}
-Notre modèle possède à un certains nombres de paramètres libre que nous devons fixer. Pour celà, nous choisissons des actifs tradables dans le marché, dont le prix est donc connus, que nous appelerons benchmark. Nous essayerons ensuite de trouver les paramètres qui reproduisent le mieux ces prix là. Cette procédure est appelé calibration.
+Notre modèle possède à un certains nombres de paramètres libres que nous devons fixer. Pour cela, nous choisissons des actifs tradables sur le marché, dont le prix est connus, que nous appellerons benchmark. Nous essayerons ensuite de trouver les paramètres qui reproduisent le mieux ces prix là. Cette procédure est appelé calibration.
 Une question naturelle qui se pose est de savoir quels actifs choisir pour la calibration. Il existe plusieurs réponses possibles, en pratique on essaye de trouver un produit à la fois simple et liquide.
 
-Dans notre cas il est indispensable que le modèle puissent retrouver les prix des bond zéro coupons. Cela se fait en calibrant $\phi$
-
+Dans notre cas il est indispensable que le modèle puissent retrouver les prix des obligations zéro coupons. Cela se fait en calibrant $\phi$
 
 Nous essayerons en plus de retrouver les prix de caplets.
 
 \section{Calibration du drift}
-Le modèle gaussien à deux facteurs est calibré sur la
-courbe $P^M (0, T ), T > 0$ de prix d’obligations zéro-coupon observés sur le
-marché si et seulement si $\phi$ est définie par :
+Il est aisé de voir que le modèle gaussien à deux facteurs est calibré sur la courbe $(P^M (0, T ))_{ T > 0}$ de prix d’obligations zéro-coupon observés sur le marché si et seulement si $\phi$ est définie par :
 $$P^M(0, T) := e^{ \int_0^T \phi(s) \rm{d}s + M x(T) +M y(T) + \frac{1}{2} V}$$
 Ce qui est équivalent à 
 $$ \int_t^T \phi(s) \rm{d}s := \frac{P^M(0, T)}{P^M(0, t)} e^{-\frac{1}{2}(V(0, T) - V(0, t))}$$
 
 Cependant, l’arbre ainsi simulé ne redonnera par exactement les prix des
 obligations zéro-coupon $P^M(0, T_i)$. En effet, dans un arbre le taux simulé est
-considéré constant sur la période $[T_i, T_{i+1}$, donc tout se passe comme
-si l’arbre simulait en fait un taux zéro-coupon R. En d’autres termes, le prix
-d’une obligation zéro-coupon de maturité $T_1$ vaut
-$P(0, T_1 ) = e^{-R(0, T_1) \Delta t}$
-mais ce prix calculé directement sur l’arbre s’écrira $e^{-r_0\Delta t}$ .
+considéré constant sur les périodes $[T_i, T_{i+1}[$. Alors que le prix théorique d’une obligation zéro-coupon de maturité $T_1$ sera $P(0, T_1 ) = e^{-R(0, T_1) \Delta t}$, ce prix calculé directement par l’arbre s’écrira $e^{-r_0\Delta t}$ .
 
+Nous proposons ici une méthode alternative pour calibrer la fonction $\Phi$ de façon à ce que l'arbre reproduise les prix des obligations zéro coupon.
+Il est intéressant de noter que nous n'avons pas besoin de toute la fonction $\Phi$, mais juste de sa somme entre les instants $t_i$ et $t_{i+1}$. Nous noterons cette quantité $h_i$
 
-On propose donc ici une méthode alternative pour calibrer la fonction $\Phi$ de façon à ce que l'arbre reproduise les prix des obligations zéro coupon.
-Il est intéressant de noter que nous n'avons pas besoin de toute la fonction $\Phi$, mais juste de sa somme entre les instant $t_i$ et $t_{i+1}$. Nous noterons cette quantité $h_i$
-
-Soit $\Pi_j$ state price (arrow debrew) (actif qui paye 1 si le noeud $(t_n, j)$ est atteint )
-Le facteur d'actualisation que l'arbre utilise peut s'écrire:
-$$D_j(h_n) := e^{- r(t_n)(t_{n+1} - t_n)} $$
+Soit $\Pi_j(t_n)$ l'actif d'Arrow Debrew, un actif qui paye 1 si le noeud $j$ est atteint au temps $t$, et soit $D_j$ le facteur d'actualisation stochastique au noeud $j$, ie
+$$D_j(h_n) := e^{- r(t_n) (t_{n+1} - t_n)} $$
 
 Nous retrouvons les $h_n$ récursivement en utilisant les deux équations suivantes:
 \begin{align}
   \Pi_j(t_{n+1}) &= \sum_{j' \text{noeud}} \Pi_{j'}(t_n) p_{j', j}(t_n) D_{j'}(h_n) \\
-  \sum_{ j \text{noeud} } \Pi_j D_j(h_n) &= P(0, t_{n+1})
+  \sum_{ j \text{noeud} } \Pi_j D_j(h_n) &= P^M(0, t_{n+1})
 \end{align}
+
 $p_{j, j'}(t_n)$ est la probabilité que le processus $(\widetilde x, \widetilde y)$ passe du noeud $j$ au noeud $j'$ à l'instant $t_n$. Cette fonction a été calculé dans la partie ``construction de l'arbre''.
 
-En effectuant un dévelopement de Taylor de la fonction $D_j$, les équations précédente deviennent polynomiales en $h_n$, et leur résolution est aisée.
+En effectuant un développement de Taylor de la fonction $D_j$, les équations précédente deviennent polynomiales en $h_n$, et leur résolution est aisée.
 
 \section{Méthode de calibration}
-Les traders préfère aiment bien avoir un controle fin sur le modèle qui reflète leur sensations sur le marché. Pour celà, le modèle doit êtres paramètrable, et les paramètres doivent avoir un sens/être compris par les traders.
+Les traders aiment bien avoir un contrôle fin sur le modèle qui reflète leur sensations sur le marché. Pour cela, le modèle doit êtres paramétrable, et les paramètres doivent avoir un sens/être compris par les traders.
 
-Le modèle G2++ est maintenant bien compris, et le roles de chacun de ses paramètres $\theta = (\sigma^x, \sigma^, \beta^x, \beta)$ 
+Le modèle G2++ est maintenant bien compris, et le rôle de chacun de ses paramètres $\theta = (\sigma^x, \sigma^, \beta^x, \beta^y, \rho)$ 
 
 La méthode de calibration par brute force repose sur les étapes suivantes:
 \begin{itemize}
 \item On s'autorise un intervalle pour les paramètres
-\item On utilise une grille (définie par le pas) pour définir les valeurs
+\item On utilise une grille (définie par un pas) pour définir les valeurs
   autorisées pour chaque paramètre. (Tradeoff entre pas petite grande
   précision et temps de calculs)
 \item On calcule le prix des caplets associés par la formule théorique donnée ci-dessous
 \item On choisit les paramètre qui reflètent le mieux les prix du marché. La plupart du temps on minimise l'erreur $L_2$ entre les prix empirique et les prédictions du modèle. 
 \end{itemize}
 
-\textbf{Prix d'un caplet}
+\textbf{Calibration par les caplets}
 
-Nous rappeleons l'expression du caplet 
+Nous rappelons l'expression du caplet 
 $$CPL(t, T, S, \tau, X) = (1+X \tau) ZBP(t, T, S, \frac{1}{1+X \tau})$$
 ainsi que celle du put $ZBP$ sous la mesure $Q_T$
 $$ZBP(t, T, \tau, K) = \Qespr{Q_T}{ (K-P(t, S))^+ } $$
@@ -92,9 +88,7 @@ $$ZBP(t, T, \tau, K) = \Qespr{Q_T}{ (K-P(t, S))^+ } $$
 Maintenant que nous connaissons la dynamique de $P(t, T)$, nous pouvons fournir une formule explicite pour le prix des caplets.
 
 $P(t, T)$ admet une distribution normale sous $Q_T$ conditionnellement à $F_t$,
-dont on peut(voir \cite{Brugo}) calculer l'espérance et la variance:
-
-Le prix théorique est donc donné par:
+dont nous pouvons calculer l'espérance et la variance (voir \cite{Brugo}). Ainsi le prix théorique d'un call est donné par:
 
 $$ZBC(t, T, S, K) = -P(t, T) N( d_1 ) + P(t, T) K N(d_2)$$
 où
@@ -102,9 +96,10 @@ $$d_{1/2} := \frac{ln \frac{KP(t, T)}{P(t, S)}}{\Sigma} +/- \frac{1}{2}\Sigma $$
 $$\Sigma^2 := \Sigma^{x,x} + \Sigma^{y,y} + 2 \rho \Sigma^{x,y}$$
 $$\Sigma^{x,y} := \sigma \nu M^x(t, T) M^y(t, T) \frac{1 - e^{(\alpha+\beta) (T-t)}}{\alpha+\beta} $$
 
-Malheuresement , les quotes de caplets, contrairement au caps, ne sont pas directement disponilbe sur les marchés. Mais nous pouvons induire les prix de caplets à partir du prix de certains caps.
+Malheureusement , les quotes de caplets, contrairement au caps, ne sont pas directement disponibles sur les marchés. Mais nous pouvons induire les prix de caplets à partir du prix de certains caps.
 
-Nous utiliserons la table de données suivantes, fournie par [3]:
+Nous utiliserons la table de données suivantes qui donne les prix de caplets à différentes maturités comme benchmark.
+Les données interne à JP Morgan étant confidentielles, nous utiliserons les données fournies par \cite{Brugo}
 
 \input{datacaps.tex}
 
@@ -113,13 +108,18 @@ $$ (\beta^x, \beta^y, \sigma^x, \sigma^y, \rho) = (0.62, 0.025, 0.0069, 0.0081, 
 Le coefficient de corrélation $\rho$ est proche de 1, ce qui était attendu puisque le pricing de caplets (et donc de caps) ne prend pas en compte la corrélation des taux cumulées entre deux dates différentes.
 \IMG{img/calibrationcap.png}{Calibration des caps}{0.5}
 
-Nous caliberons maintenant les swaptions, $\rho > 0$
+\textbf{Calibration par les swaptions}
 
-Nous comparons le résultat pour le modèle à un facteur (ie on force $y$ à être identiquement nul) et deux facteurs:
+Nous utilisons maintenant le prix des  swaptions comme benchmark. La première colonne indique la maturité, et la première ligne indique la durée du swap.
 
-\IMG{img/capsurf.png}{Surface théorique en bleu - }{0.2}
+\input{dataswap.tex}
 
+L'optimisation numérique donne maintenant une value non triviale pour le coefficient de corrélation $\rho = -0.714$. Ceci montre la nécessité d'utiliser deux facteurs.
+
+
+%\IMG{img/capsurf.png}{Surface théorique en bleu - }{0.2}
+\IMG{img/swapcalib.png}{Prix de marché en bleu, prix du modèle en rouge }{0.7}
 
 \textbf{Un mot sur le multi threading}
-La méthode de calibration proposée ci-dessus à l'avantage d'être faciement parallélisable. En effet, les calculs aux différents points de la grille sont indépendants. Ceci permet de profiter de gpu
+La méthode de calibration proposée ci-dessus à l'avantage d'être facilement parallélisable. En effet, les calculs aux différents points de la grille sont indépendants. Ceci permet de profiter de la puissance des processeurs gpu.
 
